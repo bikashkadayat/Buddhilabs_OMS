@@ -1,0 +1,33 @@
+# Read-only biometric attendance dashboard (morx-collector's web UI).
+#
+# Serves the punches collected from the ZK biometric terminal(s) — the data
+# under biometric_attendance_nif/data/ — as an analytics dashboard on :8765.
+# The APPS_NIF admin embeds this dashboard in an iframe (see the "biometric"
+# service in docker-compose.yml and pages/attendance/BiometricAttendance.jsx).
+FROM python:3.10-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /app
+
+# morx's CLI imports the collector at module load, so pyzk is needed even to run
+# the read-only `web` command; python-dotenv parses the .env device config.
+RUN pip install "pyzk>=0.9" "python-dotenv>=1.0"
+
+# Only the app code is baked in (includes the prebuilt React bundle under
+# morx/web/static/). At runtime the whole dir is bind-mounted in dev; in prod
+# only /app/data is a named volume. Deliberately NOT copied:
+#   - data/  : gitignored, so absent from a fresh clone (this COPY would fail);
+#              the collector fills the volume, so just create an empty dir.
+#   - .env   : gitignored; config comes from compose env (prod) or the mounted
+#              .env (dev). Baking one would risk shipping a dev device IP.
+COPY biometric_attendance_nif/morx/ /app/morx/
+RUN mkdir -p /app/data
+
+EXPOSE 8765
+
+# 0.0.0.0 so the port is reachable from the host (and the browser's iframe).
+CMD ["python", "-m", "morx", "web", "--host", "0.0.0.0", "--port", "8765"]

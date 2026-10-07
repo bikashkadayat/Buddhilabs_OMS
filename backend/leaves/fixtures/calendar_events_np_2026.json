@@ -1,0 +1,58 @@
+[
+  {
+    "date": "2026-01-01",
+    "name": "English New Year",
+    "name_np": "अंग्रेजी नयाँ वर्ष",
+    "event_type": "observance",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-01-30",
+    "name": "Martyrs' Day",
+    "name_np": "शहीद दिवस",
+    "event_type": "national",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-02-19",
+    "name": "Democracy Day",
+    "name_np": "प्रजातन्त्र दिवस",
+    "event_type": "national",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-03-08",
+    "name": "International Women's Day",
+    "name_np": "अन्तर्राष्ट्रिय नारी दिवस",
+    "event_type": "observance",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-05-01",
+    "name": "Labour Day",
+    "name_np": "मजदुर दिवस",
+    "event_type": "national",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-09-19",
+    "name": "Constitution Day",
+    "name_np": "संविधान दिवस",
+    "event_type": "national",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-10-20",
+    "name": "Dashain (Vijaya Dashami)",
+    "name_np": "विजया दशमी",
+    "event_type": "festival",
+    "is_public_holiday": true
+  },
+  {
+    "date": "2026-11-08",
+    "name": "Tihar (Laxmi Puja)",
+    "name_np": "लक्ष्मी पूजा",
+    "event_type": "festival",
+    "is_public_holiday": true
+  }
+]

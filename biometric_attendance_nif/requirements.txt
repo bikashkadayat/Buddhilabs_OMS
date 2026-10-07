@@ -1,0 +1,6 @@
+# Runtime
+pyzk>=0.9
+python-dotenv>=1.0
+
+# Development / tests
+pytest>=7.4

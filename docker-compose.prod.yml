@@ -1,0 +1,450 @@
+# Production stack (middleware-server). Deployed BEHIND the shared ingress nginx
+# (nifn-nginx-website, owned by the NIFN_website stack) which already owns 80/443,
+# with TLS terminating at Cloudflare + that nginx.
+#
+# NOTHING here is published to the host. The ingress reaches these containers by
+# name over the external `nifn-shared` network — nif-backend:8000 for the API and
+# nif-web:80 for the SPA — exactly like the other apps on that box. See
+# deploy/nif.conf for the ingress server block and docs/DEPLOYMENT.md.
+#
+# Everything sensitive — secrets, security flags, SMTP, public URLs — comes from
+# the gitignored .env (see .env.example). Nothing sensitive is hardcoded here.
+#
+#   Prod:  docker compose -f docker-compose.prod.yml up -d --build
+#   Dev:   docker compose up            (docker-compose.yml — local HTTP stack)
+#
+# Phase 11 (audit finding M6) adds two things every service now inherits:
+#   * Docker log rotation. The default json-file driver grows without limit, so
+#     one chatty error loop could fill the disk and take the database down with
+#     it — a logging problem becoming an outage.
+#   * Memory limits. Unbounded, a runaway report generation could consume the
+#     host and take out Postgres, which is the one process that must survive.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+  # PostgreSQL Database (internal only — not published to the host in prod).
+  db:
+    image: postgres:14-alpine
+    container_name: nif-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-leave_system}
+      POSTGRES_USER: ${DATABASE_USER:-leave_user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    logging: *default-logging
+    # The database is the process that must survive memory pressure elsewhere,
+    # so it gets the largest reservation and a generous ceiling.
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-leave_user} -d ${DATABASE_NAME:-leave_system}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  # Redis: Channels layer (db 0) + shared Django cache (db 1).
+  # Internal only - no host port, no password needed on the private network.
+  # AOF with everysec: transient pub/sub does not justify fsync-per-write, but
+  # surviving a restart keeps throttle counters honest.
+  # noeviction is deliberate - silently dropping channel-layer keys under memory
+  # pressure would surface as random missing dashboard events. Fail loudly.
+  redis:
+    image: redis:7-alpine
+    container_name: nif-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 256mb
+      --maxmemory-policy noeviction
+    volumes:
+      - redis_data:/data
+    logging: *default-logging
+    # Slightly above redis' own maxmemory (256m) so the process is bounded by
+    # its OWN eviction policy rather than by an OOM kill, which would drop the
+    # channel layer without warning.
+    deploy:
+      resources:
+        limits:
+          memory: 384m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # One-shot: make the uploads volume writable by the non-root API user BEFORE
+  # the backend starts.
+  #
+  # A Docker named volume inherits the image directory's ownership only the FIRST
+  # time it is created. A `media_data` volume created by an older build — before
+  # the API was switched to the non-root `nifn` user (uid 1001) — stays owned by
+  # root, and then gunicorn cannot write an uploaded file into it: every task
+  # evidence / attachment, memo attachment and profile-photo POST fails with a
+  # PermissionError (HTTP 500) even though the form looks fine. This container
+  # runs as root, chowns the volume to 1001, then exits; backend + cron wait for
+  # it. It is idempotent, so it is safe to run on every deploy and the problem
+  # cannot silently come back.
+  media-init:
+    image: busybox:1.36
+    container_name: nif-media-init
+    command: sh -c "mkdir -p /app/media && chown -R 1001:1001 /app/media && chmod -R u+rwX /app/media"
+    volumes:
+      - media_data:/app/media
+    restart: "no"
+    logging: *default-logging
+
+  # Django API (Gunicorn). Built from the image — no source bind-mount in prod.
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nif-backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_ENGINE=${DATABASE_ENGINE:-postgresql}
+      - DATABASE_NAME=${DATABASE_NAME:-leave_system}
+      - DATABASE_USER=${DATABASE_USER:-leave_user}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      # Your domain must be listed; localhost/127.0.0.1 are appended for the
+      # in-container healthcheck (which calls http://localhost:8000).
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:?set DJANGO_ALLOWED_HOSTS to your domain in .env},localhost,127.0.0.1
+      # --- HTTPS / security hardening (secure by default; override via .env) ---
+      # Behind the shared ingress nginx (TLS at Cloudflare + that nginx): keep ON.
+      # settings.py reads X-Forwarded-Proto, which nginx sets. The liveness probe
+      # below is exempted in settings.py (SECURE_REDIRECT_EXEMPT), not here.
+      - DJANGO_SECURE_SSL_REDIRECT=${DJANGO_SECURE_SSL_REDIRECT:-True}
+      - DJANGO_SESSION_COOKIE_SECURE=${DJANGO_SESSION_COOKIE_SECURE:-True}
+      - DJANGO_CSRF_COOKIE_SECURE=${DJANGO_CSRF_COOKIE_SECURE:-True}
+      - DJANGO_SECURE_HSTS_SECONDS=${DJANGO_SECURE_HSTS_SECONDS:-31536000}
+      # Exact HTTPS origin(s) for admin / session CSRF — from .env, no localhost.
+      - DJANGO_CSRF_TRUSTED_ORIGINS=${DJANGO_CSRF_TRUSTED_ORIGINS:?set DJANGO_CSRF_TRUSTED_ORIGINS to https://your-domain in .env}
+      # --- Public URLs (email action links + PDF QR verification) ---
+      - FRONTEND_URL=${FRONTEND_URL:?set FRONTEND_URL to https://your-domain in .env}
+      - SITE_URL=${SITE_URL:?set SITE_URL to https://your-domain in .env}
+      # --- Biometric dashboard (morx) internal API ---
+      # The backend reads punch data from here server-side and returns only the
+      # requesting employee's rows, so the whole-dataset morx service is never
+      # exposed per-employee. Defaults to the `biometric` service on this network.
+      - BIOMETRIC_INTERNAL_URL=${BIOMETRIC_INTERNAL_URL:-http://biometric:8765}
+      # --- Email / SMTP (all forwarded; settings.py fails fast if SMTP is
+      #     selected but host/user/password are empty) ---
+      - EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      - EMAIL_HOST=${EMAIL_HOST:-}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-True}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-no-reply@nifportal.local}
+      # --- Object storage (optional; USE_S3=True + AWS_* to use a bucket) ---
+      - USE_S3=${USE_S3:-False}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME:-}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME:-}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL:-}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      # --- Gunicorn tuning ---
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-3}
+      - GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-120}
+      # --- Phase 11 hardening ---
+      # How many proxies WE control sit in front of Django. Cloudflare + the
+      # shared ingress nginx is 2. Getting this too HIGH re-opens the rate-limit
+      # bypass, so verify it before go-live:
+      #   docker compose exec backend python manage.py verify_proxy_config --from-audit
+      - TRUSTED_PROXY_DEPTH=${TRUSTED_PROXY_DEPTH:-1}
+      - LOGIN_MAX_FAILURES=${LOGIN_MAX_FAILURES:-10}
+      - LOGIN_LOCKOUT_SECONDS=${LOGIN_LOCKOUT_SECONDS:-900}
+      - LOGIN_LOCKOUT_ENABLED=${LOGIN_LOCKOUT_ENABLED:-True}
+      - MEDIA_SIGNED_URL_TTL=${MEDIA_SIGNED_URL_TTL:-300}
+      - ALERT_EMAILS=${ALERT_EMAILS:-}
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      media-init:
+        condition: service_completed_successfully
+    volumes:
+      # Named volume: uploaded attachments / profile photos / generated PDFs
+      # survive `up --build`, restarts, and redeploys.
+      - media_data:/app/media
+    networks:
+      # `default` only. Compose publishes the SERVICE name as a DNS alias on
+      # every network a service joins, and this service is named `backend` -- so
+      # sitting on nifn-shared offered a bare `backend` to every other stack on
+      # the host. The website stack's ingress nginx is on that network and its
+      # Laravel API block resolved `backend:8000` to THIS container, so
+      # admin.nifn.org.np logins were answered by Django and rejected with its
+      # ALLOWED_HOSTS 400 page, which the admin UI showed as bad credentials.
+      #
+      # It was never here for the ingress: that reaches this stack at nif-web:80
+      # and deploy/nginx.conf proxies onward. It was here so `web` could reach
+      # it, and `web` now joins `default` for exactly that.
+      - default        # db + cron, and web -> backend:8000
+    expose:
+      # NOT published to the host. The ingress reaches this over nifn-shared by
+      # container name, so gunicorn is unreachable from outside docker entirely.
+      - "8000"
+    logging: *default-logging
+    # Three gunicorn workers plus PDF rendering (WeasyPrint is the memory-hungry
+    # part). Sized to leave headroom for the database on a 4GB host.
+    deploy:
+      resources:
+        limits:
+          memory: 1500m
+        reservations:
+          memory: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health/').status==200 else 1)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Scheduled jobs — same image as backend, runs cron in the foreground.
+  # Shares the media volume (report generation / purge) and gets the public
+  # URLs + SMTP so the weekly digest email links resolve to the real domain.
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nif-cron
+    restart: unless-stopped
+    environment:
+      # The crontab's times are Asia/Kathmandu. The image clock is UTC, so without
+      # this the cron daemon schedules in UTC and every job fires 5h45m off (the
+      # "Monday 09:00" digest went out at 14:45 NPT). The daemon inherits TZ from
+      # here and schedules via localtime(). NOTE: a CRON_TZ line in the crontab
+      # does NOT work — Debian's cron is vixie-cron, which has no CRON_TZ support.
+      - TZ=Asia/Kathmandu
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_ENGINE=${DATABASE_ENGINE:-postgresql}
+      - DATABASE_NAME=${DATABASE_NAME:-leave_system}
+      - DATABASE_USER=${DATABASE_USER:-leave_user}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:?set DJANGO_ALLOWED_HOSTS in .env},localhost,127.0.0.1
+      - FRONTEND_URL=${FRONTEND_URL:?set FRONTEND_URL in .env}
+      - SITE_URL=${SITE_URL:?set SITE_URL in .env}
+      - EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      - EMAIL_HOST=${EMAIL_HOST:-}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-True}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-no-reply@nifportal.local}
+      - USE_S3=${USE_S3:-False}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME:-}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME:-}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL:-}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      # Encrypted off-host DB backup (deploy/backup.sh). Set the key + a target.
+      # Phase 11 (audit finding H4): `:?` not `:-`. The key was optional here
+      # but MANDATORY in backup.sh, so an unset key meant the backup aborted
+      # every single night in silence — and the first anyone would have learned
+      # of it was a restore with nothing to restore. Refusing to start is the
+      # honest failure.
+      - BACKUP_ENCRYPTION_KEY=${BACKUP_ENCRYPTION_KEY:?set BACKUP_ENCRYPTION_KEY in .env — backups cannot run without it}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-14}
+      - BACKUP_S3_BUCKET=${BACKUP_S3_BUCKET:-}
+      - BACKUP_RSYNC_TARGET=${BACKUP_RSYNC_TARGET:-}
+      # A local-only copy is not a backup. Set to 0 ONLY for a staging box where
+      # losing the data is genuinely acceptable.
+      - BACKUP_REQUIRE_OFFHOST=${BACKUP_REQUIRE_OFFHOST:-1}
+      - BACKUP_MEDIA_INCLUDE_REPORTS=${BACKUP_MEDIA_INCLUDE_REPORTS:-0}
+      - MEDIA_ROOT=/app/media
+      # Needed by the alert engine and by audit entries written from cron jobs.
+      - TRUSTED_PROXY_DEPTH=${TRUSTED_PROXY_DEPTH:-1}
+      - ALERT_EMAILS=${ALERT_EMAILS:-}
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      media-init:
+        condition: service_completed_successfully
+    volumes:
+      - media_data:/app/media
+      - backups_data:/backups
+    # Phase 11 (M6): the ONE documented exception to the non-root default. The
+    # Debian cron daemon must start as root to read /etc/crontab and drop
+    # privileges per job; it cannot run unprivileged. The API container — the
+    # one actually exposed to traffic — runs as nifn.
+    user: root
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    # Phase 11 (audit finding M10): without this, a dead cron daemon left the
+    # container reporting healthy while every scheduled job — including the
+    # nightly backup — silently stopped. `restart: unless-stopped` cannot help
+    # if nothing ever notices the process is gone.
+    healthcheck:
+      # pidof, not pgrep: pgrep ships in procps, which this slim image does not
+      # install, so the probe exited 1 on every run and the liveness check that
+      # exists to notice a dead daemon was itself dead. pidof is in the base
+      # image (sysvinit-utils) and answers the same question.
+      test: ["CMD-SHELL", "pidof cron > /dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    # cron strips the environment, so persist the runtime env for jobs, install
+    # the crontab (baked into the image at /app/deploy/crontab), and run cron -f.
+    command: >
+      bash -c "printenv | grep -E '^(TZ=|DATABASE_|DJANGO_|EMAIL_|DEFAULT_FROM_EMAIL|FRONTEND_URL|SITE_URL|USE_S3|AWS_|BACKUP_|MEDIA_ROOT|TRUSTED_PROXY_DEPTH|ALERT_|SENTRY_)' > /etc/environment &&
+               crontab /app/deploy/crontab &&
+               cron -f"
+
+  # Static SPA host. Internal-only: no host ports, no TLS, no API proxying — the
+  # shared ingress does both. This mirrors the other apps on this box (website,
+  # admin, sandbox…): a container serving HTTP on an internal port, reached by
+  # name over nifn-shared.
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.prod
+      args:
+        # Public https origin of the biometric dashboard (the `biometric` service
+        # below), baked into the SPA so its iframe can load it. Optional: empty by
+        # default so the core app deploys without biometric. When the device is
+        # reachable and you enable the `biometric` profile, set this to the
+        # subdomain your shared ingress routes to nif-biometric:8765 (see
+        # deploy/nif-biometric.conf) and rebuild the web image.
+        - VITE_BIOMETRIC_URL=${VITE_BIOMETRIC_URL:-}
+    container_name: nif-web
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      # `default` is how this reaches the API -- deploy/nginx.conf proxies to
+      # backend:8000, and backend no longer joins the shared network. Inside the
+      # project that name is scoped and unambiguous.
+      - default
+      - nifn-shared    # reached as nif-web:80 by the shared ingress nginx
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/ > /dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+  # Biometric attendance dashboard (morx read-only web UI). Serves the collected
+  # punches as an analytics dashboard on :8765. Reached by the shared ingress on
+  # its own hostname (morx serves from / with absolute /assets + /api paths, so it
+  # cannot share nif-web's origin) — see deploy/nif-biometric.conf. The admin SPA
+  # embeds it in an iframe (VITE_BIOMETRIC_URL above).
+  biometric:
+    build:
+      context: .
+      dockerfile: Dockerfile.biometric
+    container_name: nif-biometric
+    restart: unless-stopped
+    # Opt-in: only starts with `--profile biometric` (or COMPOSE_PROFILES=biometric).
+    # Left out of a default deploy because a cloud host that cannot reach the
+    # on-prem terminal has nothing to serve. Enable once the device is reachable.
+    profiles: ["biometric"]
+    environment:
+      - TZ=${TZ:-Asia/Kathmandu}
+      - MORX_STORAGE_BACKEND=${MORX_STORAGE_BACKEND:-csv}
+      - MORX_DATA_DIR=data
+    volumes:
+      # Persist collected punches across redeploys; shared with the collector.
+      - biometric_data:/app/data
+    networks:
+      - default        # shares biometric_data with the collector
+      - nifn-shared    # reached as nif-biometric:8765 by the shared ingress
+    expose:
+      - "8765"
+
+  # Live biometric collector (morx run). Connects to the ZK terminal on the LAN,
+  # syncs the roster + backlog, then streams live punches into the shared
+  # biometric_data volume — the exact data the dashboard reads. Reconnects on its
+  # own with backoff, so it stays up and retries when the device is unreachable.
+  # REQUIRES the production host to have network reachability to the terminal.
+  biometric-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.biometric
+    container_name: nif-biometric-collector
+    restart: unless-stopped
+    # Opt-in: only starts with `--profile biometric`. Requires the production host
+    # to have network reachability to the terminal (same LAN or a VPN route).
+    profiles: ["biometric"]
+    # One-time backlog sync, THEN stream live. `sync` finishes before `run`
+    # starts, so the two never write attendance.csv at the same time. `|| echo`
+    # keeps us going live even if the device is unreachable at startup; `exec`
+    # makes `morx run` PID 1 so SIGTERM still triggers the cooperative shutdown.
+    command: ["sh", "-c", "python -m morx sync || echo '[start] backlog sync failed (device unreachable?), continuing to live capture'; exec python -m morx run"]
+    environment:
+      - TZ=${TZ:-Asia/Kathmandu}
+      - MORX_STORAGE_BACKEND=${MORX_STORAGE_BACKEND:-csv}
+      - MORX_DATA_DIR=data
+      # Do NOT re-pull the whole device log on every reconnect. With a flaky link
+      # the stream drops often, and each reconnect would re-dump the terminal's
+      # entire stored log (get_attendance) — that repeated full dump pegs the
+      # device CPU and is what lagged the fingerprint scanner during check-in/out.
+      # The single backfill is the `morx sync` in `command:` above instead.
+      - MORX_SYNC_HISTORY=${MORX_SYNC_HISTORY:-false}
+      # Device settings from .env (no hardcoding). Empty by default so a
+      # biometric-less deploy interpolates cleanly; when you enable the
+      # `biometric` profile, set this to the terminal IP in .env — morx fails
+      # loudly at connect if it is blank.
+      - MORX_DEVICE_HOST=${MORX_DEVICE_HOST:-}
+      - MORX_DEVICE_PORT=${MORX_DEVICE_PORT:-4370}
+      - MORX_DEVICE_PASSWORD=${MORX_DEVICE_PASSWORD:-0}
+      - MORX_DEVICE_TIMEOUT=${MORX_DEVICE_TIMEOUT:-10}
+      - MORX_DEVICE_FORCE_UDP=${MORX_DEVICE_FORCE_UDP:-false}
+      - MORX_DEVICE_OMIT_PING=${MORX_DEVICE_OMIT_PING:-false}
+    volumes:
+      - biometric_data:/app/data
+    networks:
+      - default
+    # morx does a cooperative shutdown on SIGTERM; give the live-poll read time to
+    # notice before Docker escalates to SIGKILL.
+    stop_grace_period: 30s
+
+networks:
+  default:
+  # Created and owned by the NIFN_website stack; this app only joins it. If it is
+  # ever missing, `docker network create nifn-shared` — but check first, since the
+  # ingress nginx must be on the same one.
+  nifn-shared:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
+  backups_data:
+  # Collected biometric punches (data/attendance.csv + employees.csv). Seeded on
+  # first create from the image's baked snapshot; the collector then appends to
+  # it. Survives redeploys. To start prod clean, `docker volume rm` it first.
+  biometric_data:

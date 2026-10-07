@@ -1,0 +1,96 @@
+# Pinned base image (Debian bookworm) - no floating tags, reproducible builds.
+FROM python:3.10-slim-bookworm
+
+# No .pyc files, unbuffered stdout (real-time container logs), quiet pip.
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /app
+
+# RUNTIME system libraries only (no compilers/build tools - every Python
+# dependency ships a manylinux wheel):
+#   cron                              - scheduled jobs
+#   libcairo2/pango/gdk-pixbuf/mime   - weasyprint PDF rendering
+#   libmagic1                         - python-magic mime sniffing
+#   postgresql-client                 - occasional DB ops / psql on the shell
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cron \
+    postgresql-client \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf-2.0-0 \
+    shared-mime-info \
+    libmagic1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pinned Python deps first for better layer caching.
+COPY backend/requirements/ ./requirements/
+COPY backend/requirements.txt .
+RUN pip install -r requirements/production.txt
+
+# Copy backend code
+COPY backend/ .
+
+# Deployment configuration, at the path the code and its tests look for it:
+# /deploy, one level above WORKDIR. deploy/nginx.conf is the SPA host's server
+# block, and its `location /iclock/` must precede the SPA catch-all or the
+# attendance terminal gets 200 + HTML for every punch and deletes the records it
+# just sent (firmware reads any 200 as success). That guarantee is asserted by
+# biometric/tests/test_push_protocol.py, which resolves the file relative to its
+# own path - so with the file absent from the image the check could never run
+# where it matters, and the one test standing between a config edit and silent
+# attendance loss failed on every containerised run.
+COPY deploy/ /deploy/
+
+# Phase 11 (audit finding M6): run as a non-root user.
+#
+# The container ran as root, so a remote-code-execution bug anywhere in the
+# stack would have started with uid 0 inside the container — one kernel or
+# runtime escape away from the host. There is no reason for Gunicorn to hold
+# privileges it never uses.
+#
+# `cron` is the exception: the Debian cron daemon requires root to read
+# /etc/crontab and drop privileges per job, so the cron container overrides the
+# user back to root in docker-compose. That is a deliberate, documented
+# exception rather than a blanket default.
+#
+# The writable paths are chowned explicitly. Media and staticfiles are written
+# at runtime (uploads, collectstatic), and a read-only WORKDIR would break both
+# in ways that only appear on first upload.
+RUN groupadd --system --gid 1001 nifn \
+    && useradd --system --uid 1001 --gid nifn --home-dir /app --shell /usr/sbin/nologin nifn \
+    && mkdir -p /app/media /app/staticfiles /app/logs \
+    && chown -R nifn:nifn /app
+
+# No secrets or environment-specific config are baked into the image; every
+# value (SECRET_KEY, DB credentials, hosts) is injected at runtime by
+# docker-compose. settings.py fails fast if a required secret is missing.
+USER nifn
+
+EXPOSE 8000
+
+# Production start: apply migrations, collect static (builds the WhiteNoise
+# manifest), then run Gunicorn. Worker count / timeout are env-tunable and
+# access + error logs stream to stdout for platform log aggregation.
+#
+# ASGI via UvicornWorker so the same process serves HTTP and WebSockets. Gunicorn
+# still owns process supervision, worker count and graceful reload, so
+# GUNICORN_WORKERS / GUNICORN_TIMEOUT and the deploy health-gate are unchanged.
+# With an async worker --timeout is a worker-liveness timeout, not a request
+# deadline, which is what lets a WebSocket outlive it.
+# collectstatic without --clear (Phase 11, L4): --clear emptied the directory
+# first, leaving a window on every boot where the admin and the browsable API
+# served 404s for their own CSS. The manifest storage already replaces changed
+# files by content hash, so clearing bought nothing but that window.
+CMD python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
+    gunicorn config.asgi:application \
+      -k uvicorn.workers.UvicornWorker \
+      --bind 0.0.0.0:8000 \
+      --workers ${GUNICORN_WORKERS:-3} \
+      --timeout ${GUNICORN_TIMEOUT:-120} \
+      --access-logfile - \
+      --error-logfile -

@@ -1,0 +1,52 @@
+# systemd unit for morx-collector.
+#
+#   sudo cp deploy/morx-collector.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now morx-collector
+#   journalctl -u morx-collector -f
+#
+# Adjust User/WorkingDirectory/ExecStart to match your install path.
+
+[Unit]
+Description=Attendance collector for ZK biometric devices
+Documentation=file:///opt/morx-collector/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=morx
+Group=morx
+WorkingDirectory=/opt/morx-collector
+EnvironmentFile=/opt/morx-collector/.env
+ExecStart=/opt/morx-collector/zk-env/bin/python -m morx run
+
+# The collector is meant to run forever; a crash should never mean silent
+# data loss, so always come back — but rate-limit a crash loop.
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+# SIGTERM triggers the cooperative shutdown; give the live-capture read time
+# to notice (MORX_LIVE_POLL_INTERVAL) before systemd escalates to SIGKILL.
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Logging goes to stderr, which journald captures.
+StandardOutput=journal
+StandardError=journal
+
+# Hardening. The process only needs to read its config and write its data dir.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/morx-collector/data
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+
+[Install]
+WantedBy=multi-user.target

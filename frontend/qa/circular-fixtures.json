@@ -1,0 +1,854 @@
+{
+ "_generated_by": "backend/circulars/tests/test_qa_fixture.py (Phase 50)",
+ "acknowledgements": {
+  "recipients": [
+   {
+    "department": "Finance",
+    "designation": "Administrator",
+    "due_date": "2026-08-21",
+    "id": "0b9349e5-63fc-4eef-ba15-3321810fe7b4",
+    "is_late": false,
+    "name": "Cir Admin T",
+    "recipient_id": "58833964-b82e-4d34-88ed-fb11ae93ca71",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Finance",
+    "designation": "Officer",
+    "due_date": "2026-08-21",
+    "id": "7ec56309-a741-43b8-a447-cb73fd59c8b7",
+    "is_late": false,
+    "name": "Cir Author T",
+    "recipient_id": "6b2f90b2-1763-4f82-a257-d8e0f673ac5e",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Finance",
+    "designation": "Dept Head",
+    "due_date": "2026-08-21",
+    "id": "da2c973e-2592-474d-8d84-5ae51e16fcb8",
+    "is_late": false,
+    "name": "Cir Head T",
+    "recipient_id": "8fce80a5-6f07-4a56-96e8-4d6867162dd4",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Finance",
+    "designation": "HR Manager",
+    "due_date": "2026-08-21",
+    "id": "7426b6ed-0ee3-47d7-a41b-06fe2031d7d0",
+    "is_late": false,
+    "name": "Cir Hr T",
+    "recipient_id": "6fef4a85-ebd9-40db-b870-986664b5a103",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Logistics",
+    "designation": "Officer",
+    "due_date": "2026-08-21",
+    "id": "09253cca-fb48-4ee0-8c8e-df91327cfcbd",
+    "is_late": false,
+    "name": "Cir Outsider T",
+    "recipient_id": "97727c57-3b57-404d-9044-56ffac71fef6",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Finance",
+    "designation": "Internal Auditor",
+    "due_date": "2026-08-21",
+    "id": "5c25587b-bdc4-493f-9a6e-a0a269fecfb4",
+    "is_late": false,
+    "name": "Cir Reviewer T",
+    "recipient_id": "e808b64a-a902-47b4-a5ee-00ffea02cdbe",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Finance",
+    "designation": "Compliance",
+    "due_date": "2026-08-21",
+    "id": "ec0bfe9e-00f2-4dd2-913c-388feed792fa",
+    "is_late": false,
+    "name": "Cir Reviewer2 T",
+    "recipient_id": "5f44076d-a818-4a3c-b8bd-f46af6812cd6",
+    "remarks": "",
+    "reminded_at": null,
+    "responded_at": null,
+    "state": "pending",
+    "state_label": "Pending"
+   },
+   {
+    "department": "Finance",
+    "designation": "Officer",
+    "due_date": "2026-08-21",
+    "id": "0f22dae9-95f0-485f-a44a-3b9546dd8953",
+    "is_late": false,
+    "name": "Cir Staff A T",
+    "recipient_id": "d9d4a71a-e6fe-478c-a645-a6156bd33492",
+    "remarks": "Noted; the team has been briefed.",
+    "reminded_at": null,
+    "responded_at": "2026-08-14 09:17:52.210922+00:00",
+    "state": "acknowledged",
+    "state_label": "Acknowledged"
+   },
+   {
+    "department": "Finance",
+    "designation": "Officer",
+    "due_date": "2026-08-21",
+    "id": "4608722d-24c5-4763-a281-dcd6f638f46a",
+    "is_late": false,
+    "name": "Cir Staff B T",
+    "recipient_id": "0857bb9c-3e91-4acc-abc0-464b421cba6b",
+    "remarks": "The Friday closing clashes with the branch rota.",
+    "reminded_at": null,
+    "responded_at": "2026-08-14 09:17:52.264747+00:00",
+    "state": "declined",
+    "state_label": "Declined"
+   }
+  ],
+  "summary": {
+   "acknowledged": 1,
+   "deadline": "2026-08-21",
+   "declined": 1,
+   "is_complete": false,
+   "late": 0,
+   "pending": 7,
+   "percent": 11,
+   "required": true,
+   "total": 9
+  }
+ },
+ "audiences": {
+  "departments": [
+   {
+    "code": "ADMIN",
+    "id": "ca2ad86c-bf21-4861-843f-5ecc07a157c6",
+    "name": "Administrative Department",
+    "parent": null
+   },
+   {
+    "code": "HR",
+    "id": "0aa0eb1b-83bb-4b6f-8d31-cb2e425af758",
+    "name": "Human Resource Department",
+    "parent": null
+   },
+   {
+    "code": "ICT",
+    "id": "383a7952-5440-41ed-b7d1-96c80e10f8e6",
+    "name": "ICT Department",
+    "parent": null
+   },
+   {
+    "code": "OPS",
+    "id": "a5695d48-c9d1-44fa-a10d-008f99965b3e",
+    "name": "Operational Department",
+    "parent": null
+   }
+  ],
+  "groups": []
+ },
+ "broadcasted_list": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "acknowledgement_required": true,
+    "archived_at": null,
+    "broadcast_at": "2026-08-14T15:02:51.963327+05:45",
+    "category": "policy",
+    "category_label": "Policy Communication",
+    "circular_number": "CIR-2026-000001",
+    "classification": "internal",
+    "classification_label": "Internal",
+    "created_at": "2026-08-14T15:02:51.194594+05:45",
+    "created_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "full_name": "Cir Author T",
+     "id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3"
+    },
+    "department_label": "Finance",
+    "external_reference": "BOD/2026/07",
+    "id": "0e53097f-0f2d-429c-a13d-4fae97fc1388",
+    "issue_date": "2026-08-14",
+    "issued_at": "2026-08-14T15:02:51.893389+05:45",
+    "issued_by_name": "Cir Issuer T",
+    "pending_with": null,
+    "priority": "high",
+    "priority_label": "High",
+    "reach": {
+     "percent": 56,
+     "read": 5,
+     "recipients": 9,
+     "unread": 4
+    },
+    "status": "broadcasted",
+    "status_label": "Broadcasted",
+    "subject": "Revised office hours and attendance policy, effective 1 Ashadh"
+   }
+  ]
+ },
+ "circular_id": "0e53097f-0f2d-429c-a13d-4fae97fc1388",
+ "dashboard": {
+  "acknowledged": 0,
+  "archived": 0,
+  "assigned": 0,
+  "broadcasted": 1,
+  "drafts": 0,
+  "issued": 0,
+  "pending_acknowledgement": 1,
+  "ready_for_broadcast": 0,
+  "ready_for_issue": 0,
+  "total_visible": 1,
+  "under_review": 0,
+  "unread": 0
+ },
+ "detail": {
+  "acknowledgement": {
+   "acknowledged": 1,
+   "deadline": "2026-08-21",
+   "declined": 1,
+   "is_complete": false,
+   "late": 0,
+   "pending": 7,
+   "percent": 11,
+   "required": true,
+   "total": 9
+  },
+  "acknowledgement_due_days": 7,
+  "acknowledgement_required": true,
+  "archived_at": null,
+  "attachments": [
+   {
+    "extension": "pdf",
+    "id": "617731a8-8cbc-49c1-acc0-71bb9db5dd8e",
+    "original_name": "revised-attendance-policy.pdf",
+    "size": 81,
+    "size_label": "81 B",
+    "uploaded_at": "2026-08-14T15:02:51.670483+05:45",
+    "uploaded_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "full_name": "Cir Author T",
+     "id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3"
+    },
+    "url": "/api/v1/media/?p=circulars%2Fattachments%2F2026%2F08%2F5faf114ecd2140daaa522f3ad2c1f865%2Frevised-attendance-policy.pdf&e=1786699372&s=8515ae6b711e0c7fa955f358cb5e6702f990f00b97321b881c6b5d86426e85af&u=69e4c79a-2f5a-48cf-9211-7a1483e813f3&dl=1"
+   },
+   {
+    "extension": "pdf",
+    "id": "ebe3a47e-e7df-4c76-8c3c-b2cec57ae682",
+    "original_name": "office-hours-annexure.pdf",
+    "size": 81,
+    "size_label": "81 B",
+    "uploaded_at": "2026-08-14T15:02:51.699637+05:45",
+    "uploaded_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "full_name": "Cir Author T",
+     "id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3"
+    },
+    "url": "/api/v1/media/?p=circulars%2Fattachments%2F2026%2F08%2F76841d5909b74907821c2c2f9e650039%2Foffice-hours-annexure.pdf&e=1786699372&s=59f3a83db89a3b2ac49d90dfba902ae673fe31431c0b59bde008c1e1e4c2b156&u=69e4c79a-2f5a-48cf-9211-7a1483e813f3&dl=1"
+   }
+  ],
+  "broadcast_at": "2026-08-14T15:02:51.963327+05:45",
+  "broadcasts": [
+   {
+    "already_present_count": 0,
+    "audience": "organisation",
+    "audience_kind": "Entire Organisation",
+    "audience_label": "Entire organisation",
+    "broadcast_at": "2026-08-14 09:17:51.953134+00:00",
+    "broadcast_by": "Cir Issuer T",
+    "id": "12fcd2e0-43d5-4bad-b143-7a1f37049276",
+    "recipient_count": 9,
+    "remarks": "All staff, ahead of the effective date.",
+    "sequence": 1
+   }
+  ],
+  "can_acknowledge": true,
+  "can_act": false,
+  "can_archive": true,
+  "can_broadcast": true,
+  "can_cancel": false,
+  "can_delete": false,
+  "can_edit": false,
+  "can_edit_chain": false,
+  "can_export": true,
+  "can_submit": false,
+  "can_view_registers": true,
+  "category": "policy",
+  "category_label": "Policy Communication",
+  "circular_number": "CIR-2026-000001",
+  "classification": "internal",
+  "classification_label": "Internal",
+  "content": "<p>Following the Board's decision of 12 Ashadh, the Foundation's office hours are revised with effect from the first of next month.</p><table class=\"memo-table memo-table-bordered\"><thead><tr><th>Day</th><th>Opening</th><th>Closing</th></tr></thead><tbody><tr><td>Sunday to Thursday</td><td>09:00</td><td>17:00</td></tr><tr><td>Friday</td><td>09:00</td><td>14:00</td></tr></tbody></table><p>Department heads are asked to confirm that their teams have been briefed. All staff must acknowledge this circular within seven days.</p>",
+  "created_at": "2026-08-14T15:02:51.194594+05:45",
+  "created_by": {
+   "department": "Finance",
+   "designation": "Officer",
+   "full_name": "Cir Author T",
+   "id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3"
+  },
+  "department_label": "Finance",
+  "external_reference": "BOD/2026/07",
+  "id": "0e53097f-0f2d-429c-a13d-4fae97fc1388",
+  "is_read_only": false,
+  "is_recipient": true,
+  "issue_date": "2026-08-14",
+  "issued_at": "2026-08-14T15:02:51.893389+05:45",
+  "issued_by_name": "Cir Issuer T",
+  "memo_reference": null,
+  "memo_reference_label": null,
+  "minute_reference": null,
+  "minute_reference_label": null,
+  "my_acknowledgement": {
+   "due_date": "2026-08-21",
+   "is_late": false,
+   "remarks": "",
+   "responded_at": null,
+   "state": "pending",
+   "state_label": "Pending"
+  },
+  "my_step": null,
+  "pending_with": null,
+  "priority": "high",
+  "priority_label": "High",
+  "reach": {
+   "percent": 44,
+   "read": 4,
+   "recipients": 9,
+   "unread": 5
+  },
+  "read_summary": {
+   "percent": 56,
+   "read": 5,
+   "total": 9,
+   "unread": 4
+  },
+  "status": "broadcasted",
+  "status_label": "Broadcasted",
+  "subject": "Revised office hours and attendance policy, effective 1 Ashadh",
+  "submitted_at": "2026-08-14T15:02:51.738812+05:45",
+  "timeline": [
+   {
+    "action": "created",
+    "actor_name": "Cir Author T",
+    "at": "2026-08-14 09:17:51.197936+00:00",
+    "id": "bea9e7d6-c863-41ea-95d0-7d87e54d8618",
+    "kind": "history",
+    "label": "Created",
+    "remarks": "Circular created.",
+    "sequence": 1,
+    "state": "done"
+   },
+   {
+    "action": "attached",
+    "actor_name": "Cir Author T",
+    "at": "2026-08-14 09:17:51.673377+00:00",
+    "id": "3767e49b-d18c-43bd-9253-ec6279575eb2",
+    "kind": "history",
+    "label": "Attachment added",
+    "remarks": "1 file(s) attached.",
+    "sequence": 2,
+    "state": "done"
+   },
+   {
+    "action": "attached",
+    "actor_name": "Cir Author T",
+    "at": "2026-08-14 09:17:51.701232+00:00",
+    "id": "1ace984f-16f0-4bcd-bdb9-e52dced4a0b0",
+    "kind": "history",
+    "label": "Attachment added",
+    "remarks": "1 file(s) attached.",
+    "sequence": 3,
+    "state": "done"
+   },
+   {
+    "action": "edited",
+    "actor_name": "Cir Author T",
+    "at": "2026-08-14 09:17:51.735571+00:00",
+    "id": "daeff029-9d29-444c-8f0d-e509e1ea2df7",
+    "kind": "history",
+    "label": "Edited",
+    "remarks": "Chain set: 2 step(s).",
+    "sequence": 4,
+    "state": "done"
+   },
+   {
+    "action": "sent_for_review",
+    "actor_name": "Cir Author T",
+    "at": "2026-08-14 09:17:51.774636+00:00",
+    "id": "b6379217-88d9-444a-ab02-dbffa2aa7465",
+    "kind": "history",
+    "label": "Sent for Review",
+    "remarks": "Submitted to Cir Reviewer T (Reviewer).",
+    "sequence": 5,
+    "state": "done"
+   },
+   {
+    "action": "reviewed",
+    "actor_name": "Cir Reviewer T",
+    "at": "2026-08-14 09:17:51.841922+00:00",
+    "id": "7ad1b5d1-6df1-4f02-bc62-ed7362cca81c",
+    "kind": "history",
+    "label": "Reviewed",
+    "remarks": "Checked against the staff handbook and the leave policy.",
+    "sequence": 6,
+    "state": "done"
+   },
+   {
+    "action": "issued",
+    "actor_name": "Cir Issuer T",
+    "at": "2026-08-14 09:17:51.900780+00:00",
+    "id": "2a4d185f-2b99-4fb5-bccd-1dbc4cd26434",
+    "kind": "history",
+    "label": "Issued",
+    "remarks": "Issued.",
+    "sequence": 7,
+    "state": "done"
+   },
+   {
+    "action": "audience_set",
+    "actor_name": "Cir Issuer T",
+    "at": "2026-08-14 09:17:51.950808+00:00",
+    "id": "bdf9627d-47de-470f-aa73-f21f5e0d490e",
+    "kind": "history",
+    "label": "Audience defined",
+    "remarks": "Entire organisation",
+    "sequence": 8,
+    "state": "done"
+   },
+   {
+    "action": "broadcast",
+    "actor_name": "Cir Issuer T",
+    "at": "2026-08-14 09:17:51.964725+00:00",
+    "id": "ac395d17-5c83-4251-ad49-eba32010a06f",
+    "kind": "history",
+    "label": "Broadcast",
+    "remarks": "Entire organisation \u2014 9 recipient(s)",
+    "sequence": 9,
+    "state": "done"
+   },
+   {
+    "action": "acknowledged",
+    "actor_name": "Cir Staff A T",
+    "at": "2026-08-14 09:17:52.212465+00:00",
+    "id": "9eb4ca08-1d4e-4c54-8a53-38e1e74ad3b8",
+    "kind": "history",
+    "label": "Acknowledged",
+    "remarks": "Noted; the team has been briefed.",
+    "sequence": 14,
+    "state": "done"
+   },
+   {
+    "action": "declined",
+    "actor_name": "Cir Staff B T",
+    "at": "2026-08-14 09:17:52.266600+00:00",
+    "id": "93e1431c-5ed9-4a75-b777-3a35c413ee69",
+    "kind": "history",
+    "label": "Acknowledgement declined",
+    "remarks": "The Friday closing clashes with the branch rota.",
+    "sequence": 15,
+    "state": "done"
+   }
+  ],
+  "tracker": [
+   {
+    "actor": "Cir Author T",
+    "at": "2026-08-14 09:17:51.194594+00:00",
+    "key": "created",
+    "label": "Created",
+    "state": "done"
+   },
+   {
+    "actor": "Cir Reviewer T",
+    "at": "2026-08-14 09:17:51.828635+00:00",
+    "key": "reviewed",
+    "label": "Reviewed",
+    "state": "done"
+   },
+   {
+    "actor": "Cir Issuer T",
+    "at": "2026-08-14 09:17:51.891910+00:00",
+    "key": "issued",
+    "label": "Issued",
+    "state": "done"
+   },
+   {
+    "actor": "9 recipient(s)",
+    "at": "2026-08-14 09:17:51.953134+00:00",
+    "key": "broadcast",
+    "label": "Broadcast",
+    "state": "done"
+   },
+   {
+    "actor": "1 of 9 acknowledged",
+    "at": null,
+    "key": "acknowledged",
+    "label": "Acknowledged",
+    "state": "active"
+   },
+   {
+    "actor": "",
+    "at": null,
+    "key": "archived",
+    "label": "Archived",
+    "state": "pending"
+   }
+  ],
+  "updated_at": "2026-08-14T15:02:51.963434+05:45",
+  "workflow_steps": [
+   {
+    "acted_at": "2026-08-14T15:02:51.828635+05:45",
+    "activated_at": "2026-08-14T15:02:51.739483+05:45",
+    "assignee": {
+     "department": "Finance",
+     "designation": "Internal Auditor",
+     "full_name": "Cir Reviewer T",
+     "id": "3ea3368f-9b4e-48a3-832e-5beb7b5e6e79"
+    },
+    "department_label": "Finance",
+    "designation": "Internal Auditor",
+    "id": "7af6c972-ccd4-45fb-b346-bd8af365a97b",
+    "name": "Cir Reviewer T",
+    "remarks": "Checked against the staff handbook and the leave policy.",
+    "role_label": "Reviewer",
+    "role_type": "reviewer",
+    "sequence": 1,
+    "status": "completed",
+    "status_label": "Completed"
+   },
+   {
+    "acted_at": "2026-08-14T15:02:51.891910+05:45",
+    "activated_at": "2026-08-14T15:02:51.833002+05:45",
+    "assignee": {
+     "department": "Finance",
+     "designation": "Chief Executive",
+     "full_name": "Cir Issuer T",
+     "id": "d0817c84-bf74-4eab-b10e-0db35f612f1d"
+    },
+    "department_label": "Finance",
+    "designation": "Chief Executive",
+    "id": "c82a80c0-c0f6-4034-af65-8cd2fb616fb1",
+    "name": "Cir Issuer T",
+    "remarks": "Issued.",
+    "role_label": "Issuer",
+    "role_type": "issuer",
+    "sequence": 2,
+    "status": "completed",
+    "status_label": "Completed"
+   }
+  ]
+ },
+ "list": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "acknowledgement_required": true,
+    "archived_at": null,
+    "broadcast_at": "2026-08-14T15:02:51.963327+05:45",
+    "category": "policy",
+    "category_label": "Policy Communication",
+    "circular_number": "CIR-2026-000001",
+    "classification": "internal",
+    "classification_label": "Internal",
+    "created_at": "2026-08-14T15:02:51.194594+05:45",
+    "created_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "full_name": "Cir Author T",
+     "id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3"
+    },
+    "department_label": "Finance",
+    "external_reference": "BOD/2026/07",
+    "id": "0e53097f-0f2d-429c-a13d-4fae97fc1388",
+    "issue_date": "2026-08-14",
+    "issued_at": "2026-08-14T15:02:51.893389+05:45",
+    "issued_by_name": "Cir Issuer T",
+    "pending_with": null,
+    "priority": "high",
+    "priority_label": "High",
+    "reach": {
+     "percent": 56,
+     "read": 5,
+     "recipients": 9,
+     "unread": 4
+    },
+    "status": "broadcasted",
+    "status_label": "Broadcasted",
+    "subject": "Revised office hours and attendance policy, effective 1 Ashadh"
+   }
+  ]
+ },
+ "recipients": {
+  "recipients": [
+   {
+    "department": "Finance",
+    "designation": "Administrator",
+    "id": "58833964-b82e-4d34-88ed-fb11ae93ca71",
+    "last_viewed_at": null,
+    "name": "Cir Admin T",
+    "opened_at": null,
+    "state": "unread",
+    "user_id": "52039869-26a2-451b-9116-2dd233cb6d7d",
+    "view_count": 0
+   },
+   {
+    "department": "Finance",
+    "designation": "Officer",
+    "id": "6b2f90b2-1763-4f82-a257-d8e0f673ac5e",
+    "last_viewed_at": "2026-08-14 09:17:52.314724+00:00",
+    "name": "Cir Author T",
+    "opened_at": "2026-08-14 09:17:52.314724+00:00",
+    "state": "read",
+    "user_id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3",
+    "view_count": 1
+   },
+   {
+    "department": "Finance",
+    "designation": "Dept Head",
+    "id": "8fce80a5-6f07-4a56-96e8-4d6867162dd4",
+    "last_viewed_at": "2026-08-14 09:17:52.132693+00:00",
+    "name": "Cir Head T",
+    "opened_at": "2026-08-14 09:17:52.132693+00:00",
+    "state": "read",
+    "user_id": "d85c486c-3e86-4a48-b2bf-2383c93fb6d1",
+    "view_count": 1
+   },
+   {
+    "department": "Finance",
+    "designation": "HR Manager",
+    "id": "6fef4a85-ebd9-40db-b870-986664b5a103",
+    "last_viewed_at": "2026-08-14 09:17:52.171762+00:00",
+    "name": "Cir Hr T",
+    "opened_at": "2026-08-14 09:17:52.171762+00:00",
+    "state": "read",
+    "user_id": "c29ef59a-cc4f-48df-8544-02f28332f4df",
+    "view_count": 1
+   },
+   {
+    "department": "Logistics",
+    "designation": "Officer",
+    "id": "97727c57-3b57-404d-9044-56ffac71fef6",
+    "last_viewed_at": null,
+    "name": "Cir Outsider T",
+    "opened_at": null,
+    "state": "unread",
+    "user_id": "c535dd56-b3b7-4501-9c40-25b74863fe48",
+    "view_count": 0
+   },
+   {
+    "department": "Finance",
+    "designation": "Internal Auditor",
+    "id": "e808b64a-a902-47b4-a5ee-00ffea02cdbe",
+    "last_viewed_at": null,
+    "name": "Cir Reviewer T",
+    "opened_at": null,
+    "state": "unread",
+    "user_id": "3ea3368f-9b4e-48a3-832e-5beb7b5e6e79",
+    "view_count": 0
+   },
+   {
+    "department": "Finance",
+    "designation": "Compliance",
+    "id": "5f44076d-a818-4a3c-b8bd-f46af6812cd6",
+    "last_viewed_at": null,
+    "name": "Cir Reviewer2 T",
+    "opened_at": null,
+    "state": "unread",
+    "user_id": "42c1e4a2-08dd-46a8-a38c-550e7e2317e3",
+    "view_count": 0
+   },
+   {
+    "department": "Finance",
+    "designation": "Officer",
+    "id": "d9d4a71a-e6fe-478c-a645-a6156bd33492",
+    "last_viewed_at": "2026-08-14 09:17:52.046157+00:00",
+    "name": "Cir Staff A T",
+    "opened_at": "2026-08-14 09:17:52.046157+00:00",
+    "state": "read",
+    "user_id": "83e5d8eb-f63b-47be-8d4f-880ecbdf715c",
+    "view_count": 1
+   },
+   {
+    "department": "Finance",
+    "designation": "Officer",
+    "id": "0857bb9c-3e91-4acc-abc0-464b421cba6b",
+    "last_viewed_at": "2026-08-14 09:17:52.085927+00:00",
+    "name": "Cir Staff B T",
+    "opened_at": "2026-08-14 09:17:52.085927+00:00",
+    "state": "read",
+    "user_id": "9098fee3-3520-404d-99d4-56870036fbe3",
+    "view_count": 1
+   }
+  ],
+  "summary": {
+   "percent": 56,
+   "read": 5,
+   "total": 9,
+   "unread": 4
+  }
+ },
+ "taxonomy": {
+  "audiences": [
+   {
+    "code": "organisation",
+    "label": "Entire Organisation"
+   },
+   {
+    "code": "departments",
+    "label": "Selected Departments"
+   },
+   {
+    "code": "groups",
+    "label": "Employee Groups"
+   },
+   {
+    "code": "employees",
+    "label": "Selected Employees"
+   }
+  ],
+  "categories": [
+   {
+    "code": "policy",
+    "label": "Policy Communication"
+   },
+   {
+    "code": "administrative",
+    "label": "Administrative Notice"
+   },
+   {
+    "code": "hr",
+    "label": "HR Announcement"
+   },
+   {
+    "code": "management",
+    "label": "Management Communication"
+   },
+   {
+    "code": "governance",
+    "label": "Governance Update"
+   },
+   {
+    "code": "instruction",
+    "label": "Official Instruction"
+   }
+  ],
+  "classifications": [
+   {
+    "code": "internal",
+    "label": "Internal"
+   },
+   {
+    "code": "confidential",
+    "label": "Confidential"
+   },
+   {
+    "code": "restricted",
+    "label": "Restricted"
+   },
+   {
+    "code": "public",
+    "label": "Public"
+   }
+  ],
+  "priorities": [
+   {
+    "code": "low",
+    "label": "Low"
+   },
+   {
+    "code": "normal",
+    "label": "Normal"
+   },
+   {
+    "code": "high",
+    "label": "High"
+   },
+   {
+    "code": "urgent",
+    "label": "Urgent"
+   }
+  ],
+  "role_types": [
+   {
+    "code": "reviewer",
+    "label": "Reviewer"
+   },
+   {
+    "code": "issuer",
+    "label": "Issuer"
+   }
+  ],
+  "statuses": [
+   {
+    "code": "draft",
+    "label": "Draft"
+   },
+   {
+    "code": "under_review",
+    "label": "Under Review"
+   },
+   {
+    "code": "ready_for_issue",
+    "label": "Ready For Issue"
+   },
+   {
+    "code": "issued",
+    "label": "Issued"
+   },
+   {
+    "code": "ready_for_broadcast",
+    "label": "Ready For Broadcast"
+   },
+   {
+    "code": "broadcasted",
+    "label": "Broadcasted"
+   },
+   {
+    "code": "archived",
+    "label": "Archived"
+   },
+   {
+    "code": "rejected",
+    "label": "Rejected"
+   },
+   {
+    "code": "cancelled",
+    "label": "Cancelled"
+   }
+  ]
+ },
+ "user": {
+  "designation": "Officer",
+  "full_name": "Cir Author T",
+  "id": "69e4c79a-2f5a-48cf-9211-7a1483e813f3",
+  "role": "maker"
+ }
+}

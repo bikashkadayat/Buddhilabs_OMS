@@ -1,0 +1,56 @@
+{# Phase S7: the verification email.
+
+   DELIBERATELY UNBRANDED. Every other email this platform sends carries the
+   tenant's logo and colours -- and at this moment there is no tenant to brand
+   it with, which is the entire point of Part 3. Rendering the PLATFORM's
+   branding here instead would be the one email a customer receives that looks
+   like it came from somebody else.
+
+   Plain, inline styles, no images: it has to survive every mail client, and a
+   verification mail that lands in spam is a registration that never happens.
+#}<!doctype html>
+<html lang="en">
+  <body style="margin:0;padding:24px;background:#f4f5f7;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#1f2933;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;">
+      <tr>
+        <td>
+          <h1 style="margin:0 0 16px;font-size:20px;font-weight:650;">
+            Confirm your email address
+          </h1>
+          <p style="margin:0 0 16px;line-height:1.55;">
+            Somebody (we hope you) asked to create a workspace for
+            <strong>{{ organization_name }}</strong> at
+            <strong>{{ workspace_host }}</strong>.
+          </p>
+          <p style="margin:0 0 24px;line-height:1.55;">
+            Confirm this address to finish setting it up. Until you do,
+            <strong>nothing has been created</strong> &mdash; no workspace, no
+            accounts, no data.
+          </p>
+          <p style="margin:0 0 24px;">
+            <a href="{{ verify_url }}"
+               style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600;">
+              Confirm and create the workspace
+            </a>
+          </p>
+          <p style="margin:0 0 16px;line-height:1.55;color:#52606d;font-size:14px;">
+            The link is good for {{ ttl_hours }} hours. You will sign in as
+            <strong>{{ admin_email }}</strong> with the password you chose
+            &mdash; we never saw it and cannot send it to you.
+          </p>
+          {% if trial_days %}
+          <p style="margin:0 0 16px;line-height:1.55;color:#52606d;font-size:14px;">
+            Your workspace starts on a {{ trial_days }}-day trial. No payment
+            details are needed to begin.
+          </p>
+          {% endif %}
+          <p style="margin:24px 0 0;line-height:1.55;color:#52606d;font-size:13px;border-top:1px solid #e4e7eb;padding-top:16px;">
+            If you did not request this, ignore this email and nothing will
+            happen &mdash; the request expires on its own. The link above is
+            the only copy; it is not stored anywhere we can read.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

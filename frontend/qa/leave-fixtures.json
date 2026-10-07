@@ -1,0 +1,1522 @@
+{
+ "approved_detail": {
+  "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+  "approver_name": "Dept Head",
+  "created_at": "2026-08-20T12:23:49.380153+05:45",
+  "created_at_bs": "2083-05-04",
+  "day_portion": "full",
+  "department_head_action_date": "2026-08-20T12:23:49.408497+05:45",
+  "department_head_name": "Dept Head",
+  "department_head_reviewer": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+  "department_name": "ENG",
+  "documents": [],
+  "employee_id": null,
+  "end_date": "2026-06-30",
+  "end_date_bs": "2083-03-16",
+  "handover_notes": "",
+  "hr_action_date": null,
+  "hr_reviewer": null,
+  "id": "81bbe117-d182-4406-be7d-7e26ed2f096d",
+  "leave_type": "annual",
+  "reason": "Family obligation; cover arranged with the operations desk.",
+  "remaining_balance": {
+   "remaining": 7.0,
+   "total_allocated": 12,
+   "used_so_far": 5.0,
+   "year": 2026
+  },
+  "remarks": "Cover is in place. Approved.",
+  "start_date": "2026-06-29",
+  "start_date_bs": "2083-03-15",
+  "status": "approved",
+  "status_display": "Approved",
+  "timeline": [
+   {
+    "date_ad": "2026-08-20T06:38:49.380153+00:00",
+    "date_bs": "2083-05-04",
+    "name": "Leave Applicant",
+    "remarks": "",
+    "stage": "Employee",
+    "status": "submitted"
+   },
+   {
+    "date_ad": "2026-08-20T06:38:49.408497+00:00",
+    "date_bs": "2083-05-04",
+    "name": "Dept Head",
+    "remarks": "Cover is in place. Approved.",
+    "stage": "Department Head",
+    "status": "approved"
+   },
+   {
+    "date_ad": null,
+    "date_bs": null,
+    "name": null,
+    "remarks": "",
+    "stage": "HR",
+    "status": "approved"
+   }
+  ],
+  "total_days": 2,
+  "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+  "user_name": "Leave Applicant"
+ },
+ "approved_id": "81bbe117-d182-4406-be7d-7e26ed2f096d",
+ "head": {
+  "full_name": "Dept Head",
+  "id": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+  "role": "checker"
+ },
+ "hr": {
+  "full_name": "HR Approver",
+  "id": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+  "role": "approver"
+ },
+ "leave_policy": {
+  "categories": [
+   {
+    "items": [
+     {
+      "applicable": true,
+      "code": "annual",
+      "days": 12.0,
+      "leave_type": "Annual Leave",
+      "value": "12 working days/year"
+     },
+     {
+      "applicable": true,
+      "code": "sick",
+      "days": 12.0,
+      "leave_type": "Sick Leave",
+      "value": "12 days/year"
+     },
+     {
+      "applicable": true,
+      "code": "maternity",
+      "days": 30.0,
+      "leave_type": "Maternity Leave",
+      "value": "30 days"
+     },
+     {
+      "applicable": true,
+      "code": "paternity",
+      "days": 15.0,
+      "leave_type": "Paternity Leave",
+      "value": "15 days"
+     },
+     {
+      "applicable": true,
+      "code": "compensatory",
+      "days": 0.0,
+      "leave_type": "Compensatory Leave",
+      "value": "Granted for approved weekend/holiday work"
+     }
+    ],
+    "key": "A",
+    "label": "Permanent Staff \u2014 more than 3 years of service"
+   },
+   {
+    "items": [
+     {
+      "applicable": true,
+      "code": "annual",
+      "days": 10.0,
+      "leave_type": "Annual Leave",
+      "value": "10 working days/year"
+     },
+     {
+      "applicable": true,
+      "code": "sick",
+      "days": 10.0,
+      "leave_type": "Sick Leave",
+      "value": "10 days/year"
+     },
+     {
+      "applicable": true,
+      "code": "maternity",
+      "days": 30.0,
+      "leave_type": "Maternity Leave",
+      "value": "30 days"
+     },
+     {
+      "applicable": true,
+      "code": "paternity",
+      "days": 15.0,
+      "leave_type": "Paternity Leave",
+      "value": "15 days"
+     },
+     {
+      "applicable": true,
+      "code": "compensatory",
+      "days": 0.0,
+      "leave_type": "Compensatory Leave",
+      "value": "Granted for approved weekend/holiday work"
+     }
+    ],
+    "key": "B",
+    "label": "Permanent Staff \u2014 1 to 3 years of service"
+   },
+   {
+    "items": [
+     {
+      "applicable": true,
+      "code": "annual",
+      "days": 8.0,
+      "leave_type": "Annual Leave",
+      "value": "8 working days/year"
+     },
+     {
+      "applicable": true,
+      "code": "sick",
+      "days": 10.0,
+      "leave_type": "Sick Leave",
+      "value": "10 days/year"
+     },
+     {
+      "applicable": true,
+      "code": "maternity",
+      "days": 30.0,
+      "leave_type": "Maternity Leave",
+      "value": "30 days"
+     },
+     {
+      "applicable": true,
+      "code": "paternity",
+      "days": 15.0,
+      "leave_type": "Paternity Leave",
+      "value": "15 days"
+     },
+     {
+      "applicable": true,
+      "code": "compensatory",
+      "days": 0.0,
+      "leave_type": "Compensatory Leave",
+      "value": "Granted for approved weekend/holiday work"
+     }
+    ],
+    "key": "C",
+    "label": "Post-Probation \u2014 3 months to 1 year of service"
+   },
+   {
+    "items": [
+     {
+      "applicable": true,
+      "code": "annual",
+      "days": 8.0,
+      "leave_type": "Annual Leave",
+      "value": "8 working days/year"
+     },
+     {
+      "applicable": true,
+      "code": "sick",
+      "days": 8.0,
+      "leave_type": "Sick Leave",
+      "value": "8 days/year"
+     },
+     {
+      "applicable": false,
+      "code": "maternity",
+      "days": 0.0,
+      "leave_type": "Maternity Leave",
+      "value": "Not applicable"
+     },
+     {
+      "applicable": false,
+      "code": "paternity",
+      "days": 0.0,
+      "leave_type": "Paternity Leave",
+      "value": "Not applicable"
+     },
+     {
+      "applicable": true,
+      "code": "compensatory",
+      "days": 0.0,
+      "leave_type": "Compensatory Leave",
+      "value": "Granted for approved weekend/holiday work"
+     }
+    ],
+    "key": "D",
+    "label": "Interns and Volunteers"
+   },
+   {
+    "items": [
+     {
+      "applicable": true,
+      "code": "annual",
+      "days": 0.0,
+      "leave_type": "Annual Leave",
+      "value": "0 working days/year"
+     },
+     {
+      "applicable": true,
+      "code": "sick",
+      "days": 5.0,
+      "leave_type": "Sick Leave",
+      "value": "5 days/year"
+     },
+     {
+      "applicable": true,
+      "code": "maternity",
+      "days": 30.0,
+      "leave_type": "Maternity Leave",
+      "value": "30 days"
+     },
+     {
+      "applicable": true,
+      "code": "paternity",
+      "days": 15.0,
+      "leave_type": "Paternity Leave",
+      "value": "15 days"
+     },
+     {
+      "applicable": true,
+      "code": "compensatory",
+      "days": 0.0,
+      "leave_type": "Compensatory Leave",
+      "value": "Granted for approved weekend/holiday work"
+     }
+    ],
+    "key": "PROBATION",
+    "label": "Probation \u2014 first 3 months"
+   }
+  ],
+  "your_category": "A"
+ },
+ "maker": {
+  "department": "ENG",
+  "designation": "Officer",
+  "full_name": "Leave Applicant",
+  "id": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+  "role": "maker",
+  "username": "qa_leave_maker"
+ },
+ "my_balance": [
+  {
+   "id": "4bdf2dc5-25dc-44fb-81e4-dad25e1f890f",
+   "leave_type": "annual",
+   "remaining": 7.0,
+   "total_allocated": 12,
+   "used_so_far": 5.0,
+   "year": 2026
+  },
+  {
+   "id": "4bb33925-8d85-4eb6-9029-1f56ebfe5afd",
+   "leave_type": "sick",
+   "remaining": 12.0,
+   "total_allocated": 12,
+   "used_so_far": 0.0,
+   "year": 2026
+  }
+ ],
+ "my_entitlements": {
+  "applicable_types": [
+   "ANNUAL",
+   "SICK"
+  ],
+  "balances": [
+   {
+    "code": "annual",
+    "color": "#3B82F6",
+    "is_working_day_based": true,
+    "name": "Annual Leave",
+    "remaining": 7.0,
+    "total": 12.0,
+    "used": 5.0
+   },
+   {
+    "code": "sick",
+    "color": "#EF4444",
+    "is_working_day_based": true,
+    "name": "Sick Leave",
+    "remaining": 12.0,
+    "total": 12.0,
+    "used": 0.0
+   }
+  ],
+  "category": "A",
+  "category_flag": null,
+  "category_label": "Category A \u2014 Permanent (>3 yrs)",
+  "compensatory": {
+   "applicable": true,
+   "available": 0.0,
+   "earned": 0.0,
+   "pending": 0.0,
+   "used": 0.0
+  },
+  "employment_type": "permanent",
+  "employment_type_label": "Permanent",
+  "service_label": "8 yrs 7 mo",
+  "service_months": 103
+ },
+ "my_leaves": {
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+    "approver_name": "Dept Head",
+    "created_at": "2026-08-20T12:23:49.460339+05:45",
+    "created_at_bs": "2083-05-04",
+    "day_portion": "full",
+    "department_head_action_date": "2026-08-20T12:23:49.517383+05:45",
+    "department_head_name": "Dept Head",
+    "department_head_reviewer": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+    "department_name": "ENG",
+    "documents": [],
+    "employee_id": null,
+    "end_date": "2026-07-17",
+    "end_date_bs": "2083-04-01",
+    "handover_notes": "",
+    "hr_action_date": null,
+    "hr_reviewer": null,
+    "id": "1415dfe1-ab68-481c-8dd3-7f98a3c15fb9",
+    "leave_type": "annual",
+    "reason": "Extended personal leave.",
+    "remaining_balance": {
+     "remaining": 7.0,
+     "total_allocated": 12,
+     "used_so_far": 5.0,
+     "year": 2026
+    },
+    "remarks": "Clashes with the quarter-end audit window; please resubmit for the first week of the following month.",
+    "start_date": "2026-07-13",
+    "start_date_bs": "2083-03-29",
+    "status": "rejected",
+    "status_display": "Rejected",
+    "timeline": [
+     {
+      "date_ad": "2026-08-20T06:38:49.460339+00:00",
+      "date_bs": "2083-05-04",
+      "name": "Leave Applicant",
+      "remarks": "",
+      "stage": "Employee",
+      "status": "submitted"
+     },
+     {
+      "date_ad": "2026-08-20T06:38:49.517383+00:00",
+      "date_bs": "2083-05-04",
+      "name": "Dept Head",
+      "remarks": "Clashes with the quarter-end audit window; please resubmit for the first week of the following month.",
+      "stage": "Department Head",
+      "status": "rejected"
+     },
+     {
+      "date_ad": null,
+      "date_bs": null,
+      "name": null,
+      "remarks": "",
+      "stage": "HR",
+      "status": "pending"
+     }
+    ],
+    "total_days": 5,
+    "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+    "user_name": "Leave Applicant"
+   },
+   {
+    "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+    "approver_name": "Dept Head",
+    "created_at": "2026-08-20T12:23:49.380153+05:45",
+    "created_at_bs": "2083-05-04",
+    "day_portion": "full",
+    "department_head_action_date": "2026-08-20T12:23:49.408497+05:45",
+    "department_head_name": "Dept Head",
+    "department_head_reviewer": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+    "department_name": "ENG",
+    "documents": [],
+    "employee_id": null,
+    "end_date": "2026-06-30",
+    "end_date_bs": "2083-03-16",
+    "handover_notes": "",
+    "hr_action_date": null,
+    "hr_reviewer": null,
+    "id": "81bbe117-d182-4406-be7d-7e26ed2f096d",
+    "leave_type": "annual",
+    "reason": "Family obligation; cover arranged with the operations desk.",
+    "remaining_balance": {
+     "remaining": 7.0,
+     "total_allocated": 12,
+     "used_so_far": 5.0,
+     "year": 2026
+    },
+    "remarks": "Cover is in place. Approved.",
+    "start_date": "2026-06-29",
+    "start_date_bs": "2083-03-15",
+    "status": "approved",
+    "status_display": "Approved",
+    "timeline": [
+     {
+      "date_ad": "2026-08-20T06:38:49.380153+00:00",
+      "date_bs": "2083-05-04",
+      "name": "Leave Applicant",
+      "remarks": "",
+      "stage": "Employee",
+      "status": "submitted"
+     },
+     {
+      "date_ad": "2026-08-20T06:38:49.408497+00:00",
+      "date_bs": "2083-05-04",
+      "name": "Dept Head",
+      "remarks": "Cover is in place. Approved.",
+      "stage": "Department Head",
+      "status": "approved"
+     },
+     {
+      "date_ad": null,
+      "date_bs": null,
+      "name": null,
+      "remarks": "",
+      "stage": "HR",
+      "status": "approved"
+     }
+    ],
+    "total_days": 2,
+    "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+    "user_name": "Leave Applicant"
+   },
+   {
+    "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+    "approver_name": "Dept Head",
+    "created_at": "2026-08-20T12:23:49.329501+05:45",
+    "created_at_bs": "2083-05-04",
+    "day_portion": "full",
+    "department_head_action_date": null,
+    "department_head_reviewer": null,
+    "department_name": "ENG",
+    "documents": [],
+    "employee_id": null,
+    "end_date": "2026-06-10",
+    "end_date_bs": "2083-02-27",
+    "handover_notes": "",
+    "hr_action_date": null,
+    "hr_reviewer": null,
+    "id": "aea87f3a-2164-4470-bf29-5321639cbf91",
+    "leave_type": "annual",
+    "reason": "Attending the annual regional internet governance forum in Pokhara as the Foundation's nominated delegate. Handover notes have been shared with the ICT team and the standing infrastructure roster is covered.",
+    "remaining_balance": {
+     "remaining": 7.0,
+     "total_allocated": 12,
+     "used_so_far": 5.0,
+     "year": 2026
+    },
+    "remarks": "",
+    "start_date": "2026-06-08",
+    "start_date_bs": "2083-02-25",
+    "status": "pending",
+    "status_display": "Pending (Department Head)",
+    "timeline": [
+     {
+      "date_ad": "2026-08-20T06:38:49.329501+00:00",
+      "date_bs": "2083-05-04",
+      "name": "Leave Applicant",
+      "remarks": "",
+      "stage": "Employee",
+      "status": "submitted"
+     },
+     {
+      "date_ad": null,
+      "date_bs": null,
+      "name": null,
+      "remarks": "",
+      "stage": "Department Head",
+      "status": "pending"
+     },
+     {
+      "date_ad": null,
+      "date_bs": null,
+      "name": null,
+      "remarks": "",
+      "stage": "HR",
+      "status": "pending"
+     }
+    ],
+    "total_days": 3,
+    "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+    "user_name": "Leave Applicant"
+   }
+  ]
+ },
+ "notification_prefs": [
+  {
+   "category": "MEMO_ASSIGNED_TO_REVIEW",
+   "category_label": "Memo assigned to review",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_APPROVED",
+   "category_label": "Memo approved",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_REJECTED",
+   "category_label": "Memo rejected",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_RETURNED",
+   "category_label": "Memo returned",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_SUBMITTED",
+   "category_label": "Memo submitted",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_REVIEW_REQUIRED",
+   "category_label": "Memo review required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_RECOMMENDATION_REQUIRED",
+   "category_label": "Memo recommendation required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_SUPPORT_REQUIRED",
+   "category_label": "Memo support required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_APPROVAL_REQUIRED",
+   "category_label": "Memo approval required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_ARCHIVED",
+   "category_label": "Memo archived",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_NOTE_REQUIRED",
+   "category_label": "Memo note required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_APPROVER_UNAVAILABLE",
+   "category_label": "Memo approver unavailable",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MEMO_ACCESS_GRANTED",
+   "category_label": "Memo archive access granted",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_REVIEW_REQUIRED",
+   "category_label": "Circular review required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_ISSUE_REQUIRED",
+   "category_label": "Circular issue required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_ISSUED",
+   "category_label": "Circular issued",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_RETURNED",
+   "category_label": "Circular returned for revision",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_BROADCAST",
+   "category_label": "Circular broadcast",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_ACK_REQUIRED",
+   "category_label": "Circular acknowledgement required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "CIRCULAR_ACK_REMINDER",
+   "category_label": "Circular acknowledgement reminder",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ASSIGNED",
+   "category_label": "Minute assigned",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_SUBMITTED",
+   "category_label": "Minute submitted",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_REVIEW_REQUIRED",
+   "category_label": "Minute review required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_RECOMMENDATION_REQUIRED",
+   "category_label": "Minute recommendation required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_SUPPORT_REQUIRED",
+   "category_label": "Minute support required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_APPROVAL_REQUIRED",
+   "category_label": "Minute approval required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_APPROVED",
+   "category_label": "Minute approved",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_REJECTED",
+   "category_label": "Minute returned",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_UPDATED",
+   "category_label": "Minute updated",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ARCHIVED",
+   "category_label": "Minute archived",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ACK_REQUIRED",
+   "category_label": "Minute acknowledgement required",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ACKNOWLEDGED",
+   "category_label": "Minute acknowledged",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ACK_REMINDER",
+   "category_label": "Minute acknowledgement reminder",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ACTION_ASSIGNED",
+   "category_label": "Minute action item assigned",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ACTION_ESCALATED",
+   "category_label": "Minute action item escalated",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_ACTION_ALERT",
+   "category_label": "Minute action item management alert",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "MINUTE_RESOLUTION",
+   "category_label": "Minute resolution recorded",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "LEAVE_SUBMITTED",
+   "category_label": "Leave submitted",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "LEAVE_APPROVED",
+   "category_label": "Leave approved",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "LEAVE_REJECTED",
+   "category_label": "Leave rejected",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "LEAVE_BALANCE_LOW",
+   "category_label": "Leave balance low",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "POLICY_UPDATED",
+   "category_label": "Policy updated",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "SYSTEM_ANNOUNCEMENT",
+   "category_label": "System announcement",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "WEEKLY_DIGEST",
+   "category_label": "Weekly digest",
+   "email_enabled": false,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_TAKEOUT_REQUESTED",
+   "category_label": "Inventory take-out requested",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_TAKEOUT_APPROVED",
+   "category_label": "Inventory take-out approved",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_TAKEOUT_REJECTED",
+   "category_label": "Inventory take-out rejected",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_ASSET_REQUESTED",
+   "category_label": "Asset requested",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_ASSET_APPROVAL_REQUIRED",
+   "category_label": "Asset request awaiting inventory",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_ASSET_READY",
+   "category_label": "Asset ready for collection",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_ASSET_HANDED_OVER",
+   "category_label": "Asset handed over \u2014 confirm receipt",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_ASSET_ACCEPTED",
+   "category_label": "Asset receipt confirmed",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_ASSET_REJECTED",
+   "category_label": "Asset request refused",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_RETURN_REQUESTED",
+   "category_label": "Asset return raised",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_RETURN_COMPLETED",
+   "category_label": "Asset return closed",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_MAINTENANCE_REPORTED",
+   "category_label": "Asset fault reported",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "INVENTORY_MAINTENANCE_DONE",
+   "category_label": "Asset repair completed",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "ATTENDANCE_CORRECTION_SUBMITTED",
+   "category_label": "Attendance correction submitted",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "ATTENDANCE_CORRECTION_MANAGER_APPROVED",
+   "category_label": "Attendance correction approved by department head",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "ATTENDANCE_CORRECTION_APPROVED",
+   "category_label": "Attendance correction applied",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "ATTENDANCE_CORRECTION_REJECTED",
+   "category_label": "Attendance correction rejected",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "WFH_SUBMITTED",
+   "category_label": "Work-from-home requested",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "WFH_APPROVED",
+   "category_label": "Work-from-home approved",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "WFH_REJECTED",
+   "category_label": "Work-from-home rejected",
+   "email_enabled": true,
+   "in_app_enabled": true
+  },
+  {
+   "category": "COMP_OFF_CONFIRMED",
+   "category_label": "Compensatory day confirmed",
+   "email_enabled": true,
+   "in_app_enabled": true
+  }
+ ],
+ "notification_read_id": "64929c4b-6ce7-4046-a684-f3c5227c7c7d",
+ "notification_unread": {
+  "unread": 9
+ },
+ "notifications": {
+  "count": 10,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your leave request was rejected by the Department Head. See the remarks for details.",
+    "category": "LEAVE_REJECTED",
+    "category_label": "Leave rejected",
+    "created_at": "2026-08-20T12:23:50.046740+05:45",
+    "id": "64929c4b-6ce7-4046-a684-f3c5227c7c7d",
+    "is_read": true,
+    "read_at": "2026-08-20T12:23:50.064364+05:45",
+    "title": "Leave Rejected \u2014 2026-09-28 to 2026-09-28"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your Sick Leave (1 working day(s)) has been approved and granted.",
+    "category": "LEAVE_APPROVED",
+    "category_label": "Leave approved",
+    "created_at": "2026-08-20T12:23:49.987778+05:45",
+    "id": "7933c445-68a7-4572-90a4-b00898c871c8",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Approved \u2014 2026-09-21 to 2026-09-21"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your leave request was rejected by the Department Head. See the remarks for details.",
+    "category": "LEAVE_REJECTED",
+    "category_label": "Leave rejected",
+    "created_at": "2026-08-20T12:23:49.928253+05:45",
+    "id": "bffae32d-41fb-4e07-a5a5-18eb7a533ccc",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Rejected \u2014 2026-09-14 to 2026-09-14"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your Sick Leave (1 working day(s)) has been approved and granted.",
+    "category": "LEAVE_APPROVED",
+    "category_label": "Leave approved",
+    "created_at": "2026-08-20T12:23:49.871709+05:45",
+    "id": "39699eae-65c4-4afb-955f-1d5ec74f4f3f",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Approved \u2014 2026-09-07 to 2026-09-07"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your leave request was rejected by the Department Head. See the remarks for details.",
+    "category": "LEAVE_REJECTED",
+    "category_label": "Leave rejected",
+    "created_at": "2026-08-20T12:23:49.811965+05:45",
+    "id": "7282044f-d166-4fd6-8139-c132e131dbfb",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Rejected \u2014 2026-08-31 to 2026-08-31"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your Sick Leave (1 working day(s)) has been approved and granted.",
+    "category": "LEAVE_APPROVED",
+    "category_label": "Leave approved",
+    "created_at": "2026-08-20T12:23:49.754811+05:45",
+    "id": "2ccc538e-0fd0-4428-b800-8e092118fa21",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Approved \u2014 2026-08-24 to 2026-08-24"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your leave request was rejected by the Department Head. See the remarks for details.",
+    "category": "LEAVE_REJECTED",
+    "category_label": "Leave rejected",
+    "created_at": "2026-08-20T12:23:49.694878+05:45",
+    "id": "83589247-6840-4149-81c8-099ce6c0d9b5",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Rejected \u2014 2026-08-17 to 2026-08-17"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your Sick Leave (1 working day(s)) has been approved and granted.",
+    "category": "LEAVE_APPROVED",
+    "category_label": "Leave approved",
+    "created_at": "2026-08-20T12:23:49.638163+05:45",
+    "id": "b5188723-d0da-4515-b3b1-02d686a0ba31",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Approved \u2014 2026-08-10 to 2026-08-10"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your leave request was rejected by the Department Head. See the remarks for details.",
+    "category": "LEAVE_REJECTED",
+    "category_label": "Leave rejected",
+    "created_at": "2026-08-20T12:23:49.530305+05:45",
+    "id": "e804aff5-4573-4285-980e-b403a594f38f",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Rejected \u2014 2026-07-13 to 2026-07-17"
+   },
+   {
+    "action_url": "/leave/my-applications",
+    "body": "Your Annual Leave (2 working day(s)) has been approved and granted.",
+    "category": "LEAVE_APPROVED",
+    "category_label": "Leave approved",
+    "created_at": "2026-08-20T12:23:49.423452+05:45",
+    "id": "b16540ed-6c6f-456f-a7cf-a36399bec1a7",
+    "is_read": false,
+    "read_at": null,
+    "title": "Leave Approved \u2014 2026-06-29 to 2026-06-30"
+   }
+  ]
+ },
+ "pending_detail": {
+  "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+  "approver_name": "Dept Head",
+  "created_at": "2026-08-20T12:23:49.329501+05:45",
+  "created_at_bs": "2083-05-04",
+  "day_portion": "full",
+  "department_head_action_date": null,
+  "department_head_reviewer": null,
+  "department_name": "ENG",
+  "documents": [],
+  "employee_id": null,
+  "end_date": "2026-06-10",
+  "end_date_bs": "2083-02-27",
+  "handover_notes": "",
+  "hr_action_date": null,
+  "hr_reviewer": null,
+  "id": "aea87f3a-2164-4470-bf29-5321639cbf91",
+  "leave_type": "annual",
+  "reason": "Attending the annual regional internet governance forum in Pokhara as the Foundation's nominated delegate. Handover notes have been shared with the ICT team and the standing infrastructure roster is covered.",
+  "remaining_balance": {
+   "remaining": 7.0,
+   "total_allocated": 12,
+   "used_so_far": 5.0,
+   "year": 2026
+  },
+  "remarks": "",
+  "start_date": "2026-06-08",
+  "start_date_bs": "2083-02-25",
+  "status": "pending",
+  "status_display": "Pending (Department Head)",
+  "timeline": [
+   {
+    "date_ad": "2026-08-20T06:38:49.329501+00:00",
+    "date_bs": "2083-05-04",
+    "name": "Leave Applicant",
+    "remarks": "",
+    "stage": "Employee",
+    "status": "submitted"
+   },
+   {
+    "date_ad": null,
+    "date_bs": null,
+    "name": null,
+    "remarks": "",
+    "stage": "Department Head",
+    "status": "pending"
+   },
+   {
+    "date_ad": null,
+    "date_bs": null,
+    "name": null,
+    "remarks": "",
+    "stage": "HR",
+    "status": "pending"
+   }
+  ],
+  "total_days": 3,
+  "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+  "user_name": "Leave Applicant"
+ },
+ "pending_id": "aea87f3a-2164-4470-bf29-5321639cbf91",
+ "pending_queue": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+    "approver_name": "Dept Head",
+    "created_at": "2026-08-20T12:23:49.329501+05:45",
+    "created_at_bs": "2083-05-04",
+    "day_portion": "full",
+    "department_head_action_date": null,
+    "department_head_reviewer": null,
+    "department_name": "ENG",
+    "documents": [],
+    "employee_id": null,
+    "end_date": "2026-06-10",
+    "end_date_bs": "2083-02-27",
+    "handover_notes": "",
+    "hr_action_date": null,
+    "hr_reviewer": null,
+    "id": "aea87f3a-2164-4470-bf29-5321639cbf91",
+    "leave_type": "annual",
+    "reason": "Attending the annual regional internet governance forum in Pokhara as the Foundation's nominated delegate. Handover notes have been shared with the ICT team and the standing infrastructure roster is covered.",
+    "remaining_balance": {
+     "remaining": 7.0,
+     "total_allocated": 12,
+     "used_so_far": 5.0,
+     "year": 2026
+    },
+    "remarks": "",
+    "start_date": "2026-06-08",
+    "start_date_bs": "2083-02-25",
+    "status": "pending",
+    "status_display": "Pending (Department Head)",
+    "timeline": [
+     {
+      "date_ad": "2026-08-20T06:38:49.329501+00:00",
+      "date_bs": "2083-05-04",
+      "name": "Leave Applicant",
+      "remarks": "",
+      "stage": "Employee",
+      "status": "submitted"
+     },
+     {
+      "date_ad": null,
+      "date_bs": null,
+      "name": null,
+      "remarks": "",
+      "stage": "Department Head",
+      "status": "pending"
+     },
+     {
+      "date_ad": null,
+      "date_bs": null,
+      "name": null,
+      "remarks": "",
+      "stage": "HR",
+      "status": "pending"
+     }
+    ],
+    "total_days": 3,
+    "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+    "user_name": "Leave Applicant"
+   }
+  ]
+ },
+ "rejected_detail": {
+  "approver": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+  "approver_name": "Dept Head",
+  "created_at": "2026-08-20T12:23:49.460339+05:45",
+  "created_at_bs": "2083-05-04",
+  "day_portion": "full",
+  "department_head_action_date": "2026-08-20T12:23:49.517383+05:45",
+  "department_head_name": "Dept Head",
+  "department_head_reviewer": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+  "department_name": "ENG",
+  "documents": [],
+  "employee_id": null,
+  "end_date": "2026-07-17",
+  "end_date_bs": "2083-04-01",
+  "handover_notes": "",
+  "hr_action_date": null,
+  "hr_reviewer": null,
+  "id": "1415dfe1-ab68-481c-8dd3-7f98a3c15fb9",
+  "leave_type": "annual",
+  "reason": "Extended personal leave.",
+  "remaining_balance": {
+   "remaining": 7.0,
+   "total_allocated": 12,
+   "used_so_far": 5.0,
+   "year": 2026
+  },
+  "remarks": "Clashes with the quarter-end audit window; please resubmit for the first week of the following month.",
+  "start_date": "2026-07-13",
+  "start_date_bs": "2083-03-29",
+  "status": "rejected",
+  "status_display": "Rejected",
+  "timeline": [
+   {
+    "date_ad": "2026-08-20T06:38:49.460339+00:00",
+    "date_bs": "2083-05-04",
+    "name": "Leave Applicant",
+    "remarks": "",
+    "stage": "Employee",
+    "status": "submitted"
+   },
+   {
+    "date_ad": "2026-08-20T06:38:49.517383+00:00",
+    "date_bs": "2083-05-04",
+    "name": "Dept Head",
+    "remarks": "Clashes with the quarter-end audit window; please resubmit for the first week of the following month.",
+    "stage": "Department Head",
+    "status": "rejected"
+   },
+   {
+    "date_ad": null,
+    "date_bs": null,
+    "name": null,
+    "remarks": "",
+    "stage": "HR",
+    "status": "pending"
+   }
+  ],
+  "total_days": 5,
+  "user": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+  "user_name": "Leave Applicant"
+ },
+ "rejected_id": "1415dfe1-ab68-481c-8dd3-7f98a3c15fb9",
+ "reports_all": {
+  "count": 8,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.228834+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "f3fad1e8-069a-44d9-81be-cd9bd9ba4ec1",
+    "params": {
+     "format": "excel"
+    },
+    "report_type": "attendance_vs_wfh",
+    "report_type_display": "Attendance vs WFH",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.225462+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "64155b70-9638-4c6e-9677-a43a2ee65744",
+    "params": {
+     "format": "pdf"
+    },
+    "report_type": "shift_utilization",
+    "report_type_display": "Shift Utilization",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.222396+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "a5ec989e-7a4f-4af5-912a-060ee36a9987",
+    "params": {
+     "format": "csv"
+    },
+    "report_type": "comp_off_report",
+    "report_type_display": "Comp Off Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.219310+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "5631c931-cb0f-4955-a617-c3a8f63c9f81",
+    "params": {
+     "format": "excel"
+    },
+    "report_type": "overtime_summary",
+    "report_type_display": "Overtime Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.216530+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "170d0fa8-d3cf-49f7-a39d-a3ebf190c1a1",
+    "params": {
+     "format": "pdf"
+    },
+    "report_type": "late_arrival_summary",
+    "report_type_display": "Late Arrival Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.213437+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "fe061e57-ca44-4996-878f-59501e7de4df",
+    "params": {
+     "format": "csv"
+    },
+    "report_type": "attendance_vs_leave",
+    "report_type_display": "Attendance vs Leave",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.210460+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "06a2e1b0-b1ae-4a22-bc8b-e94de5bb9a49",
+    "params": {
+     "format": "pdf"
+    },
+    "report_type": "department_attendance",
+    "report_type_display": "Department Attendance",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.206749+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "d34cdffb-0fe4-4f18-ba9c-8c7d260533c4",
+    "params": {
+     "format": "excel"
+    },
+    "report_type": "monthly_workforce_summary",
+    "report_type_display": "Monthly Workforce Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   }
+  ]
+ },
+ "reports_mine": {
+  "count": 8,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.228834+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "f3fad1e8-069a-44d9-81be-cd9bd9ba4ec1",
+    "params": {
+     "format": "excel"
+    },
+    "report_type": "attendance_vs_wfh",
+    "report_type_display": "Attendance vs WFH",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.225462+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "64155b70-9638-4c6e-9677-a43a2ee65744",
+    "params": {
+     "format": "pdf"
+    },
+    "report_type": "shift_utilization",
+    "report_type_display": "Shift Utilization",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.222396+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "a5ec989e-7a4f-4af5-912a-060ee36a9987",
+    "params": {
+     "format": "csv"
+    },
+    "report_type": "comp_off_report",
+    "report_type_display": "Comp Off Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.219310+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "5631c931-cb0f-4955-a617-c3a8f63c9f81",
+    "params": {
+     "format": "excel"
+    },
+    "report_type": "overtime_summary",
+    "report_type_display": "Overtime Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.216530+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "170d0fa8-d3cf-49f7-a39d-a3ebf190c1a1",
+    "params": {
+     "format": "pdf"
+    },
+    "report_type": "late_arrival_summary",
+    "report_type_display": "Late Arrival Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.213437+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "fe061e57-ca44-4996-878f-59501e7de4df",
+    "params": {
+     "format": "csv"
+    },
+    "report_type": "attendance_vs_leave",
+    "report_type_display": "Attendance vs Leave",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.210460+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "06a2e1b0-b1ae-4a22-bc8b-e94de5bb9a49",
+    "params": {
+     "format": "pdf"
+    },
+    "report_type": "department_attendance",
+    "report_type_display": "Department Attendance",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   },
+   {
+    "completed_at": null,
+    "created_at": "2026-08-20T12:23:50.206749+05:45",
+    "error": "",
+    "file_url": null,
+    "id": "d34cdffb-0fe4-4f18-ba9c-8c7d260533c4",
+    "params": {
+     "format": "excel"
+    },
+    "report_type": "monthly_workforce_summary",
+    "report_type_display": "Monthly Workforce Summary",
+    "requested_by": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+    "requested_by_name": "HR Approver",
+    "status": "pending"
+   }
+  ]
+ },
+ "users": [
+  {
+   "email": "qa_leave_maker@nif.test",
+   "first_name": "Leave",
+   "id": "db4fa729-2baa-498e-80ca-39a6c6f82575",
+   "last_name": "Applicant",
+   "role": "maker",
+   "username": "qa_leave_maker"
+  },
+  {
+   "email": "qa_leave_head@nif.test",
+   "first_name": "Dept",
+   "id": "af46fc8b-d9bc-45d3-8b7c-5c26acfd8f0f",
+   "last_name": "Head",
+   "role": "checker",
+   "username": "qa_leave_head"
+  },
+  {
+   "email": "qa_leave_hr@nif.test",
+   "first_name": "HR",
+   "id": "7fdb49df-0b26-4963-89ec-90093bc0d010",
+   "last_name": "Approver",
+   "role": "approver",
+   "username": "qa_leave_hr"
+  }
+ ]
+}

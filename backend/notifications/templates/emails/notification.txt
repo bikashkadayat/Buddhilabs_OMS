@@ -1,0 +1,22 @@
+Hi {{ recipient_name }},
+
+{{ title }}
+
+{{ body }}
+{% if employee_name %}
+Employee:     {{ employee_name }}{% if department %}
+Department:   {{ department }}{% endif %}
+Leave type:   {{ leave_type }}
+Start:        {{ start_bs }} BS / {{ start_ad }}
+End:          {{ end_bs }} BS / {{ end_ad }}
+Working days: {{ working_days }}{% if reason %}
+Reason:       {{ reason }}{% endif %}{% if actor_line %}
+Action:       {{ actor_line }}{% endif %}{% if remarks %}
+Remarks:      {{ remarks }}{% endif %}
+{% endif %}{% if action_url %}
+View in portal: {{ action_url }}
+{% endif %}
+--
+This is an automated message from {{ org_name|default:"your workspace" }}.
+{{ powered_by|default:"Powered by Buddhi Labs" }}.
+Manage preferences / unsubscribe: {{ unsubscribe_url }}

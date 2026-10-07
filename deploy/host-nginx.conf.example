@@ -1,0 +1,51 @@
+# Host nginx vhost for the NIF production stack (runs on the VPS host, OUTSIDE
+# Docker). Terminates TLS and reverse-proxies to the `web` container, which
+# listens on 127.0.0.1:8080 (see docker-compose.prod.yml).
+#
+# Install:
+#   sudo cp deploy/host-nginx.conf.example /etc/nginx/sites-available/nif
+#   # edit server_name below to your real domain
+#   sudo ln -s /etc/nginx/sites-available/nif /etc/nginx/sites-enabled/nif
+#   sudo certbot --nginx -d nif.example.com      # obtains + auto-renews the cert
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# Replace every `nif.example.com` below with your domain.
+
+# HTTP -> HTTPS redirect.
+server {
+    listen 80;
+    listen [::]:80;
+    server_name nif.example.com;
+
+    # Let certbot's webroot/HTTP-01 challenge through, redirect everything else.
+    location /.well-known/acme-challenge/ { root /var/www/html; }
+    location / { return 301 https://$host$request_uri; }
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name nif.example.com;
+
+    # Certificate paths are filled in / managed by certbot.
+    ssl_certificate     /etc/letsencrypt/live/nif.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nif.example.com/privkey.pem;
+    include             /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam         /etc/letsencrypt/ssl-dhparams.pem;
+
+    # Must match the container nginx / Django upload limits.
+    client_max_body_size 25m;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        # REQUIRED: Django reads this (SECURE_PROXY_SSL_HEADER) to recognise HTTPS.
+        # Omit it and DJANGO_SECURE_SSL_REDIRECT=True causes a redirect loop.
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-Host  $host;
+        proxy_read_timeout 120s;
+    }
+}

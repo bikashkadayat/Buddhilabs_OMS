@@ -1,0 +1,26 @@
+# Local-workstation overlay. Use WITH the base file, never instead of it:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d redis
+#
+# The base compose file deliberately publishes no host port for Redis, because
+# in the all-in-Docker layout every service reaches it over the compose network
+# by hostname. Running the backend on the host instead — which is what
+# `run-local.sh` does, so the collector can reach the terminal on the LAN
+# without Docker networking in the way — leaves it with no route to Redis at
+# all.
+#
+# That matters more than it looks. The channel layer is what carries a punch
+# from the collector process to the WebSocket held open by the dashboard, and
+# those are two separate processes. Without Redis the layer falls back to
+# InMemoryChannelLayer, which is per-process: the collector broadcasts into its
+# own memory, the web process never hears it, and the live feed only updates
+# when the browser's 20-second poll comes round. Everything still works, just
+# never promptly, and nothing reports an error.
+#
+# 6380 rather than 6379 on purpose — 6379 is already taken on this machine by
+# an unrelated project's Redis, and sharing one would put two applications'
+# keyspaces in the same instance.
+services:
+  redis:
+    ports:
+      - "127.0.0.1:6380:6379"

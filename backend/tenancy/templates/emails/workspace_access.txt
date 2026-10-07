@@ -1,0 +1,20 @@
+{% autoescape off %}{% if recipient_name %}Hello {{ recipient_name }},{% else %}Hello {{ organization_name }} team,{% endif %}
+
+{% if reissued %}Here are new sign-in details for your {{ organization_name }} workspace. The temporary password you were given before no longer works.{% else %}Your {{ organization_name }} workspace has been created and is ready to use.{% endif %}
+
+Sign in at:          {{ login_url }}
+Email:               {{ email }}
+Temporary password:  {{ temporary_password }}
+
+You will be asked to choose your own password the first time you sign in. The temporary one stops working once you do.
+{% if trial %}
+Your workspace is on a {{ trial.days }}-day trial, until {{ trial.ends_on|date:"j F Y" }}.{% endif %}
+
+When you are in, a short checklist on your home page walks you through adding your logo, your team and your policies.
+{% if support_email %}
+Trouble signing in? Write to {{ support_email }}.{% endif %}
+
+--
+{{ org_name }}
+{{ powered_by }}
+{% endautoescape %}

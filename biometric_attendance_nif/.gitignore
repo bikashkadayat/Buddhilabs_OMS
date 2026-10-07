@@ -1,0 +1,19 @@
+# Environment
+.env
+
+# Python virtual env
+zk-env/
+
+# Attendance data
+data/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Local tools
+.claude/
+
+# Frontend build tooling (build output in morx/web/static/ IS committed)
+frontend/node_modules/
+frontend/.vite/

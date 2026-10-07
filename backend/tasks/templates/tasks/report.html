@@ -1,0 +1,93 @@
+{% comment %}
+Print layout for a task report (Phase T3, Part 7).
+
+Deliberately plain: a report that has to be legible on a desk and in a filing
+cabinet is not the place for the workspace's colour system. Black on white, one
+rule under the header, and the generation stamp on every page — because a
+printed report with no date on it is the one that gets quoted a year later.
+
+Rows are rendered by the SAME {columns, rows} envelope the JSON and the CSV use,
+so all three carry identical figures. A separate query for the PDF is how the
+printed number and the on-screen number start to differ.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ label }}</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 14mm 12mm 16mm;
+      @bottom-center {
+        content: "{{ label }} · page " counter(page) " of " counter(pages);
+        font: 8pt "Helvetica", sans-serif; color: #666;
+      }
+    }
+    body { font: 9pt "Helvetica", Arial, sans-serif; color: #111; }
+    h1 { margin: 0 0 2mm; font-size: 15pt; }
+    .meta { margin: 0 0 4mm; font-size: 8pt; color: #555; }
+    .summary {
+      margin: 0 0 5mm; padding: 3mm 4mm; border: 0.4pt solid #bbb;
+      background: #f7f7f7;
+    }
+    .summary span { margin-right: 8mm; font-size: 8.5pt; }
+    .summary b { font-size: 10pt; }
+    table { width: 100%; border-collapse: collapse; }
+    /* Repeat the header on every page — a table that breaks across three pages
+       with the headings only on the first is unreadable from page two. */
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+    th, td {
+      padding: 1.6mm 2mm; text-align: left; border-bottom: 0.3pt solid #ddd;
+      font-size: 8.5pt;
+    }
+    th {
+      border-bottom: 0.8pt solid #333; text-transform: uppercase;
+      font-size: 7.5pt; letter-spacing: 0.3pt;
+    }
+    td.numeric, th.numeric { text-align: right; font-variant-numeric: tabular-nums; }
+    .empty { padding: 6mm 0; color: #666; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>{{ label }}</h1>
+  <p class="meta">
+    NIF Office Management System · generated {{ generated_at|date:"j M Y, H:i" }}
+    {% if generated_by %}by {{ generated_by }}{% endif %}
+  </p>
+
+  {% if summary %}
+    <div class="summary">
+      {% for key, value in summary.items %}
+        <span>{{ key|cut:"_"|title }}: <b>{% if value == None %}—{% else %}{{ value }}{% endif %}</b></span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if rows %}
+    <table>
+      <thead>
+        <tr>
+          {% for column in columns %}
+            <th class="{% if column.numeric %}numeric{% endif %}">{{ column.label }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            {# `row` is already a list of cells in column order — see
+               TaskViewSet._pdf. Zipping here would need a custom filter. #}
+            {% for cell in row %}
+              <td>{% if cell == None %}—{% else %}{{ cell }}{% endif %}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">Nothing to report for this selection.</p>
+  {% endif %}
+</body>
+</html>

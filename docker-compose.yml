@@ -1,0 +1,265 @@
+# Local development stack. Secrets come from the gitignored .env file
+# (see .env.example). `${VAR:?message}` makes compose refuse to start if a
+# required secret is missing - no hardcoded credentials.
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:14-alpine
+    container_name: nif-db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-leave_system}
+      POSTGRES_USER: ${DATABASE_USER:-leave_user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-leave_user} -d ${DATABASE_NAME:-leave_system}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Django Backend
+
+  # Redis: Channels layer (db 0) + shared Django cache (db 1).
+  # Internal only - no host port, no password needed on the private network.
+  # AOF with everysec: transient pub/sub does not justify fsync-per-write, but
+  # surviving a restart keeps throttle counters honest.
+  # noeviction is deliberate - silently dropping channel-layer keys under memory
+  # pressure would surface as random missing dashboard events. Fail loudly.
+  redis:
+    image: redis:7-alpine
+    container_name: nif-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 256mb
+      --maxmemory-policy noeviction
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nif-backend
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_ENGINE=${DATABASE_ENGINE:-postgresql}
+      - DATABASE_NAME=${DATABASE_NAME:-leave_system}
+      - DATABASE_USER=${DATABASE_USER:-leave_user}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      # Local runs over plain HTTP: disable HTTPS-only enforcement so the app is
+      # reachable at http://localhost while keeping DEBUG=False (prod-like).
+      - DJANGO_SECURE_SSL_REDIRECT=False
+      - DJANGO_SESSION_COOKIE_SECURE=False
+      - DJANGO_CSRF_COOKIE_SECURE=False
+      - DJANGO_SECURE_HSTS_SECONDS=0
+      - DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://localhost:8001
+      # Local dev is mail-less: console backend prints emails instead of sending.
+      # Real production sets EMAIL_BACKEND=...smtp.EmailBackend + EMAIL_HOST* env.
+      - EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      # Channels layer + shared cache. Unset it to run without Redis entirely —
+      # the app falls back to in-memory backends and only loses cross-worker
+      # WebSocket fan-out.
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      # Alert delivery. The monitoring dashboard reports `configured: false`
+      # without these, and an alert raised from the API container reaches
+      # nobody. Same values as the cron container, which is where the scheduled
+      # check_alerts run lives.
+      - ALERT_EMAILS=${ALERT_EMAILS:-}
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/v1/health/').status==200 else 1)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Scheduled jobs - same image as backend, runs cron in the foreground.
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: nif-cron
+    environment:
+      # The crontab's times are Asia/Kathmandu and the image clock is UTC, so
+      # without TZ every job fires 5h45m off. Same reasoning as prod.
+      - TZ=${TZ:-Asia/Kathmandu}
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_ENGINE=${DATABASE_ENGINE:-postgresql}
+      - DATABASE_NAME=${DATABASE_NAME:-leave_system}
+      - DATABASE_USER=${DATABASE_USER:-leave_user}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL:-no-reply@nifportal.local}
+      - MEDIA_ROOT=/app/media
+      # The backup and alert jobs run HERE, so their configuration has to reach
+      # HERE. It did not: this block forwarded only DATABASE_/DJANGO_, so even
+      # with a working daemon backup.sh would have aborted for want of its key
+      # and every fired alert would have reached nobody.
+      #
+      # DEV ONLY: this defaults to a throwaway key so `docker compose up` works
+      # on a fresh checkout with no .env editing. A dev backup is a local,
+      # disposable copy (BACKUP_REQUIRE_OFFHOST=0 below), so the key does not
+      # protect anything real. docker-compose.prod.yml keeps this REQUIRED
+      # (${...:?}) — production must not start without a real key.
+      - BACKUP_ENCRYPTION_KEY=${BACKUP_ENCRYPTION_KEY:-dev-insecure-local-backup-key}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-14}
+      - BACKUP_S3_BUCKET=${BACKUP_S3_BUCKET:-}
+      - BACKUP_RSYNC_TARGET=${BACKUP_RSYNC_TARGET:-}
+      # Local stack ONLY. A dev box has no off-host target, and a nightly backup
+      # that refuses to run would leave every downstream check (verify drill,
+      # heartbeat, health tile) permanently red for a reason that is true of dev
+      # and not of production. docker-compose.prod.yml keeps this at 1, because
+      # there a local-only copy really is not a backup.
+      - BACKUP_REQUIRE_OFFHOST=0
+      - BACKUP_MEDIA_INCLUDE_REPORTS=${BACKUP_MEDIA_INCLUDE_REPORTS:-0}
+      - ALERT_EMAILS=${ALERT_EMAILS:-}
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      # Backup artifacts have to outlive the container, and backup_verify has to
+      # find them again the next morning.
+      - backups_data:/backups
+    # The ONE documented exception to the non-root default - Dockerfile.backend
+    # says so at line 44, and this file had drifted from it. Debian's cron needs
+    # root to install a crontab and drop privileges per job; as uid 1001 it
+    # could not even write /etc/environment, so the container exited 1 on every
+    # start and NOT ONE scheduled job has ever run on this stack, the nightly
+    # backup included. The API container - the one exposed to traffic - stays
+    # non-root.
+    user: root
+    # Without this a dead daemon leaves the container reporting healthy while
+    # every job silently stops; `restart` cannot help if nothing notices.
+    healthcheck:
+      # pidof, not pgrep: pgrep ships in procps, which this slim image does not
+      # install, so the probe exited 1 on every run and the liveness check that
+      # exists to notice a dead daemon was itself dead. pidof is in the base
+      # image (sysvinit-utils) and answers the same question.
+      test: ["CMD-SHELL", "pidof cron > /dev/null || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    # Persist the runtime env for cron jobs (cron strips the environment),
+    # install the crontab, and run cron in the foreground.
+    command: >
+      bash -c "printenv | grep -E '^(TZ=|DATABASE_|DJANGO_|REDIS_URL|EMAIL_|DEFAULT_FROM_EMAIL|MEDIA_ROOT|BACKUP_|ALERT_)' > /etc/environment &&
+               crontab /app/deploy/crontab &&
+               cron -f"
+
+  # React Frontend (Vite dev server)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: nif-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      # Vite's dev-server proxy runs INSIDE this container, so it must reach the
+      # backend by its compose service name, not the host port mapping. (The
+      # browser still calls /api/v1 same-origin on :5173; only the proxy target
+      # matters here. "backend" is in the backend's DJANGO_ALLOWED_HOSTS.)
+      - VITE_API_URL=http://backend:8000
+      # Origin of the biometric attendance dashboard (the `biometric` service),
+      # embedded in the admin's Attendance section via an iframe. Loaded by the
+      # BROWSER, so it is a host-published URL (localhost), not a compose name.
+      - VITE_BIOMETRIC_URL=${VITE_BIOMETRIC_URL:-http://localhost:8765}
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  # Biometric attendance dashboard (morx-collector's read-only web UI). Serves
+  # the punches collected from the ZK terminal(s) as an analytics dashboard on
+  # :8765; the admin embeds it in an iframe. Independent of the Django backend —
+  # it reads the collected CSV/SQLite directly, so it needs no DB.
+  biometric:
+    build:
+      context: .
+      dockerfile: Dockerfile.biometric
+    container_name: nif-biometric
+    ports:
+      - "8765:8765"
+    environment:
+      - MORX_STORAGE_BACKEND=${MORX_STORAGE_BACKEND:-csv}
+      - MORX_DATA_DIR=data
+    volumes:
+      # Live code + collected data: the dashboard auto-refreshes when the CSV
+      # changes (the collector, `python -m morx run`, appends to it).
+      - ./biometric_attendance_nif:/app
+    restart: unless-stopped
+
+  # Live biometric collector (morx run). Connects to the ZK terminal, syncs the
+  # roster + backlog, then streams live punches into biometric_attendance_nif/
+  # data/attendance.csv — the exact file the `biometric` dashboard reads, via the
+  # shared bind mount. Device settings come from biometric_attendance_nif/.env
+  # (MORX_DEVICE_HOST etc.). It reconnects on its own with backoff, so it stays
+  # up and simply retries when the device is unreachable (e.g. off the LAN).
+  biometric-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.biometric
+    container_name: nif-biometric-collector
+    # One-time backlog sync, THEN stream live. `sync` finishes before `run`
+    # starts, so the two never write attendance.csv at the same time. `|| echo`
+    # keeps us going live even if the device is unreachable at startup; `exec`
+    # makes `morx run` PID 1 so SIGTERM still triggers the cooperative shutdown.
+    command: ["sh", "-c", "python -m morx sync || echo '[start] backlog sync failed (device unreachable?), continuing to live capture'; exec python -m morx run"]
+    environment:
+      - MORX_STORAGE_BACKEND=${MORX_STORAGE_BACKEND:-csv}
+      - MORX_DATA_DIR=data
+      # Do NOT re-pull the whole device log on every reconnect. With a flaky link
+      # the stream drops often, and each reconnect would re-dump the terminal's
+      # entire stored log (get_attendance) — that repeated full dump pegs the
+      # device CPU and is what lagged the fingerprint scanner during check-in/out.
+      # The single backfill is the `morx sync` in `command:` above instead.
+      - MORX_SYNC_HISTORY=${MORX_SYNC_HISTORY:-false}
+    volumes:
+      - ./biometric_attendance_nif:/app
+    restart: unless-stopped
+    # morx does a cooperative shutdown on SIGTERM; give the live-poll read time
+    # to notice before Docker escalates to SIGKILL (mirrors the systemd unit).
+    stop_grace_period: 30s
+    # NOTE: the terminal is on the LAN (192.168.77.201). Outbound TCP from this
+    # bridged container is NATed through the host, which reaches LAN hosts fine.
+    # If your device only answers on the same L2 segment, or ping is blocked,
+    # either add `network_mode: host` here (Linux) or set MORX_DEVICE_OMIT_PING
+    # =true in biometric_attendance_nif/.env.
+
+volumes:
+  postgres_data:
+  redis_data:
+  # Encrypted database + media backup artifacts written by deploy/backup.sh.
+  backups_data:

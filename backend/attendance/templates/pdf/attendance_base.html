@@ -1,0 +1,66 @@
+{% autoescape on %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @page {
+    size: A4; margin: 1.6cm 1.4cm 2.2cm 1.4cm;
+    @bottom-center { content: "{{ org.name }} · {{ org.address }} · Phone: {{ org.tel }} · {{ org.email }}"; font-size: 8px; color: #9ca3af; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8px; color: #9ca3af; }
+    @bottom-left { content: "{{ powered_by|default:'Powered by Buddhi Labs' }}"; font-size: 7px; color: #c3c9d2; }
+  }
+  body { font-family: "Inter", Helvetica, Arial, sans-serif; color: #1f2937; font-size: 11px; line-height: 1.5; }
+  /* Letterhead: larger logo, smaller org name (matches base_pdf). */
+  .letterhead { border-bottom: 3px solid #2563EB; padding-bottom: 12px; margin-bottom: 10px; }
+  .letterhead-logo { height: 88px; width: auto; }
+  .org-name { font-size: 15px; font-weight: 700; color: #111827; letter-spacing: .2px; }
+  .org-meta { font-size: 9px; color: #6b7280; margin-top: 3px; }
+  .doc-meta { text-align: right; font-size: 9px; color: #6b7280; }
+  .report-title { font-size: 16px; font-weight: 700; color: #111827; margin: 8px 0 2px; }
+  .report-sub { font-size: 10px; color: #6b7280; }
+  .emp-grid { width: 100%; border-collapse: collapse; margin: 10px 0 6px; }
+  .emp-grid td { font-size: 10px; padding: 3px 6px; vertical-align: top; }
+  .emp-grid td.k { color: #6b7280; width: 90px; }
+  .att-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .att-table th { background: #f3f4f6; color: #374151; font-size: 8.5px; text-transform: uppercase; letter-spacing: .3px; padding: 5px 6px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  .att-table td { font-size: 9.5px; padding: 4px 6px; border-bottom: 1px solid #f0f0f0; }
+  tr.sat td { background: #fef2f2; }
+  .st { font-weight: 700; }
+  .st-present { color: #059669; } .st-late { color: #d97706; } .st-half_day { color: #ca8a04; }
+  .st-absent { color: #dc2626; } .st-on_leave { color: #2563eb; } .st-holiday { color: #6b7280; }
+  .st-wfh { color: #7c3aed; }
+  .summary { margin-top: 12px; }
+  .summary-title { font-size: 11px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+  .sum-grid { width: 100%; border-collapse: collapse; }
+  .sum-grid td { border: 1px solid #e5e7eb; padding: 6px 8px; font-size: 10px; text-align: center; }
+  .sum-grid td .n { display: block; font-size: 16px; font-weight: 700; color: #111827; }
+  .sum-grid td .l { font-size: 8.5px; color: #6b7280; text-transform: uppercase; }
+  .sign-grid { display: flex; justify-content: flex-end; margin-top: 34px; }
+  .sign-box { width: 46%; }
+  .sign-line { border-top: 1px solid #374151; margin-top: 30px; padding-top: 4px; font-size: 10px; }
+  .cover-title { font-size: 20px; font-weight: 700; color: #111827; margin: 24px 0 6px; }
+  .page-break { page-break-before: always; }
+  h3.emp-head { font-size: 13px; color: #111827; margin: 4px 0 0; }
+</style>
+</head>
+<body>
+  <table style="width:100%" class="letterhead"><tr>
+    <td style="border:none; width:100px; vertical-align:middle; padding:0;">
+      {% if logo %}<img src="{{ logo }}" alt="{{ org.name|default:'Buddhi Labs' }} logo" class="letterhead-logo">{% endif %}
+    </td>
+    <td style="border:none; vertical-align:middle; padding:0 0 0 12px;">
+      {% include "pdf/_org_contact.html" %}
+    </td>
+    <td class="doc-meta" style="border:none; vertical-align:middle;">
+      <div>Generated (BS): {{ generated_bs }}</div>
+      <div>Generated (AD): {{ generated_ad }}</div>
+      <div>By: {{ generated_by }}</div>
+    </td>
+  </tr></table>
+
+  <div class="report-title">{{ report_title }}</div>
+  <div class="report-sub">Period: {{ period.start_bs }} to {{ period.end_bs }} (BS) · {{ period.start_ad }} to {{ period.end_ad }} (AD)</div>
+
+  {% block body %}{% endblock %}
+</body>
+</html>{% endautoescape %}

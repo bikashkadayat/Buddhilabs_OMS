@@ -1,0 +1,1129 @@
+{
+ "_generated_by": "backend/minutes/tests/test_qa_fixture.py",
+ "archived": {
+  "acknowledgement": {
+   "acknowledged": 3,
+   "is_complete": true,
+   "is_open": false,
+   "opened_at": "2026-08-25 08:34:18.182335+00:00",
+   "pending": 0,
+   "percent": 100,
+   "total": 3
+  },
+  "acknowledgement_deadline": {
+   "due_date": "2026-09-01",
+   "due_days": 7,
+   "is_overdue": false,
+   "late": 0
+  },
+  "acknowledgement_due_days": 7,
+  "acknowledgement_opened_at": "2026-08-25T14:19:18.182335+05:45",
+  "agenda_body": "<p>The Board considered the deferred server refresh and the three quotations obtained under the standing procurement policy.</p><table><thead><tr><th>S.N.</th><th>Agendas</th><th>Responsibility (Primary)</th><th>Responsibility (Secondary)</th><th>Deadline</th></tr></thead><tbody><tr><td>1</td><td>Approve the ICT capital expenditure of NPR 1,745,000</td><td>Min Member A T</td><td>Min Member B T</td><td>2026-09-15</td></tr><tr><td>2</td><td>Defer the vehicle replacement programme to the fourth quarter</td><td>Min Member B T</td><td>&mdash;</td><td>2026-10-01</td></tr><tr><td>3</td><td>Close the two outstanding audit recommendations</td><td>Min Fro T</td><td>Min Member A T</td><td>2026-08-24</td></tr></tbody></table>",
+  "archived_at": "2026-08-25T14:19:18.388053+05:45",
+  "attachments": [
+   {
+    "content_type": "application/pdf",
+    "download_url": "/api/v1/media/?p=minutes%2Fattachments%2F2026%2F08%2Fevaluation-committee-scoring.pdf&e=1787647158&s=589ca4468773f07e7734489eaaa6f8351ce1b3dec2e9ec87bae1c1c86008f9d6&u=af9b4553-7481-47ed-90f4-a6c06252970a&dl=1",
+    "id": "af8d91e3-d2b3-4baf-bb8d-8ee7c1c507bc",
+    "is_current": true,
+    "is_previewable": true,
+    "original_name": "evaluation-committee-scoring.pdf",
+    "size": 191,
+    "size_label": "191 B",
+    "uploaded_at": "2026-08-25T14:19:18.084857+05:45",
+    "uploaded_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "email": "min_initiator@nif.test",
+     "full_name": "Min Initiator T",
+     "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+    },
+    "version": 1,
+    "versions": []
+   },
+   {
+    "content_type": "image/png",
+    "download_url": "/api/v1/media/?p=minutes%2Fattachments%2F2026%2F08%2Fserver-room-layout.png&e=1787647158&s=86b71fc69a971de9c91842d274a8998b0183d65bc2f7b217a5901ab772a98b6d&u=af9b4553-7481-47ed-90f4-a6c06252970a&dl=1",
+    "id": "95ee1a7d-6c4c-46dd-b75f-978cf166a00c",
+    "is_current": true,
+    "is_previewable": true,
+    "original_name": "server-room-layout.png",
+    "size": 75,
+    "size_label": "75 B",
+    "uploaded_at": "2026-08-25T14:19:18.115224+05:45",
+    "uploaded_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "email": "min_initiator@nif.test",
+     "full_name": "Min Initiator T",
+     "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+    },
+    "version": 1,
+    "versions": []
+   }
+  ],
+  "can_acknowledge": false,
+  "can_delete": false,
+  "can_edit": false,
+  "can_export": true,
+  "can_manage_participants": false,
+  "can_remind_acknowledgements": false,
+  "can_return_review": false,
+  "can_send_for_acknowledgement": false,
+  "can_send_for_review": false,
+  "created_at": "2026-08-25T14:19:17.966179+05:45",
+  "created_by": {
+   "department": "Finance",
+   "designation": "Officer",
+   "email": "min_initiator@nif.test",
+   "full_name": "Min Initiator T",
+   "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+  },
+  "department_name": "Finance",
+  "fro": {
+   "department": "Finance",
+   "designation": "Department Head",
+   "email": "min_fro@nif.test",
+   "full_name": "Min Fro T",
+   "id": "cdd3f390-6cce-4857-a9f4-3f473ae679cb"
+  },
+  "fro_name": "Min Fro T",
+  "id": "1a6abfb0-38fe-4c6d-91bf-390cb2669327",
+  "involvements": [],
+  "is_read_only": true,
+  "meeting_date": "2026-08-05",
+  "meeting_time": "10:30:00",
+  "minute_number": "MIN-2026-000001",
+  "minute_type": 12,
+  "my_participation": null,
+  "participants": [
+   {
+    "ack_due_date": null,
+    "ack_status": "not_required",
+    "ack_status_label": "Not Required",
+    "acknowledged_at": null,
+    "attendance": "absent",
+    "attendance_label": "Absent",
+    "department_label": "Finance",
+    "designation": "Board Member",
+    "id": "923d4e7e-7524-4c24-8ca4-edc98950407a",
+    "is_late": false,
+    "must_acknowledge": false,
+    "name": "Min Absentee T",
+    "remarks": "",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Board Member",
+     "email": "min_absentee@nif.test",
+     "full_name": "Min Absentee T",
+     "id": "24b11ef4-610e-4ae3-8940-58be55699b3a"
+    }
+   },
+   {
+    "ack_due_date": null,
+    "ack_status": "not_required",
+    "ack_status_label": "Not Required",
+    "acknowledged_at": null,
+    "attendance": "invitee",
+    "attendance_label": "Invitee",
+    "department_label": "Finance",
+    "designation": "Consultant",
+    "id": "5f2d95d1-2e9c-4449-948f-df85da8d4f9a",
+    "is_late": false,
+    "must_acknowledge": false,
+    "name": "Min Invitee T",
+    "remarks": "",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Consultant",
+     "email": "min_invitee@nif.test",
+     "full_name": "Min Invitee T",
+     "id": "4c10d0dd-a85d-45fe-b1c0-4b3110cc82a9"
+    }
+   },
+   {
+    "ack_due_date": "2026-09-01",
+    "ack_status": "acknowledged",
+    "ack_status_label": "Acknowledged",
+    "acknowledged_at": "2026-08-25T14:19:18.378836+05:45",
+    "attendance": "present",
+    "attendance_label": "Present",
+    "department_label": "Finance",
+    "designation": "Department Head",
+    "id": "4c56e05a-6f5c-4542-ae03-548a3f15c7a4",
+    "is_late": false,
+    "must_acknowledge": true,
+    "name": "Min Fro T",
+    "remarks": "Read and noted.",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Department Head",
+     "email": "min_fro@nif.test",
+     "full_name": "Min Fro T",
+     "id": "cdd3f390-6cce-4857-a9f4-3f473ae679cb"
+    }
+   },
+   {
+    "ack_due_date": "2026-09-01",
+    "ack_status": "acknowledged",
+    "ack_status_label": "Acknowledged",
+    "acknowledged_at": "2026-08-25T14:19:18.279802+05:45",
+    "attendance": "present",
+    "attendance_label": "Present",
+    "department_label": "Finance",
+    "designation": "Board Member",
+    "id": "3882527e-92c2-4e8f-9514-06bb269dff2a",
+    "is_late": false,
+    "must_acknowledge": true,
+    "name": "Min Member A T",
+    "remarks": "Read and noted.",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Board Member",
+     "email": "min_member_a@nif.test",
+     "full_name": "Min Member A T",
+     "id": "1db85ffd-15ea-4eaf-b0a9-194fb5143d2c"
+    }
+   },
+   {
+    "ack_due_date": "2026-09-01",
+    "ack_status": "acknowledged",
+    "ack_status_label": "Acknowledged",
+    "acknowledged_at": "2026-08-25T14:19:18.330901+05:45",
+    "attendance": "present",
+    "attendance_label": "Present",
+    "department_label": "Finance",
+    "designation": "Board Member",
+    "id": "1d719e39-84be-4b64-a6d6-e2c84b3649c4",
+    "is_late": false,
+    "must_acknowledge": true,
+    "name": "Min Member B T",
+    "remarks": "Read and noted.",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Board Member",
+     "email": "min_member_b@nif.test",
+     "full_name": "Min Member B T",
+     "id": "b4b9cd3d-194d-4de0-bb14-e2372f61f9b1"
+    }
+   }
+  ],
+  "pending_with": null,
+  "reference_number": "DEPT/2026/07",
+  "sent_for_review_at": null,
+  "signatures": [
+   {
+    "attendance": "absent",
+    "attendance_label": "Absent",
+    "date": null,
+    "department": "Finance",
+    "designation": "Board Member",
+    "name": "Min Absentee T",
+    "stamp": "ABSENT"
+   },
+   {
+    "attendance": "invitee",
+    "attendance_label": "Invitee",
+    "date": null,
+    "department": "Finance",
+    "designation": "Consultant",
+    "name": "Min Invitee T",
+    "stamp": ""
+   },
+   {
+    "attendance": "present",
+    "attendance_label": "Present",
+    "date": "2026-08-25 08:34:18.378836+00:00",
+    "department": "Finance",
+    "designation": "Department Head",
+    "name": "Min Fro T",
+    "stamp": "ACKNOWLEDGED"
+   },
+   {
+    "attendance": "present",
+    "attendance_label": "Present",
+    "date": "2026-08-25 08:34:18.279802+00:00",
+    "department": "Finance",
+    "designation": "Board Member",
+    "name": "Min Member A T",
+    "stamp": "ACKNOWLEDGED"
+   },
+   {
+    "attendance": "present",
+    "attendance_label": "Present",
+    "date": "2026-08-25 08:34:18.330901+00:00",
+    "department": "Finance",
+    "designation": "Board Member",
+    "name": "Min Member B T",
+    "stamp": "ACKNOWLEDGED"
+   }
+  ],
+  "status": "archived",
+  "status_label": "Archived",
+  "subject": "Third quarter capital expenditure and the ICT refresh programme",
+  "timeline": [
+   {
+    "action": "created",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:17.976260+00:00",
+    "id": "88b129b7-a884-4ba6-b817-cd897fecaa27",
+    "label": "Created",
+    "remarks": "Minute created."
+   },
+   {
+    "action": "updated",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.086843+00:00",
+    "id": "6f90e30a-b57f-4fe5-ae66-689732f89544",
+    "label": "Edited",
+    "remarks": "Attached evaluation-committee-scoring.pdf."
+   },
+   {
+    "action": "updated",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.116268+00:00",
+    "id": "643ad7c0-6200-47b5-b1ab-44f4f9c5adc1",
+    "label": "Edited",
+    "remarks": "Attached server-room-layout.png."
+   },
+   {
+    "action": "participants_changed",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.150673+00:00",
+    "id": "f59e4c8a-9c05-4fcf-9200-521c1917cdba",
+    "label": "Participants updated",
+    "remarks": "5 participant(s) recorded."
+   },
+   {
+    "action": "sent_for_ack",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.185846+00:00",
+    "id": "a3962b55-5506-4063-831c-77f90bdae0d1",
+    "label": "Submitted for acknowledgement",
+    "remarks": "Assigned to 3 member(s) present."
+   },
+   {
+    "action": "acknowledged",
+    "actor_name": "Min Member A T",
+    "at": "2026-08-25 08:34:18.280818+00:00",
+    "id": "ef3b868b-ab56-466a-ba35-09864eb6e3cd",
+    "label": "Acknowledged",
+    "remarks": "Read and noted."
+   },
+   {
+    "action": "acknowledged",
+    "actor_name": "Min Member B T",
+    "at": "2026-08-25 08:34:18.331821+00:00",
+    "id": "2f7f3548-6717-4e45-af93-c3034688bf74",
+    "label": "Acknowledged",
+    "remarks": "Read and noted."
+   },
+   {
+    "action": "acknowledged",
+    "actor_name": "Min Fro T",
+    "at": "2026-08-25 08:34:18.379796+00:00",
+    "id": "955798b1-74de-4c1e-a3b1-050f4219a84e",
+    "label": "Acknowledged",
+    "remarks": "Read and noted."
+   },
+   {
+    "action": "archived",
+    "actor_name": "Min Fro T",
+    "at": "2026-08-25 08:34:18.388978+00:00",
+    "id": "f75f5e12-65b1-47f9-b3b9-9211209ff2d4",
+    "label": "Archived",
+    "remarks": "All members present have acknowledged; minute archived."
+   }
+  ],
+  "title": "Third quarter capital expenditure and the ICT refresh programme",
+  "tracker": [
+   {
+    "key": "draft",
+    "label": "Draft",
+    "state": "done"
+   },
+   {
+    "key": "review",
+    "label": "Draft Review",
+    "state": "done"
+   },
+   {
+    "key": "acknowledgement",
+    "label": "Acknowledgement",
+    "state": "done"
+   },
+   {
+    "key": "archived",
+    "label": "Archived",
+    "state": "done"
+   }
+  ],
+  "type_label": "DEPARTMENT",
+  "updated_at": "2026-08-25T14:19:18.388111+05:45"
+ },
+ "archived_id": "1a6abfb0-38fe-4c6d-91bf-390cb2669327",
+ "archived_list": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "acknowledgement": {
+     "acknowledged": 3,
+     "is_complete": true,
+     "is_open": false,
+     "opened_at": "2026-08-25 08:34:18.182335+00:00",
+     "pending": 0,
+     "percent": 100,
+     "total": 3
+    },
+    "archived_at": "2026-08-25T14:19:18.388053+05:45",
+    "created_at": "2026-08-25T14:19:17.966179+05:45",
+    "created_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "email": "min_initiator@nif.test",
+     "full_name": "Min Initiator T",
+     "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+    },
+    "department_name": "Finance",
+    "id": "1a6abfb0-38fe-4c6d-91bf-390cb2669327",
+    "meeting_date": "2026-08-05",
+    "meeting_time": "10:30:00",
+    "minute_number": "MIN-2026-000001",
+    "minute_type": 12,
+    "pending_with": null,
+    "reference_number": "DEPT/2026/07",
+    "status": "archived",
+    "status_label": "Archived",
+    "subject": "Third quarter capital expenditure and the ICT refresh programme",
+    "title": "Third quarter capital expenditure and the ICT refresh programme",
+    "type_label": "DEPARTMENT"
+   }
+  ]
+ },
+ "audit_trail": [
+  {
+   "action": "created",
+   "action_label": "Created",
+   "actor_display": "Min Initiator T",
+   "created_at": "2026-08-25T14:19:17.976260+05:45",
+   "id": "88b129b7-a884-4ba6-b817-cd897fecaa27",
+   "ip_address": null,
+   "metadata": {},
+   "remarks": "Minute created."
+  },
+  {
+   "action": "updated",
+   "action_label": "Edited",
+   "actor_display": "Min Initiator T",
+   "created_at": "2026-08-25T14:19:18.086843+05:45",
+   "id": "6f90e30a-b57f-4fe5-ae66-689732f89544",
+   "ip_address": "127.0.0.1",
+   "metadata": {},
+   "remarks": "Attached evaluation-committee-scoring.pdf."
+  },
+  {
+   "action": "updated",
+   "action_label": "Edited",
+   "actor_display": "Min Initiator T",
+   "created_at": "2026-08-25T14:19:18.116268+05:45",
+   "id": "643ad7c0-6200-47b5-b1ab-44f4f9c5adc1",
+   "ip_address": "127.0.0.1",
+   "metadata": {},
+   "remarks": "Attached server-room-layout.png."
+  },
+  {
+   "action": "participants_changed",
+   "action_label": "Participants updated",
+   "actor_display": "Min Initiator T",
+   "created_at": "2026-08-25T14:19:18.150673+05:45",
+   "id": "f59e4c8a-9c05-4fcf-9200-521c1917cdba",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "count": 5
+   },
+   "remarks": "5 participant(s) recorded."
+  },
+  {
+   "action": "sent_for_ack",
+   "action_label": "Submitted for acknowledgement",
+   "actor_display": "Min Initiator T",
+   "created_at": "2026-08-25T14:19:18.185846+05:45",
+   "id": "a3962b55-5506-4063-831c-77f90bdae0d1",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "present": 3
+   },
+   "remarks": "Assigned to 3 member(s) present."
+  },
+  {
+   "action": "acknowledged",
+   "action_label": "Acknowledged",
+   "actor_display": "Min Member A T",
+   "created_at": "2026-08-25T14:19:18.280818+05:45",
+   "id": "ef3b868b-ab56-466a-ba35-09864eb6e3cd",
+   "ip_address": "127.0.0.1",
+   "metadata": {},
+   "remarks": "Read and noted."
+  },
+  {
+   "action": "acknowledged",
+   "action_label": "Acknowledged",
+   "actor_display": "Min Member B T",
+   "created_at": "2026-08-25T14:19:18.331821+05:45",
+   "id": "2f7f3548-6717-4e45-af93-c3034688bf74",
+   "ip_address": "127.0.0.1",
+   "metadata": {},
+   "remarks": "Read and noted."
+  },
+  {
+   "action": "acknowledged",
+   "action_label": "Acknowledged",
+   "actor_display": "Min Fro T",
+   "created_at": "2026-08-25T14:19:18.379796+05:45",
+   "id": "955798b1-74de-4c1e-a3b1-050f4219a84e",
+   "ip_address": "127.0.0.1",
+   "metadata": {},
+   "remarks": "Read and noted."
+  },
+  {
+   "action": "archived",
+   "action_label": "Archived",
+   "actor_display": "Min Fro T",
+   "created_at": "2026-08-25T14:19:18.388978+05:45",
+   "id": "f75f5e12-65b1-47f9-b3b9-9211209ff2d4",
+   "ip_address": "127.0.0.1",
+   "metadata": {},
+   "remarks": "All members present have acknowledged; minute archived."
+  }
+ ],
+ "charts": {
+  "by_status": [
+   {
+    "label": "Archived",
+    "value": 1
+   },
+   {
+    "label": "Draft",
+    "value": 1
+   },
+   {
+    "label": "Draft For Review",
+    "value": 1
+   }
+  ],
+  "by_type": [
+   {
+    "label": "BRANCH",
+    "value": 1
+   },
+   {
+    "label": "DEPARTMENT",
+    "value": 1
+   },
+   {
+    "label": "MANCOM",
+    "value": 1
+   }
+  ]
+ },
+ "dashboard": {
+  "archived": 1,
+  "assigned_to_me": 0,
+  "draft_for_review": 0,
+  "my_acknowledged": 0,
+  "my_drafts": 1,
+  "my_minutes": 3,
+  "my_pending_acknowledgements": 0,
+  "needs_my_action": 0,
+  "under_process": 1
+ },
+ "draft": {
+  "acknowledgement": {
+   "acknowledged": 0,
+   "is_complete": false,
+   "is_open": false,
+   "opened_at": null,
+   "pending": 2,
+   "percent": 0,
+   "total": 2
+  },
+  "acknowledgement_deadline": {
+   "due_date": null,
+   "due_days": 7,
+   "is_overdue": false,
+   "late": 0
+  },
+  "acknowledgement_due_days": 7,
+  "acknowledgement_opened_at": null,
+  "agenda_body": "<p>The Committee will review progress against the plan.</p>",
+  "archived_at": null,
+  "attachments": [],
+  "can_acknowledge": false,
+  "can_delete": true,
+  "can_edit": true,
+  "can_export": true,
+  "can_manage_participants": true,
+  "can_remind_acknowledgements": false,
+  "can_return_review": false,
+  "can_send_for_acknowledgement": true,
+  "can_send_for_review": true,
+  "created_at": "2026-08-25T14:19:18.426426+05:45",
+  "created_by": {
+   "department": "Finance",
+   "designation": "Officer",
+   "email": "min_initiator@nif.test",
+   "full_name": "Min Initiator T",
+   "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+  },
+  "department_name": "Finance",
+  "fro": {
+   "department": "Finance",
+   "designation": "Department Head",
+   "email": "min_fro@nif.test",
+   "full_name": "Min Fro T",
+   "id": "cdd3f390-6cce-4857-a9f4-3f473ae679cb"
+  },
+  "fro_name": "Min Fro T",
+  "id": "eb8cf90b-0151-4f91-9a34-aab0168822f3",
+  "involvements": [],
+  "is_read_only": false,
+  "meeting_date": "2026-08-08",
+  "meeting_time": "14:00:00",
+  "minute_number": "MIN-2026-000002",
+  "minute_type": 14,
+  "my_participation": null,
+  "participants": [
+   {
+    "ack_due_date": null,
+    "ack_status": "not_required",
+    "ack_status_label": "Not Required",
+    "acknowledged_at": null,
+    "attendance": "present",
+    "attendance_label": "Present",
+    "department_label": "Finance",
+    "designation": "Board Member",
+    "id": "4197cc7e-38fc-4d0b-b01b-4f345e8f5b12",
+    "is_late": false,
+    "must_acknowledge": true,
+    "name": "Min Member A T",
+    "remarks": "",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Board Member",
+     "email": "min_member_a@nif.test",
+     "full_name": "Min Member A T",
+     "id": "1db85ffd-15ea-4eaf-b0a9-194fb5143d2c"
+    }
+   },
+   {
+    "ack_due_date": null,
+    "ack_status": "not_required",
+    "ack_status_label": "Not Required",
+    "acknowledged_at": null,
+    "attendance": "present",
+    "attendance_label": "Present",
+    "department_label": "Finance",
+    "designation": "Board Member",
+    "id": "27cd2d57-6671-4508-beb5-b8338ade0c12",
+    "is_late": false,
+    "must_acknowledge": true,
+    "name": "Min Member B T",
+    "remarks": "",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Board Member",
+     "email": "min_member_b@nif.test",
+     "full_name": "Min Member B T",
+     "id": "b4b9cd3d-194d-4de0-bb14-e2372f61f9b1"
+    }
+   }
+  ],
+  "pending_with": {
+   "name": "Min Initiator T",
+   "role_label": "Initiator"
+  },
+  "reference_number": "AUD/2026/03",
+  "sent_for_review_at": null,
+  "signatures": [
+   {
+    "attendance": "present",
+    "attendance_label": "Present",
+    "date": null,
+    "department": "Finance",
+    "designation": "Board Member",
+    "name": "Min Member A T",
+    "stamp": ""
+   },
+   {
+    "attendance": "present",
+    "attendance_label": "Present",
+    "date": null,
+    "department": "Finance",
+    "designation": "Board Member",
+    "name": "Min Member B T",
+    "stamp": ""
+   }
+  ],
+  "status": "draft",
+  "status_label": "Draft",
+  "subject": "Audit Committee, third quarter sitting",
+  "timeline": [
+   {
+    "action": "created",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.428301+00:00",
+    "id": "bf538482-36c5-44e1-b2db-25986e5ebcbd",
+    "label": "Created",
+    "remarks": "Minute created."
+   },
+   {
+    "action": "participants_changed",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.450720+00:00",
+    "id": "fe96a9a3-34a1-40ff-8ecc-1742b3eeea3b",
+    "label": "Participants updated",
+    "remarks": "2 participant(s) recorded."
+   }
+  ],
+  "title": "Audit Committee, third quarter sitting",
+  "tracker": [
+   {
+    "key": "draft",
+    "label": "Draft",
+    "state": "active"
+   },
+   {
+    "key": "review",
+    "label": "Draft Review",
+    "state": "pending"
+   },
+   {
+    "key": "acknowledgement",
+    "label": "Acknowledgement",
+    "state": "pending"
+   },
+   {
+    "key": "archived",
+    "label": "Archived",
+    "state": "pending"
+   }
+  ],
+  "type_label": "MANCOM",
+  "updated_at": "2026-08-25T14:19:18.426433+05:45"
+ },
+ "draft_id": "eb8cf90b-0151-4f91-9a34-aab0168822f3",
+ "in_review": {
+  "acknowledgement": {
+   "acknowledged": 0,
+   "is_complete": false,
+   "is_open": false,
+   "opened_at": null,
+   "pending": 1,
+   "percent": 0,
+   "total": 1
+  },
+  "acknowledgement_deadline": {
+   "due_date": null,
+   "due_days": 7,
+   "is_overdue": false,
+   "late": 0
+  },
+  "acknowledgement_due_days": 7,
+  "acknowledgement_opened_at": null,
+  "agenda_body": "<p>The committee considered the capital plan.</p>",
+  "archived_at": null,
+  "attachments": [],
+  "can_acknowledge": false,
+  "can_delete": false,
+  "can_edit": true,
+  "can_export": true,
+  "can_manage_participants": false,
+  "can_remind_acknowledgements": false,
+  "can_return_review": true,
+  "can_send_for_acknowledgement": false,
+  "can_send_for_review": false,
+  "created_at": "2026-08-25T14:19:18.461397+05:45",
+  "created_by": {
+   "department": "Finance",
+   "designation": "Officer",
+   "email": "min_initiator@nif.test",
+   "full_name": "Min Initiator T",
+   "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+  },
+  "department_name": "Finance",
+  "fro": {
+   "department": "Finance",
+   "designation": "Department Head",
+   "email": "min_fro@nif.test",
+   "full_name": "Min Fro T",
+   "id": "cdd3f390-6cce-4857-a9f4-3f473ae679cb"
+  },
+  "fro_name": "Min Fro T",
+  "id": "e91b559b-2be3-461c-bc6b-5be1e02d7262",
+  "involvements": [],
+  "is_read_only": false,
+  "meeting_date": "2026-08-06",
+  "meeting_time": "09:00:00",
+  "minute_number": "MIN-2026-000003",
+  "minute_type": 13,
+  "my_participation": null,
+  "participants": [
+   {
+    "ack_due_date": null,
+    "ack_status": "not_required",
+    "ack_status_label": "Not Required",
+    "acknowledged_at": null,
+    "attendance": "present",
+    "attendance_label": "Present",
+    "department_label": "Finance",
+    "designation": "Board Member",
+    "id": "00c49ffc-7461-4c38-b32b-d668762f8b4a",
+    "is_late": false,
+    "must_acknowledge": true,
+    "name": "Min Member A T",
+    "remarks": "",
+    "reminded_at": null,
+    "user": {
+     "department": "Finance",
+     "designation": "Board Member",
+     "email": "min_member_a@nif.test",
+     "full_name": "Min Member A T",
+     "id": "1db85ffd-15ea-4eaf-b0a9-194fb5143d2c"
+    }
+   }
+  ],
+  "pending_with": {
+   "name": "Min Fro T",
+   "role_label": "FRO"
+  },
+  "reference_number": "",
+  "sent_for_review_at": "2026-08-25T14:19:18.505272+05:45",
+  "signatures": [
+   {
+    "attendance": "present",
+    "attendance_label": "Present",
+    "date": null,
+    "department": "Finance",
+    "designation": "Board Member",
+    "name": "Min Member A T",
+    "stamp": ""
+   }
+  ],
+  "status": "draft_for_review",
+  "status_label": "Draft For Review",
+  "subject": "Branch operations review",
+  "timeline": [
+   {
+    "action": "created",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.463239+00:00",
+    "id": "b4a4a58f-2129-49a4-b9ed-3cc42b21f821",
+    "label": "Created",
+    "remarks": "Minute created."
+   },
+   {
+    "action": "participants_changed",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.483362+00:00",
+    "id": "98738439-ace1-4f11-bf1c-effbc8cc6639",
+    "label": "Participants updated",
+    "remarks": "1 participant(s) recorded."
+   },
+   {
+    "action": "sent_for_review",
+    "actor_name": "Min Initiator T",
+    "at": "2026-08-25 08:34:18.506349+00:00",
+    "id": "08ce30dd-25fb-4c9f-af97-afb182742e51",
+    "label": "Submitted for draft review",
+    "remarks": "Sent to Min Fro T for draft review."
+   }
+  ],
+  "title": "Branch operations review",
+  "tracker": [
+   {
+    "key": "draft",
+    "label": "Draft",
+    "state": "done"
+   },
+   {
+    "key": "review",
+    "label": "Draft Review",
+    "state": "active"
+   },
+   {
+    "key": "acknowledgement",
+    "label": "Acknowledgement",
+    "state": "pending"
+   },
+   {
+    "key": "archived",
+    "label": "Archived",
+    "state": "pending"
+   }
+  ],
+  "type_label": "BRANCH",
+  "updated_at": "2026-08-25T14:19:18.505341+05:45"
+ },
+ "list": {
+  "count": 3,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "acknowledgement": {
+     "acknowledged": 0,
+     "is_complete": false,
+     "is_open": false,
+     "opened_at": null,
+     "pending": 1,
+     "percent": 0,
+     "total": 1
+    },
+    "archived_at": null,
+    "created_at": "2026-08-25T14:19:18.461397+05:45",
+    "created_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "email": "min_initiator@nif.test",
+     "full_name": "Min Initiator T",
+     "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+    },
+    "department_name": "Finance",
+    "id": "e91b559b-2be3-461c-bc6b-5be1e02d7262",
+    "meeting_date": "2026-08-06",
+    "meeting_time": "09:00:00",
+    "minute_number": "MIN-2026-000003",
+    "minute_type": 13,
+    "pending_with": {
+     "name": "Min Fro T",
+     "role_label": "FRO"
+    },
+    "reference_number": "",
+    "status": "draft_for_review",
+    "status_label": "Draft For Review",
+    "subject": "Branch operations review",
+    "title": "Branch operations review",
+    "type_label": "BRANCH"
+   },
+   {
+    "acknowledgement": {
+     "acknowledged": 0,
+     "is_complete": false,
+     "is_open": false,
+     "opened_at": null,
+     "pending": 2,
+     "percent": 0,
+     "total": 2
+    },
+    "archived_at": null,
+    "created_at": "2026-08-25T14:19:18.426426+05:45",
+    "created_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "email": "min_initiator@nif.test",
+     "full_name": "Min Initiator T",
+     "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+    },
+    "department_name": "Finance",
+    "id": "eb8cf90b-0151-4f91-9a34-aab0168822f3",
+    "meeting_date": "2026-08-08",
+    "meeting_time": "14:00:00",
+    "minute_number": "MIN-2026-000002",
+    "minute_type": 14,
+    "pending_with": {
+     "name": "Min Initiator T",
+     "role_label": "Initiator"
+    },
+    "reference_number": "AUD/2026/03",
+    "status": "draft",
+    "status_label": "Draft",
+    "subject": "Audit Committee, third quarter sitting",
+    "title": "Audit Committee, third quarter sitting",
+    "type_label": "MANCOM"
+   },
+   {
+    "acknowledgement": {
+     "acknowledged": 3,
+     "is_complete": true,
+     "is_open": false,
+     "opened_at": "2026-08-25 08:34:18.182335+00:00",
+     "pending": 0,
+     "percent": 100,
+     "total": 3
+    },
+    "archived_at": "2026-08-25T14:19:18.388053+05:45",
+    "created_at": "2026-08-25T14:19:17.966179+05:45",
+    "created_by": {
+     "department": "Finance",
+     "designation": "Officer",
+     "email": "min_initiator@nif.test",
+     "full_name": "Min Initiator T",
+     "id": "af9b4553-7481-47ed-90f4-a6c06252970a"
+    },
+    "department_name": "Finance",
+    "id": "1a6abfb0-38fe-4c6d-91bf-390cb2669327",
+    "meeting_date": "2026-08-05",
+    "meeting_time": "10:30:00",
+    "minute_number": "MIN-2026-000001",
+    "minute_type": 12,
+    "pending_with": null,
+    "reference_number": "DEPT/2026/07",
+    "status": "archived",
+    "status_label": "Archived",
+    "subject": "Third quarter capital expenditure and the ICT refresh programme",
+    "title": "Third quarter capital expenditure and the ICT refresh programme",
+    "type_label": "DEPARTMENT"
+   }
+  ]
+ },
+ "review_id": "e91b559b-2be3-461c-bc6b-5be1e02d7262",
+ "taxonomy": {
+  "assignment_types": [
+   {
+    "code": "action_required",
+    "label": "Action Required"
+   },
+   {
+    "code": "review_required",
+    "label": "Review Required"
+   },
+   {
+    "code": "information_only",
+    "label": "Information Only"
+   }
+  ],
+  "attendance": [
+   {
+    "code": "present",
+    "label": "Present"
+   },
+   {
+    "code": "absent",
+    "label": "Absent"
+   },
+   {
+    "code": "invitee",
+    "label": "Invitee"
+   }
+  ],
+  "statuses": [
+   {
+    "code": "draft",
+    "label": "Draft"
+   },
+   {
+    "code": "draft_for_review",
+    "label": "Draft For Review"
+   },
+   {
+    "code": "pending_acknowledgement",
+    "label": "Pending Acknowledgement"
+   },
+   {
+    "code": "archived",
+    "label": "Archived"
+   }
+  ],
+  "types": [
+   {
+    "code": "department",
+    "id": 12,
+    "name": "DEPARTMENT",
+    "ordering": 1
+   },
+   {
+    "code": "branch",
+    "id": 13,
+    "name": "BRANCH",
+    "ordering": 2
+   },
+   {
+    "code": "mancom",
+    "id": 14,
+    "name": "MANCOM",
+    "ordering": 3
+   },
+   {
+    "code": "others",
+    "id": 15,
+    "name": "OTHERS",
+    "ordering": 4
+   },
+   {
+    "code": "board-meeting",
+    "id": 1,
+    "name": "Board Meeting",
+    "ordering": 10
+   },
+   {
+    "code": "management-committee",
+    "id": 2,
+    "name": "Management Committee",
+    "ordering": 20
+   },
+   {
+    "code": "ict-committee",
+    "id": 8,
+    "name": "ICT Committee",
+    "ordering": 30
+   },
+   {
+    "code": "hr-committee",
+    "id": 9,
+    "name": "HR Committee",
+    "ordering": 40
+   },
+   {
+    "code": "procurement-committee",
+    "id": 10,
+    "name": "Procurement Committee",
+    "ordering": 50
+   },
+   {
+    "code": "executive-meeting",
+    "id": 11,
+    "name": "Executive Meeting",
+    "ordering": 60
+   },
+   {
+    "code": "departmental",
+    "id": 5,
+    "name": "Department Meeting",
+    "ordering": 70
+   },
+   {
+    "code": "audit-committee",
+    "id": 3,
+    "name": "Audit Committee",
+    "ordering": 80
+   },
+   {
+    "code": "governance",
+    "id": 4,
+    "name": "Governance Meeting",
+    "ordering": 90
+   },
+   {
+    "code": "general",
+    "id": 6,
+    "name": "General Meeting",
+    "ordering": 100
+   }
+  ]
+ },
+ "user": {
+  "designation": "Officer",
+  "full_name": "Min Initiator T",
+  "id": "af9b4553-7481-47ed-90f4-a6c06252970a",
+  "role": "maker"
+ }
+}

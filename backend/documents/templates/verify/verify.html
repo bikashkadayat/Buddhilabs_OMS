@@ -1,0 +1,39 @@
+{% autoescape on %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Verification</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; background: #f3f4f6; margin: 0; padding: 40px 16px; color: #1f2937; }
+    .card { max-width: 420px; margin: 0 auto; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); overflow: hidden; }
+    .head { padding: 20px 24px; color: #fff; background: {% if d.valid %}#10B981{% else %}#b91c1c{% endif %}; }
+    .head h1 { margin: 0; font-size: 18px; }
+    .body { padding: 24px; }
+    .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .row span:first-child { color: #6b7280; }
+    .status { font-size: 22px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="head"><h1>Document Verification</h1></div>
+    <div class="body">
+      <p class="status">{% if d.valid %}✓ Valid document{% else %}✗ Not found / invalid{% endif %}</p>
+      <div class="row"><span>Document number</span><span>{{ d.document_number }}</span></div>
+      {% if d.valid %}
+        <div class="row"><span>Type</span><span>{{ d.doc_type }}</span></div>
+        {# Phase S3: `subject` and `actors` are no longer served here. This
+           page is unauthenticated and document numbers are sequential, so
+           rendering the subject and the signatories' names made the endpoint
+           a staff-directory and approval-history leak for anyone willing to
+           count. Verification needs "is this genuine", not "what did it say". #}
+        <div class="row"><span>Issued</span><span>{{ d.issued_at }}</span></div>
+
+      {% else %}
+        <p style="color:#6b7280;font-size:14px;">This document number was not issued by this system, or has been revoked.</p>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>{% endautoescape %}

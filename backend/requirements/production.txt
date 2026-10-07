@@ -1,0 +1,14 @@
+# Production dependencies.
+#   pip install -r requirements/production.txt
+-r base.txt
+
+# WSGI application server
+gunicorn==26.0.0
+
+# NOTE: whitenoise moved to base.txt — it is used by the middleware/storage
+# stack in every environment, not just production.
+
+# Optional: object storage for media when USE_S3=True. Not installed by default
+# because the standard deployment stores media on the container filesystem. To enable
+# S3 / Cloudflare R2 / MinIO, add to your image build:
+#   django-storages[boto3]==1.14.4

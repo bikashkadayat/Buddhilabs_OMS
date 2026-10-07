@@ -1,0 +1,79 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  {% comment %}
+    Asset Return Form (Phase 70.16).
+
+    The two condition blocks are printed side by side and the disagreement, if
+    there is one, is stated in words rather than left for the reader to spot. A
+    form that showed only the officer's finding would be the document somebody
+    produces to argue about the employee's declaration - which is precisely when
+    both need to be on the page.
+  {% endcomment %}
+  <style>
+    .cond-grid { display: flex; gap: 12px; margin-top: 6px; }
+    .cond-box { flex: 1; border: 1px solid #d7dae0; border-radius: 3px; padding: 9px 11px; }
+    .cond-box h4 { margin: 0 0 4px; font-size: 9px; text-transform: uppercase;
+                   letter-spacing: .1em; color: #6b7280; }
+    .cond-box .val { font-size: 13px; font-weight: 700; }
+    .cond-box .note { font-size: 10px; color: #4b5563; margin-top: 3px; }
+    .dispute { margin-top: 10px; border: 1px solid #dda15e; background: #fff4e5;
+               color: #8a4b08; border-radius: 3px; padding: 8px 11px; font-size: 10px; }
+    .sign-row { display: flex; gap: 26px; margin-top: 34px; }
+    .sign-cell { flex: 1; }
+    .sign-line { border-top: 1px solid #9aa1ac; margin-top: 34px; padding-top: 4px;
+                 font-size: 9.5px; color: #6b7280; }
+  </style>
+
+  <h1 class="title">Asset Return Form <span class="badge">{{ status_label }}</span></h1>
+  <div class="muted">Record of an asset returned to the store.</div>
+
+  <div class="section-title">Asset</div>
+  <table class="kv">
+    <tr><td class="k">Asset Code</td><td><b>{{ item_code }}</b></td>
+        <td class="k">Item</td><td>{{ item_name }}</td></tr>
+    <tr><td class="k">Reference</td><td>{{ reference }}</td>
+        <td class="k">Returned By</td><td>{{ holder }}</td></tr>
+    <tr><td class="k">Reason</td><td colspan="3">{{ reason }}</td></tr>
+  </table>
+
+  <div class="section-title">Condition</div>
+  <div class="cond-grid">
+    <div class="cond-box">
+      <h4>Declared by the holder</h4>
+      <div class="val">{{ declared_condition }}</div>
+      <div class="note">{{ declared_remarks }}</div>
+    </div>
+    <div class="cond-box">
+      <h4>Found on inspection</h4>
+      <div class="val">{{ inspected_condition }}</div>
+      <div class="note">{{ inspection_remarks }}</div>
+    </div>
+  </div>
+  {% if disputed %}
+    <div class="dispute">
+      <b>The declared and inspected conditions differ.</b> Both are recorded above
+      as stated. This form records that they did not agree; it does not determine
+      which is correct.
+    </div>
+  {% endif %}
+
+  <div class="section-title">Processing</div>
+  <table class="kv">
+    <tr><td class="k">Verified By</td><td>{{ verified_by }}</td>
+        <td class="k">Verified On</td><td>{{ verified_ad }}</td></tr>
+    <tr><td class="k">Inspected On</td><td>{{ inspected_ad }}</td>
+        <td class="k">Return Date</td><td>{{ returned_bs }} BS · {{ returned_ad }}</td></tr>
+  </table>
+  {% if rejection_reason %}
+    <div class="dispute"><b>Return refused.</b> {{ rejection_reason }}</div>
+  {% endif %}
+
+  <div class="sign-row">
+    <div class="sign-cell">
+      <div class="sign-line">Returned by — {{ holder }}</div>
+    </div>
+    <div class="sign-cell">
+      <div class="sign-line">Received by — {{ verified_by }}</div>
+    </div>
+  </div>
+{% endblock %}

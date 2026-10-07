@@ -1,0 +1,5 @@
+# Canonical, split & pinned requirements now live in requirements/.
+# This shim is kept for backwards compatibility and installs the production set.
+#   Production : pip install -r requirements/production.txt
+#   Development: pip install -r requirements/development.txt
+-r requirements/production.txt

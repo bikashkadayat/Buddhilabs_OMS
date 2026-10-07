@@ -1,0 +1,62 @@
+{% comment %}
+  The compact approval certification section (Phases 26, 30), shared by every
+  document type that prints one.
+
+  Included by memos/templates/pdf/memo.html and minutes/templates/pdf/minute.html.
+  Phase 36 asks the minute PDF for exactly the treatment the memo PDF already had -
+  role-specific stamp words, three or four signatories across one row, balanced
+  wrapping beyond that, small verification IDs - so it is one partial rather than two
+  templates that have to be kept looking identical.
+
+  Expects in context:
+    signature_rows  - from common.certification.signature_rows(); each row carries
+                      .blocks, .columns, .width and .show_department. The row width
+                      comes from the DATA, so this template contains no block count
+                      and no per-count special case.
+    certificate     - the seal's contents, or None. Rendered on presence alone, so
+                      there is no status test here that could drift from the workflow
+                      engine's own definition of "approved".
+
+  The styles live in the including template because the two documents size their
+  blocks slightly differently (a minute prints more sections before this one), and
+  because WeasyPrint has no cascade across included files to rely on.
+{% endcomment %}
+{% for row in signature_rows %}
+  <table class="cert-row-grid">
+    <tr>
+      {% for block in row.blocks %}
+        <td class="cert-cell {% if block.state == 'rejected' %}is-rejected{% elif block.state != 'done' %}is-pending{% endif %}"
+            style="width: {{ row.width }}%">
+          <div class="cert-caption">{{ block.heading }}</div>
+          <div class="cert-stamp-wrap">
+            <span class="cert-stamp">{{ block.stamp }}</span>
+          </div>
+          <div class="cert-rows">
+            <div class="cert-name">{{ block.name }}</div>
+            <div class="cert-line">{{ block.designation }}</div>
+            {% if row.show_department %}
+              <div class="cert-line">{{ block.department }}</div>
+            {% endif %}
+            <div class="cert-line is-date">{% if block.at %}{{ block.at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</div>
+          </div>
+          {% if block.remarks %}
+            <div class="cert-remarks">“{{ block.remarks }}”</div>
+          {% endif %}
+          {% if block.verified %}
+            <div class="cert-verify">
+              ✓ Verified{% if block.verification_id %} · <span class="vid">{{ block.verification_id }}</span>{% endif %}
+            </div>
+          {% else %}
+            <div class="cert-unverified">Not yet signed</div>
+          {% endif %}
+        </td>
+      {% endfor %}
+    </tr>
+  </table>
+{% endfor %}
+{% if signature_rows %}
+  <p class="cert-footnote">
+    Blocks marked ✓ were authorised electronically; no wet signature is required.
+    Quote the verification ID to confirm a signature against the system record.
+  </p>
+{% endif %}

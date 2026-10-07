@@ -1,0 +1,250 @@
+[
+  {
+    "date": "",
+    "name": "Nepali New Year (Baishakh 1)",
+    "name_np": "नयाँ वर्ष",
+    "event_type": "national",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Loktantra Diwas",
+    "name_np": "लोकतन्त्र दिवस",
+    "event_type": "national",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Buddha Jayanti",
+    "name_np": "बुद्ध जयन्ती",
+    "event_type": "jayanti",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Janai Purnima",
+    "name_np": "जनै पूर्णिमा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Gai Jatra",
+    "name_np": "गाईजात्रा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Krishna Janmashtami",
+    "name_np": "कृष्ण जन्माष्टमी",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Haritalika Teej",
+    "name_np": "हरितालिका तीज",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Rishi Panchami",
+    "name_np": "ऋषि पञ्चमी",
+    "event_type": "religious",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Indra Jatra",
+    "name_np": "इन्द्रजात्रा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Ghatasthapana",
+    "name_np": "घटस्थापना",
+    "event_type": "religious",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Fulpati",
+    "name_np": "फूलपाती",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Maha Ashtami",
+    "name_np": "महाअष्टमी",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Maha Navami",
+    "name_np": "महानवमी",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Vijaya Dashami",
+    "name_np": "विजया दशमी",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Kojagrat Purnima",
+    "name_np": "कोजाग्रत पूर्णिमा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Kag Tihar",
+    "name_np": "काग तिहार",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Kukur Tihar",
+    "name_np": "कुकुर तिहार",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Laxmi Puja",
+    "name_np": "लक्ष्मी पूजा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Gai Tihar / Govardhan Puja",
+    "name_np": "गोवर्धन पूजा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Bhai Tika",
+    "name_np": "भाइटीका",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Chhath Parva",
+    "name_np": "छठ पर्व",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Yomari Punhi",
+    "name_np": "योमरी पुन्ही",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Tamu Lhosar",
+    "name_np": "तमु ल्होसार",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Maghe Sankranti (Magh 1)",
+    "name_np": "माघे संक्रान्ति",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Sonam Lhosar",
+    "name_np": "सोनाम ल्होसार",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Basanta Panchami",
+    "name_np": "बसन्त पञ्चमी",
+    "event_type": "religious",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Maha Shivaratri",
+    "name_np": "महाशिवरात्रि",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Gyalpo Lhosar",
+    "name_np": "ग्याल्पो ल्होसार",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Fagu Purnima (Holi)",
+    "name_np": "फागु पूर्णिमा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": true
+  },
+  {
+    "date": "",
+    "name": "Ghode Jatra",
+    "name_np": "घोडेजात्रा",
+    "event_type": "festival",
+    "tithi": "",
+    "is_public_holiday": false
+  },
+  {
+    "date": "",
+    "name": "Ram Navami",
+    "name_np": "राम नवमी",
+    "event_type": "religious",
+    "tithi": "",
+    "is_public_holiday": false
+  }
+]

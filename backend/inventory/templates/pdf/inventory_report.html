@@ -1,0 +1,45 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  {% comment %}
+    One template for all seven inventory reports (Phase 70.16).
+
+    Columns arrive derived from the rows themselves, so adding an eighth report
+    needs no template change and no report can print columns that do not match the
+    data it holds. The alternative - seven templates - is seven places for a column
+    to be renamed in six of them.
+  {% endcomment %}
+  <style>
+    .rpt { width: 100%; border-collapse: collapse; font-size: 9.5px; margin-top: 8px; }
+    .rpt th { background: #f3f4f6; color: #374151; text-align: left;
+              padding: 5px 7px; border-bottom: 1px solid #cfd4dc;
+              font-size: 8.5px; text-transform: uppercase; letter-spacing: .06em; }
+    .rpt td { padding: 5px 7px; border-bottom: 1px solid #eef0f3; vertical-align: top; }
+    .rpt tr:nth-child(even) td { background: #fafbfc; }
+    .meta-line { font-size: 9px; color: #6b7280; margin-top: 4px; }
+  </style>
+
+  <h1 class="title">{{ report_label }}</h1>
+  <div class="muted">Inventory report · {{ row_count }} row{{ row_count|pluralize }}</div>
+  <div class="meta-line">
+    Generated {{ generated_at|date:"Y-m-d H:i" }}{% if generated_for %} for {{ generated_for }}{% endif %}.
+    Figures are as at that moment and will change as assets move.
+  </div>
+
+  {% if rows %}
+    <table class="rpt">
+      <thead>
+        <tr>{% for col in columns %}<th>{{ col.label }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>{% for cell in row %}<td>{{ cell|default_if_none:"—" }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted" style="margin-top:14px;">
+      This report has no rows. That is an answer rather than a failure — nothing
+      currently matches it.
+    </p>
+  {% endif %}
+{% endblock %}

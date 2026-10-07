@@ -1,0 +1,35 @@
+# Production frontend image: build the SPA, then serve it behind nginx.
+# Used only by docker-compose.prod.yml. Local dev keeps using Dockerfile.frontend
+# (the Vite dev server).
+
+# --- Stage 1: build the static bundle -------------------------------------
+# Node 22 LTS satisfies Vite 8's Node >= 20.19 requirement.
+# Debian (glibc), NOT alpine. vite 8 bundles config through rolldown, whose
+# musl binding fails with "Cannot convert undefined or null to object" on
+# node:22-alpine — reproducible in a pristine image with no mounts and with the
+# glibc binding removed, so it is rolldown's musl build, not our dependency
+# tree. Debian slim is the same libc the CI runner and developer machines use.
+FROM node:22-slim AS build
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+COPY frontend/ .
+# The biometric attendance dashboard (morx) runs as its own service on its own
+# hostname (the SPA embeds it in an iframe — see BiometricAttendance.jsx). That
+# URL is loaded by the BROWSER, so unlike the same-origin API it must be baked in
+# at build time. Passed from docker-compose.prod.yml's `web` build args.
+ARG VITE_BIOMETRIC_URL
+ENV VITE_BIOMETRIC_URL=$VITE_BIOMETRIC_URL
+# The SPA calls the API same-origin (axios baseURL '/api/v1'), so no backend URL
+# is baked in — the reverse proxy routes /api to Gunicorn. `npm run build`
+# emits the optimized, minified bundle to /app/dist.
+RUN npm run build
+
+# --- Stage 2: serve dist + reverse-proxy the API (plain HTTP :80) ----------
+# TLS is terminated by the host nginx / Cloudflare in front of this container.
+FROM nginx:1.27-alpine
+# Built SPA assets.
+COPY --from=build /app/dist /srv
+# Replace the stock default site with our SPA + API-proxy config.
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80

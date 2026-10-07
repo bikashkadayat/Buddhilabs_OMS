@@ -1,0 +1,124 @@
+# NIFN scheduled jobs (container timezone: Asia/Kathmandu).
+# Installed by the `cron` service in docker-compose.yml.
+# %-signs must be escaped as \% inside crontabs.
+#
+# Phase 11: every job records a heartbeat (monitoring.heartbeat). Management
+# commands do it themselves through the `heartbeat()` context manager; the shell
+# backup scripts call `record_heartbeat`. A job that stops running is now a red
+# tile and an alert instead of silence — audit finding M5, where only 4 of 11
+# jobs reported anything. Any job added here MUST also be registered in
+# monitoring.heartbeat.CRON_JOBS, or the dashboard reports it unmonitored.
+
+# cron runs jobs with PATH=/usr/bin:/bin, and this image's interpreter is at
+# /usr/local/bin/python. Without this line every single job above and below died
+# with "python: not found" the moment the daemon finally started — the jobs ran,
+# on time, and did nothing but write that one line to the container log. A
+# heartbeat cannot record a job that never reached Django, so the failure looked
+# exactly like a cron daemon that was not running at all.
+PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# 00:30 daily - refresh the current ISO week's summaries
+30 0 * * * cd /app && python manage.py recompute_summaries --scope weekly --this-week > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 01:00 daily - refresh the current month's summaries
+0 1 * * * cd /app && python manage.py recompute_summaries --scope monthly --this-month > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 02:00 daily - data integrity audit (report only; alerts on non-zero exit)
+0 2 * * * cd /app && python manage.py audit_data_integrity > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 03:00 on Jan 1 - close out the year that just ended
+0 3 1 1 * cd /app && python manage.py process_year_end --year $(date -d "yesterday" +\%Y) > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Hourly - send any scheduled reports that are due (Phase 8)
+0 * * * * cd /app && python manage.py run_scheduled_reports > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 04:00 daily - purge generated report files older than the retention window
+0 4 * * * cd /app && python manage.py purge_expired_reports > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Monday 09:00 - send the opt-in weekly digest email (Phase 9)
+0 9 * * 1 cd /app && python manage.py send_weekly_digest > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 05:00 daily - reconcile stale 'awaiting review' notifications with the actionable
+# queue (bell count can never drift from Pending Approvals).
+0 5 * * * cd /app && python manage.py reconcile_approval_notifications > /proc/1/fd/1 2>/proc/1/fd/2
+
+# ---------------------------------------------------------------------------
+# Backups (Phase 11). Ordering matters: database first, media second,
+# verification last — so the artifact verified is the one just written, and a
+# restore drill always pairs a DB and a media archive from the same night.
+# Restoring a newer database against older media yields rows pointing at files
+# that do not exist, which reads as a bug rather than a partial restore.
+# ---------------------------------------------------------------------------
+
+# 01:30 daily - encrypted, off-host database backup (rotates locally). Requires
+# BACKUP_ENCRYPTION_KEY (+ BACKUP_S3_BUCKET or BACKUP_RSYNC_TARGET) in .env.
+30 1 * * * sh /app/deploy/backup.sh > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 02:15 daily - incremental media backup (attachments, evidence, photos).
+# The database stores only PATHS to these files (audit finding H3).
+15 2 * * * sh /app/deploy/backup_media.sh incremental > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Sunday 02:45 - full media backup, resetting the incremental chain so a restore
+# never needs every artifact ever written.
+45 2 * * 0 sh /app/deploy/backup_media.sh full > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 03:15 daily - restore the newest artifact into a scratch DB and verify it.
+# A backup that has never been restored is a hypothesis (audit finding H4).
+15 3 * * * cd /app && python manage.py backup_verify > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Every 5 minutes - collect punches from the biometric terminal (Phase 12).
+# This is the only path attendance takes into the system, so it is the most
+# important line in this file. It re-reads the terminal's whole log each time
+# and ingest discards what it already has, which is why a missed cycle needs no
+# catch-up: the next run collects it. Read-only on the device — it never
+# disables the terminal, so staff can punch while it runs.
+*/5 * * * * cd /app && python manage.py device_sync > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Every 10 minutes - safety net behind the inline derivation that runs at punch
+# ingest, so a punch that arrived during a restart still becomes attendance.
+# --quiet keeps the log silent on the (normal) empty runs (Phase 5).
+*/10 * * * * cd /app && python manage.py process_punches --quiet > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Every 5 minutes - flag devices that have gone quiet and broadcast the change.
+# A terminal that loses power cannot announce it, so offline is inferred from
+# silence (BIOMETRIC_DEVICE_OFFLINE_MINUTES, default 15) (Phase 7).
+*/5 * * * * cd /app && python manage.py check_device_health --quiet > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Every 15 minutes - fail reports whose generating thread died with the process.
+# Generation runs in a daemon thread, so a container restart mid-run left a
+# ReportRun stuck in 'generating' forever (audit finding M4).
+*/15 * * * * cd /app && python manage.py reap_stuck_reports --quiet > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Every 5 minutes - evaluate alert rules; notify on state CHANGES only, so an
+# offline device does not send an alert every five minutes all weekend.
+*/5 * * * * cd /app && python manage.py check_alerts --quiet > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 04:30 daily - purge autosave snapshots untouched for DRAFT_RETENTION_DAYS
+# (Phase 111.17). Runs after the report purge so the two file/row sweeps do not
+# contend, and off `saved_at` so a document someone returns to weekly survives.
+30 4 * * * cd /app && python manage.py purge_expired_drafts --quiet > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 07:00 daily - task reminders, review nudges and overdue escalation
+# (Phase T4.4 / T4.5). Early enough to be in somebody's inbox at the start of
+# the working day, and AFTER midnight so "due today" means today.
+#
+# Safe to run more than once: every send is guarded by a (task, kind, day)
+# unique row, so a retry after a failed night sends nothing twice.
+0 7 * * * cd /app && python manage.py send_task_reminders > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 07:15 daily - appraisal deadline reminders (Phase RELEASE). Just after the
+# task reminders, so somebody with both gets them in one batch rather than
+# fifteen minutes apart. Three nudges per deadline (7 days, 3 days, on the day)
+# and then silence; every send is keyed, so a retry sends nothing twice.
+15 7 * * * cd /app && python manage.py send_appraisal_reminders > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 07:30 daily - asset warranty, maintenance-contract and end-of-life alerts (Phase
+# ASSET-LIFECYCLE-DISPOSAL). To the store. Each asset is announced once on entering
+# its warning window and once when the date passes; every send is keyed, so a
+# retry sends nothing twice.
+30 7 * * * cd /app && python manage.py send_asset_lifecycle_alerts > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 23:30 daily - freeze each employee's task evidence for the day (Phase T5.8).
+# Late, so the day's work is in it. Read-only with respect to tasks; safe to
+# re-run, and backfillable with --date if a night is missed.
+30 23 * * * cd /app && python manage.py snapshot_task_evidence > /proc/1/fd/1 2>/proc/1/fd/2

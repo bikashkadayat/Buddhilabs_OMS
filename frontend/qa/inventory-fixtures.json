@@ -1,0 +1,1674 @@
+{
+ "_generated_by": "backend/inventory/tests/test_qa_fixture.py (Phase 70)",
+ "asset_id": "53c1e01a-91ce-40e8-81d0-452be779d1a9",
+ "dashboard": {
+  "counts": {
+   "amc_expiring": 0,
+   "assets_awaiting_return": 0,
+   "assets_held_by_inactive_employees": 0,
+   "assets_missing_depreciation_data": 7,
+   "assets_with_no_owner": 4,
+   "assigned": 1,
+   "assigned_without_custody_record": 0,
+   "available": 4,
+   "awaiting_check_in": 0,
+   "book_value": "65000.00",
+   "book_value_assets": 1,
+   "disposed": 1,
+   "disposed_this_year": 1,
+   "draft_transfers": 0,
+   "end_of_life_approaching": 0,
+   "end_of_life_past": 0,
+   "governance_assigned_assets": 1,
+   "governance_department_assets": 8,
+   "governance_department_name": "Engineering",
+   "governance_total_assets": 8,
+   "governance_transferred_assets": 0,
+   "governance_unassigned_assets": 7,
+   "gross_cost": "906000",
+   "lost_this_year": 0,
+   "low_stock": 0,
+   "maintenance": 1,
+   "on_order": 1,
+   "open_maintenance_tickets": 1,
+   "overdue_returns": 0,
+   "pending_disposals": 1,
+   "pending_requests": 0,
+   "pending_returns": 0,
+   "pending_transfers": 0,
+   "retired": 1,
+   "taken_out": 0,
+   "total_assets": 8,
+   "transfer_trends": [
+    {
+     "completed": 0,
+     "month": "2026-04"
+    },
+    {
+     "completed": 0,
+     "month": "2026-05"
+    },
+    {
+     "completed": 0,
+     "month": "2026-06"
+    },
+    {
+     "completed": 0,
+     "month": "2026-07"
+    },
+    {
+     "completed": 0,
+     "month": "2026-08"
+    },
+    {
+     "completed": 0,
+     "month": "2026-09"
+    }
+   ],
+   "transferred_this_month": 0,
+   "warranty_expiring": 0,
+   "written_off_this_year": "0.00"
+  },
+  "low_stock": [],
+  "roles": {
+   "can_browse_register": true,
+   "can_manage_assets": true,
+   "can_view_all_assets": true,
+   "is_admin": false,
+   "is_department_head": false,
+   "is_employee": true,
+   "is_hr": false,
+   "is_inventory_officer": true,
+   "is_read_only_viewer": false,
+   "is_supervisor": false
+  },
+  "scope": "organisation"
+ },
+ "disposal_detail": {
+  "approved_at": "2026-09-15 05:59:20.379207+00:00",
+  "approved_by": "Inv_admin T",
+  "attachments": [],
+  "book_value_note": "",
+  "book_value_now": null,
+  "created_at": "2026-09-15 05:59:20.369303+00:00",
+  "disposal_number": "DSP-2026-0001",
+  "disposal_type": "sale",
+  "disposal_type_label": "Sold",
+  "disposed_at": "2026-09-15 05:59:20.381453+00:00",
+  "expected_proceeds": "6000.00",
+  "figures": {
+   "accumulated": "84000.00",
+   "book_value": "4000.00",
+   "gain": "2000.00",
+   "proceeds": "6000.00",
+   "purchase_cost": "88000.00",
+   "written_off": "0"
+  },
+  "id": "552fd4bd-5143-4282-b1da-252c61e4bb8f",
+  "item": {
+   "asset_code": "NIF-INV-Q901",
+   "department": "Engineering",
+   "id": "138290b1-ae11-4852-8e6d-4c9571f6c656",
+   "name": "Dell OptiPlex 3070"
+  },
+  "last_holder": "",
+  "permissions": {
+   "can_approve": false,
+   "can_attach": true,
+   "can_cancel": false,
+   "can_reject": false,
+   "can_submit": false
+  },
+  "reason": "Six years old and superseded; a buyer has offered for it.",
+  "rejection": null,
+  "remarks": "",
+  "requested_by": "Inv_officer T",
+  "stage_approvals": [
+   {
+    "at": "2026-09-15 05:59:20.376670+00:00",
+    "by": "Inv_head T",
+    "label": "Department Head",
+    "remarks": "The department has no further use for it."
+   },
+   {
+    "at": "2026-09-15 05:59:20.379207+00:00",
+    "by": "Inv_admin T",
+    "label": "Admin",
+    "remarks": "Approved; proceed with the sale."
+   }
+  ],
+  "stages": [
+   {
+    "at": "2026-09-15 05:59:20.369303+00:00",
+    "by": "Inv_officer T",
+    "key": "draft",
+    "label": "Draft",
+    "state": "done"
+   },
+   {
+    "at": "2026-09-15 05:59:20.376670+00:00",
+    "by": "Inv_head T",
+    "key": "dept_head_review",
+    "label": "Department Head Review",
+    "state": "done"
+   },
+   {
+    "at": "2026-09-15 05:59:20.379207+00:00",
+    "by": "Inv_admin T",
+    "key": "admin_approval",
+    "label": "Admin Approval",
+    "state": "done"
+   },
+   {
+    "at": "2026-09-15 05:59:20.381453+00:00",
+    "by": "",
+    "key": "disposed",
+    "label": "Disposed",
+    "state": "done"
+   }
+  ],
+  "status": "disposed",
+  "status_label": "Disposed",
+  "submitted_at": "2026-09-15 05:59:20.373349+00:00",
+  "timeline": [
+   {
+    "action": "created",
+    "actor": "Inv_officer T",
+    "at": "2026-09-15 05:59:20.369648+00:00",
+    "label": "Disposal requested",
+    "metadata": {
+     "asset": "NIF-INV-Q901",
+     "last_holder": "",
+     "type": "sale"
+    },
+    "remarks": "Six years old and superseded; a buyer has offered for it.",
+    "sequence": 1
+   },
+   {
+    "action": "submitted",
+    "actor": "Inv_officer T",
+    "at": "2026-09-15 05:59:20.373682+00:00",
+    "label": "Submitted",
+    "metadata": {},
+    "remarks": "",
+    "sequence": 2
+   },
+   {
+    "action": "dept_head_approved",
+    "actor": "Inv_head T",
+    "at": "2026-09-15 05:59:20.377062+00:00",
+    "label": "Approved by Department Head",
+    "metadata": {},
+    "remarks": "The department has no further use for it.",
+    "sequence": 3
+   },
+   {
+    "action": "admin_approved",
+    "actor": "Inv_admin T",
+    "at": "2026-09-15 05:59:20.379585+00:00",
+    "label": "Approved by Admin",
+    "metadata": {},
+    "remarks": "Approved; proceed with the sale.",
+    "sequence": 4
+   },
+   {
+    "action": "disposed",
+    "actor": "Inv_admin T",
+    "at": "2026-09-15 05:59:20.382702+00:00",
+    "label": "Asset disposed",
+    "metadata": {
+     "book_value": "4000.00",
+     "depreciable": true,
+     "proceeds": "6000.00",
+     "written_off": "0"
+    },
+    "remarks": "",
+    "sequence": 5
+   }
+  ]
+ },
+ "disposal_id": "552fd4bd-5143-4282-b1da-252c61e4bb8f",
+ "disposal_options": {
+  "can_create": true,
+  "types": [
+   {
+    "has_proceeds": true,
+    "label": "Sold",
+    "value": "sale"
+   },
+   {
+    "has_proceeds": false,
+    "label": "Scrapped",
+    "value": "scrap"
+   },
+   {
+    "has_proceeds": false,
+    "label": "Donated",
+    "value": "donation"
+   },
+   {
+    "has_proceeds": true,
+    "label": "E-waste recycling",
+    "value": "recycle"
+   },
+   {
+    "has_proceeds": false,
+    "label": "Written off",
+    "value": "write_off"
+   },
+   {
+    "has_proceeds": false,
+    "label": "Lost or stolen",
+    "value": "lost"
+   }
+  ]
+ },
+ "disposals": [
+  {
+   "approved_at": null,
+   "approved_by": "",
+   "book_value_note": "",
+   "book_value_now": "65000.00",
+   "created_at": "2026-09-15 05:59:20.386124+00:00",
+   "disposal_number": "DSP-2026-0002",
+   "disposal_type": "scrap",
+   "disposal_type_label": "Scrapped",
+   "disposed_at": null,
+   "expected_proceeds": null,
+   "figures": null,
+   "id": "c0732ee4-48b0-4dd6-af32-3311d0a5d148",
+   "item": {
+    "asset_code": "NIF-INV-Q902",
+    "department": "Engineering",
+    "id": "35995467-884f-4b1b-aa93-eafdf544e9d5",
+    "name": "Canon imageRUNNER 2425"
+   },
+   "last_holder": "",
+   "permissions": {
+    "can_approve": false,
+    "can_attach": true,
+    "can_cancel": true,
+    "can_reject": false,
+    "can_submit": false
+   },
+   "reason": "The fuser has failed twice this year and spares are no longer made.",
+   "rejection": null,
+   "remarks": "",
+   "requested_by": "Inv_officer T",
+   "stages": [
+    {
+     "at": "2026-09-15 05:59:20.386124+00:00",
+     "by": "Inv_officer T",
+     "key": "draft",
+     "label": "Draft",
+     "state": "done"
+    },
+    {
+     "at": null,
+     "by": "",
+     "key": "dept_head_review",
+     "label": "Department Head Review",
+     "state": "active"
+    },
+    {
+     "at": null,
+     "by": "",
+     "key": "admin_approval",
+     "label": "Admin Approval",
+     "state": "pending"
+    },
+    {
+     "at": null,
+     "by": "",
+     "key": "disposed",
+     "label": "Disposed",
+     "state": "pending"
+    }
+   ],
+   "status": "dept_head_review",
+   "status_label": "Department Head Review",
+   "submitted_at": "2026-09-15 05:59:20.389329+00:00"
+  },
+  {
+   "approved_at": "2026-09-15 05:59:20.379207+00:00",
+   "approved_by": "Inv_admin T",
+   "book_value_note": "",
+   "book_value_now": null,
+   "created_at": "2026-09-15 05:59:20.369303+00:00",
+   "disposal_number": "DSP-2026-0001",
+   "disposal_type": "sale",
+   "disposal_type_label": "Sold",
+   "disposed_at": "2026-09-15 05:59:20.381453+00:00",
+   "expected_proceeds": "6000.00",
+   "figures": {
+    "accumulated": "84000.00",
+    "book_value": "4000.00",
+    "gain": "2000.00",
+    "proceeds": "6000.00",
+    "purchase_cost": "88000.00",
+    "written_off": "0"
+   },
+   "id": "552fd4bd-5143-4282-b1da-252c61e4bb8f",
+   "item": {
+    "asset_code": "NIF-INV-Q901",
+    "department": "Engineering",
+    "id": "138290b1-ae11-4852-8e6d-4c9571f6c656",
+    "name": "Dell OptiPlex 3070"
+   },
+   "last_holder": "",
+   "permissions": {
+    "can_approve": false,
+    "can_attach": true,
+    "can_cancel": false,
+    "can_reject": false,
+    "can_submit": false
+   },
+   "reason": "Six years old and superseded; a buyer has offered for it.",
+   "rejection": null,
+   "remarks": "",
+   "requested_by": "Inv_officer T",
+   "stages": [
+    {
+     "at": "2026-09-15 05:59:20.369303+00:00",
+     "by": "Inv_officer T",
+     "key": "draft",
+     "label": "Draft",
+     "state": "done"
+    },
+    {
+     "at": "2026-09-15 05:59:20.376670+00:00",
+     "by": "Inv_head T",
+     "key": "dept_head_review",
+     "label": "Department Head Review",
+     "state": "done"
+    },
+    {
+     "at": "2026-09-15 05:59:20.379207+00:00",
+     "by": "Inv_admin T",
+     "key": "admin_approval",
+     "label": "Admin Approval",
+     "state": "done"
+    },
+    {
+     "at": "2026-09-15 05:59:20.381453+00:00",
+     "by": "",
+     "key": "disposed",
+     "label": "Disposed",
+     "state": "done"
+    }
+   ],
+   "status": "disposed",
+   "status_label": "Disposed",
+   "submitted_at": "2026-09-15 05:59:20.373349+00:00"
+  }
+ ],
+ "history": [
+  {
+   "actor": "Inv_officer T",
+   "at": "2026-09-15 05:59:20.315739+00:00",
+   "event": "received",
+   "from_status": "procurement",
+   "id": "b97e9289-15aa-4f6a-b142-e9a2450613de",
+   "label": "Received",
+   "metadata": {},
+   "remarks": "Delivered against PO/2026/114.",
+   "sequence": 1,
+   "subject": "",
+   "to_status": "received"
+  },
+  {
+   "actor": "Inv_officer T",
+   "at": "2026-09-15 05:59:20.320813+00:00",
+   "event": "stocked",
+   "from_status": "received",
+   "id": "420c3633-1558-4060-ac1b-d21034a5d668",
+   "label": "Placed in stock",
+   "metadata": {
+    "location": "Store room, 2nd floor"
+   },
+   "remarks": "Checked in, serial verified.",
+   "sequence": 2,
+   "subject": "",
+   "to_status": "available"
+  },
+  {
+   "actor": "Inv_emp T",
+   "at": "2026-09-15 05:59:20.325257+00:00",
+   "event": "requested",
+   "from_status": "",
+   "id": "4710cea3-1561-4290-8c96-d11ed4c4757b",
+   "label": "Requested",
+   "metadata": {
+    "reference": "NIF-AR-2083-0001"
+   },
+   "remarks": "My current machine cannot run the statistical tooling the survey analysis needs.",
+   "sequence": 3,
+   "subject": "Inv_emp T",
+   "to_status": ""
+  },
+  {
+   "actor": "Inv_super T",
+   "at": "2026-09-15 05:59:20.328886+00:00",
+   "event": "request_approved",
+   "from_status": "",
+   "id": "4a480c42-774f-4103-98a2-5d5868c9b088",
+   "label": "Request approved",
+   "metadata": {
+    "reference": "NIF-AR-2083-0001",
+    "stage": "supervisor"
+   },
+   "remarks": "Agreed; the analysis workload justifies it.",
+   "sequence": 4,
+   "subject": "Inv_emp T",
+   "to_status": ""
+  },
+  {
+   "actor": "Inv_officer T",
+   "at": "2026-09-15 05:59:20.334521+00:00",
+   "event": "request_approved",
+   "from_status": "",
+   "id": "ead47972-61fb-419a-939d-06c99073d695",
+   "label": "Request approved",
+   "metadata": {
+    "reference": "NIF-AR-2083-0001",
+    "stage": "inventory"
+   },
+   "remarks": "One in stock, serial verified.",
+   "sequence": 5,
+   "subject": "Inv_emp T",
+   "to_status": ""
+  },
+  {
+   "actor": "Inv_officer T",
+   "at": "2026-09-15 05:59:20.339682+00:00",
+   "event": "handed_over",
+   "from_status": "assigned",
+   "id": "ad784f00-f6f6-4620-ad3a-75d1320bad4f",
+   "label": "Handed over",
+   "metadata": {
+    "reference": "NIF-AR-2083-0001"
+   },
+   "remarks": "",
+   "sequence": 6,
+   "subject": "Inv_emp T",
+   "to_status": "assigned"
+  },
+  {
+   "actor": "Inv_emp T",
+   "at": "2026-09-15 05:59:20.343454+00:00",
+   "event": "accepted",
+   "from_status": "assigned",
+   "id": "d7361053-7d83-4109-91da-d54e9071285d",
+   "label": "Accepted by holder",
+   "metadata": {
+    "reference": "NIF-AR-2083-0001"
+   },
+   "remarks": "Received with charger, sleeve and hub.",
+   "sequence": 7,
+   "subject": "Inv_emp T",
+   "to_status": "assigned"
+  }
+ ],
+ "lifecycle_summary": {
+  "amc": {
+   "contract": "",
+   "cost": null,
+   "end": null,
+   "provider": "",
+   "start": null,
+   "state": null
+  },
+  "can_request_disposal": false,
+  "depreciation": {
+   "accumulated": "84000.00",
+   "as_of": "2026-09-15",
+   "book_value": "4000.00",
+   "depreciable": true,
+   "end_of_life_date": "2025-04-12",
+   "end_of_life_state": "past",
+   "frozen_at_disposal": true,
+   "fully_depreciated": true,
+   "method": "straight_line",
+   "monthly_charge": "1400.00",
+   "months_elapsed": 77,
+   "percent_depreciated": 100,
+   "purchase_cost": "88000.00",
+   "purchase_date": "2020-04-12",
+   "reason": "",
+   "salvage_value": "4000.00",
+   "useful_life_months": 60,
+   "useful_life_source": "asset"
+  },
+  "disposal": {
+   "approved_at": "2026-09-15 05:59:20.379207+00:00",
+   "approved_by": "Inv_admin T",
+   "book_value_note": "",
+   "book_value_now": null,
+   "created_at": "2026-09-15 05:59:20.369303+00:00",
+   "disposal_number": "DSP-2026-0001",
+   "disposal_type": "sale",
+   "disposal_type_label": "Sold",
+   "disposed_at": "2026-09-15 05:59:20.381453+00:00",
+   "expected_proceeds": "6000.00",
+   "figures": {
+    "accumulated": "84000.00",
+    "book_value": "4000.00",
+    "gain": "2000.00",
+    "proceeds": "6000.00",
+    "purchase_cost": "88000.00",
+    "written_off": "0"
+   },
+   "id": "552fd4bd-5143-4282-b1da-252c61e4bb8f",
+   "item": {
+    "asset_code": "NIF-INV-Q901",
+    "department": "Engineering",
+    "id": "138290b1-ae11-4852-8e6d-4c9571f6c656",
+    "name": "Dell OptiPlex 3070"
+   },
+   "last_holder": "",
+   "permissions": {
+    "can_approve": false,
+    "can_attach": true,
+    "can_cancel": false,
+    "can_reject": false,
+    "can_submit": false
+   },
+   "reason": "Six years old and superseded; a buyer has offered for it.",
+   "rejection": null,
+   "remarks": "",
+   "requested_by": "Inv_officer T",
+   "stages": [
+    {
+     "at": "2026-09-15 05:59:20.369303+00:00",
+     "by": "Inv_officer T",
+     "key": "draft",
+     "label": "Draft",
+     "state": "done"
+    },
+    {
+     "at": "2026-09-15 05:59:20.376670+00:00",
+     "by": "Inv_head T",
+     "key": "dept_head_review",
+     "label": "Department Head Review",
+     "state": "done"
+    },
+    {
+     "at": "2026-09-15 05:59:20.379207+00:00",
+     "by": "Inv_admin T",
+     "key": "admin_approval",
+     "label": "Admin Approval",
+     "state": "done"
+    },
+    {
+     "at": "2026-09-15 05:59:20.381453+00:00",
+     "by": "",
+     "key": "disposed",
+     "label": "Disposed",
+     "state": "done"
+    }
+   ],
+   "status": "disposed",
+   "status_label": "Disposed",
+   "submitted_at": "2026-09-15 05:59:20.373349+00:00"
+  },
+  "end_of_life": {
+   "date": "2025-04-12",
+   "state": "past"
+  },
+  "events": [
+   {
+    "actor": "Inv_admin T",
+    "at": "2026-09-15 05:59:20.381904+00:00",
+    "event": "disposed",
+    "from_status": "available",
+    "id": "c3a61809-a627-4f98-9f08-3529c3475aaa",
+    "label": "Disposed",
+    "metadata": {
+     "method": "Sold",
+     "value": "6000.00"
+    },
+    "phase": "disposed",
+    "remarks": "Six years old and superseded; a buyer has offered for it.",
+    "sequence": 1,
+    "subject": "",
+    "to_status": "disposed"
+   }
+  ],
+  "item": {
+   "asset_code": "NIF-INV-Q901",
+   "id": "138290b1-ae11-4852-8e6d-4c9571f6c656",
+   "is_terminal": true,
+   "name": "Dell OptiPlex 3070",
+   "status": "disposed",
+   "status_label": "Disposed"
+  },
+  "phases": [
+   {
+    "count": 0,
+    "derived": true,
+    "first_at": "2020-04-12",
+    "key": "purchased",
+    "label": "Purchased",
+    "last_at": "2020-04-12"
+   },
+   {
+    "count": 0,
+    "derived": false,
+    "first_at": null,
+    "key": "assigned",
+    "label": "Assigned",
+    "last_at": null
+   },
+   {
+    "count": 0,
+    "derived": false,
+    "first_at": null,
+    "key": "transferred",
+    "label": "Transferred",
+    "last_at": null
+   },
+   {
+    "count": 0,
+    "derived": false,
+    "first_at": null,
+    "key": "returned",
+    "label": "Returned",
+    "last_at": null
+   },
+   {
+    "count": 0,
+    "derived": false,
+    "first_at": null,
+    "key": "maintained",
+    "label": "Maintained",
+    "last_at": null
+   },
+   {
+    "count": 1,
+    "derived": false,
+    "first_at": "2026-09-15 05:59:20.381904+00:00",
+    "key": "disposed",
+    "label": "Disposed",
+    "last_at": "2026-09-15 05:59:20.381904+00:00"
+   }
+  ],
+  "warranty": {
+   "end": null,
+   "start": null,
+   "state": null
+  }
+ },
+ "maintenance": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "assigned_at": "2026-09-15T11:44:20.349384+05:45",
+    "assigned_to": null,
+    "assigned_to_name": "",
+    "can_manage": true,
+    "completed_at": null,
+    "condition_after": "",
+    "cost": null,
+    "created_at": "2026-09-15T11:44:20.346797+05:45",
+    "days_open": 0,
+    "id": "34d90f20-496a-4fc5-bad8-4528e7093869",
+    "is_open": true,
+    "issue": "Paper jams repeatedly and the fuser makes a grinding noise.",
+    "item": "fd6d880b-21fc-4920-8b49-a70c19bdad1d",
+    "item_code": "NIF-INV-Q003",
+    "item_name": "HP LaserJet Pro",
+    "priority": "high",
+    "priority_label": "High",
+    "reference": "NIF-MT-2083-0001",
+    "reported_by": "095b17cc-bd9a-42b9-b615-1d6ab9214db5",
+    "reported_by_name": "Inv_emp T",
+    "resolution": "",
+    "returned_at": null,
+    "started_at": null,
+    "status": "assigned",
+    "status_label": "Assigned",
+    "updated_at": "2026-09-15T11:44:20.349413+05:45",
+    "vendor": "TechCare Pvt Ltd"
+   }
+  ]
+ },
+ "open_disposal_id": "c0732ee4-48b0-4dd6-af32-3311d0a5d148",
+ "profile": {
+  "assigned": [
+   {
+    "accessories": "Charger, sleeve, USB-C hub",
+    "assigned_date": "2026-09-15",
+    "code": "NIF-INV-Q900",
+    "condition": "new",
+    "id": "b7564400-3d4f-4291-96ea-01c0a289a810",
+    "item_id": "53c1e01a-91ce-40e8-81d0-452be779d1a9",
+    "name": "ThinkPad T14 Gen 4"
+   }
+  ],
+  "employee": {
+   "department": "Engineering",
+   "employee_id": "",
+   "id": "095b17cc-bd9a-42b9-b615-1d6ab9214db5",
+   "name": "Inv_emp T"
+  },
+  "history": [
+   {
+    "assigned_date": "2026-09-15",
+    "code": "NIF-INV-Q002",
+    "id": "7b7bad32-d69c-489f-8858-741706d32bf2",
+    "name": "Dell Latitude 5540",
+    "return_condition": "fair",
+    "returned_at": "2026-09-15 05:59:20.363186+00:00"
+   }
+  ],
+  "requests": [
+   {
+    "code": "NIF-INV-Q900",
+    "created_at": "2026-09-15 05:59:20.324974+00:00",
+    "id": "8bf8bcb7-a137-4187-bd87-1f833ed29fea",
+    "name": "ThinkPad T14 Gen 4",
+    "reference": "NIF-AR-2083-0001",
+    "status": "accepted",
+    "status_label": "Accepted"
+   }
+  ],
+  "returns": [
+   {
+    "code": "NIF-INV-Q002",
+    "created_at": "2026-09-15 05:59:20.353967+00:00",
+    "id": "b12de892-7b96-4810-92ae-c3b53275ca67",
+    "name": "Dell Latitude 5540",
+    "reference": "NIF-RT-2083-0001",
+    "status": "accepted",
+    "status_label": "Return Accepted"
+   }
+  ],
+  "take_outs": []
+ },
+ "qr": {
+  "asset_code": "NIF-INV-Q900",
+  "name": "ThinkPad T14 Gen 4",
+  "qr": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2AQAAAADNaUdlAAACaklEQVR4nO1ZQYrkMAwsx4EcHdgH9EcWnJ8t86T5gfsp8wP72OCgpSRnjt2zLEMiGNNk0m0GSkpZVVKC4Nnap6fbwM/+/+UHUnmNIlJzrIg191Si2GPJ/er5hdQsIlFKR+7ISBIZUbaIugf8QI68Akk6YIGMZzGdjG/66v49SpF6R5Kl3hcpV8P3aj8/wob2By3st9L//f9P2p9JIf2zCJDKXNdYsf+qSIJ2Pr7p9f49hMDbts1tAzLatnxsewhhvQS+50tsVURh2ezgsbWiJCJO6g+IPPEzSlCS8eN0/fyXnopUCllHFilQ/eqpMCIP/OkEXFTFhgojlSEE08n4ppf7bVuYeewh9LbN6e2xGqMKAzkf31fyL3Z46SLUPyj47MP/CDHT6pjzUdqrixMf/K98BEy11hzyX6uo3Xcn+OXgT2T9EaTCiOACfx6G2QjPB0Hyu+J/0SOgsqWZt6LaXfBfRs0hZmQzEibB3Uf+peuVPWMaB4EuyEv/pTqlmDMDOfR3/Dg5wC/6sZ4Xahu0KBUf/lPUdhKzNsJC8fLjf2a0lZVnxn57/z3jsb4zqLaykYGb/gVqQTk8US0zRY4uzm+l+VTDwIRzBKTDEzf8r8yzct4aSas/1ohlF/iFzZd6fra9Sh7tyLoL/a1H2eH8yvznmP9EF/yxpbaBXkJHoCYB3Uf+MVJ9fFVGjUPRXfBfRs9osfAgV0f5z1bqLe3KH+N/9pD/6fNuv5VwK3N66zpF1KYGF8L3aj9WoIVYsUjhRCWVh4v5Zz3ev6hmjXaYLy/gw/9XfCqXTQ75XUcocKC/4ef96dP13fn/C3WLN9k5uJsYAAAAAElFTkSuQmCC",
+  "url": "https://oms.nif.org.np/inventory/items/53c1e01a-91ce-40e8-81d0-452be779d1a9",
+  "warning": null
+ },
+ "reports": {
+  "amc_expiring": {
+   "label": "AMC Expiring",
+   "report": "amc_expiring",
+   "rows": []
+  },
+  "by_category": {
+   "label": "Assets by Category",
+   "report": "by_category",
+   "rows": [
+    {
+     "assigned": 1,
+     "available": 4,
+     "category": "Laptop",
+     "id": "4ce31785-4c1a-43c8-8d76-40e9f5daeefb",
+     "maintenance": 1,
+     "total": 8
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Accessories",
+     "id": "4f5d139c-0f19-4220-a110-ad9c4dcb1505",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Desktop",
+     "id": "dde1c49c-66bd-41fe-a09b-eb78b67c6871",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Electronics",
+     "id": "c77aaece-5167-4bb1-9bef-9b8c51113d7e",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Furniture",
+     "id": "8dbd281b-2583-41c0-ad85-677efbd93acd",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Mobile Device",
+     "id": "ccb648fd-9c2b-4dcb-95e0-38294dcac191",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Monitor",
+     "id": "090091f1-ba41-4b87-a77a-a29d7ceb842b",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Network Device",
+     "id": "538c5df1-69e4-4cc7-8678-e5b6396a504b",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Networking",
+     "id": "88565ec5-5dc4-4a11-ab37-72f8cb76c6f3",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Office Supplies",
+     "id": "7489257a-e65e-4e15-a39c-2325cbe3b61a",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Other",
+     "id": "7ddb0aac-1558-4d40-9ed7-544ae9e43244",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Printer",
+     "id": "25e4c6a9-2d0c-4798-b7e3-abfe7597d5b0",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Projector",
+     "id": "98c37627-b07d-464b-9dee-2ff74a04c3df",
+     "maintenance": 0,
+     "total": 0
+    },
+    {
+     "assigned": 0,
+     "available": 0,
+     "category": "Vehicles",
+     "id": "0fc57900-00de-42eb-906a-9bc4f6e44310",
+     "maintenance": 0,
+     "total": 0
+    }
+   ]
+  },
+  "by_department": {
+   "label": "Assets by Department",
+   "report": "by_department",
+   "rows": [
+    {
+     "assigned": 1,
+     "available": 4,
+     "department": "Engineering",
+     "department_id": "168a3f32-ccff-4ffb-bbc8-0316a09bcd23",
+     "maintenance": 1,
+     "total": 8,
+     "value": "906000"
+    }
+   ]
+  },
+  "by_employee": {
+   "label": "Assets by Employee",
+   "report": "by_employee",
+   "rows": [
+    {
+     "assets": [
+      {
+       "assigned_date": "2026-09-15",
+       "code": "NIF-INV-Q900",
+       "condition": "new",
+       "name": "ThinkPad T14 Gen 4"
+      }
+     ],
+     "employee": "Inv_emp T",
+     "employee_id": "095b17cc-bd9a-42b9-b615-1d6ab9214db5",
+     "total": 1
+    }
+   ]
+  },
+  "department_assets": {
+   "label": "Department-wise Asset Report",
+   "report": "department_assets",
+   "rows": [
+    {
+     "assets_owned": 8,
+     "assigned": 1,
+     "department": "Engineering",
+     "held_by_staff": 1,
+     "in_maintenance": 1,
+     "purchase_value": "906000",
+     "unassigned": 4
+    }
+   ]
+  },
+  "depreciation": {
+   "label": "Depreciation Register",
+   "report": "depreciation",
+   "rows": [
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q001",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "Dell Latitude 5540",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "142000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q002",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "Dell Latitude 5540",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "142000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q003",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "HP LaserJet Pro",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "38000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q004",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "Epson Projector",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "95000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q005",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "Cisco Switch 24p",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "76000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q006",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "Old Desktop Tower",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "45000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": null,
+     "book_value": null,
+     "category": "Laptop",
+     "code": "NIF-INV-Q900",
+     "end_of_life": null,
+     "end_of_life_state": "",
+     "life_from": "",
+     "monthly_charge": null,
+     "months_elapsed": null,
+     "name": "ThinkPad T14 Gen 4",
+     "note": "Record the purchase date and useful life to depreciate this asset.",
+     "percent_depreciated": null,
+     "purchase_cost": "158000.00",
+     "purchase_date": null,
+     "salvage_value": null,
+     "useful_life_months": null
+    },
+    {
+     "accumulated": "145000.00",
+     "book_value": "65000.00",
+     "category": "Laptop",
+     "code": "NIF-INV-Q902",
+     "end_of_life": "2028-11-03",
+     "end_of_life_state": "in_life",
+     "life_from": "asset",
+     "monthly_charge": "2500.00",
+     "months_elapsed": 58,
+     "name": "Canon imageRUNNER 2425",
+     "note": "",
+     "percent_depreciated": 69,
+     "purchase_cost": "210000.00",
+     "purchase_date": "2021-11-03",
+     "salvage_value": "0.00",
+     "useful_life_months": 84
+    }
+   ]
+  },
+  "disposed": {
+   "label": "Disposed Assets",
+   "report": "disposed",
+   "rows": [
+    {
+     "approval": "Approved",
+     "approved_by": "Inv_admin T",
+     "book_value_at_disposal": "4000.00",
+     "code": "NIF-INV-Q901",
+     "department": "Engineering",
+     "disposal_number": "DSP-2026-0001",
+     "disposal_value": "6000.00",
+     "disposed_at": "2026-09-15 05:59:20.381453+00:00",
+     "id": "138290b1-ae11-4852-8e6d-4c9571f6c656",
+     "method": "Sold",
+     "name": "Dell OptiPlex 3070",
+     "purchase_cost": "88000.00",
+     "reason": "Six years old and superseded; a buyer has offered for it.",
+     "status": "disposed",
+     "status_label": "Disposed"
+    }
+   ]
+  },
+  "exit_clearance": {
+   "label": "Exit Clearance Assets",
+   "report": "exit_clearance",
+   "rows": [
+    {
+     "account": "Active",
+     "asset_codes": "NIF-INV-Q900",
+     "assets_held": 1,
+     "department": "Engineering",
+     "email": "inv_emp@nif.test",
+     "employee": "Inv_emp T",
+     "in_return": 0,
+     "in_transfer": 0,
+     "not_started": 1,
+     "status": "BLOCKED"
+    }
+   ]
+  },
+  "in_maintenance": {
+   "label": "Assets in Maintenance",
+   "report": "in_maintenance",
+   "rows": [
+    {
+     "assigned_to": "TechCare Pvt Ltd",
+     "code": "NIF-INV-Q003",
+     "cost": null,
+     "days_open": 0,
+     "id": "34d90f20-496a-4fc5-bad8-4528e7093869",
+     "issue": "Paper jams repeatedly and the fuser makes a grinding noise.",
+     "name": "HP LaserJet Pro",
+     "priority": "high",
+     "priority_label": "High",
+     "reference": "NIF-MT-2083-0001",
+     "reported_at": "2026-09-15 05:59:20.346797+00:00",
+     "reported_by": "Inv_emp T",
+     "status": "assigned",
+     "status_label": "Assigned"
+    }
+   ]
+  },
+  "lifecycle": {
+   "label": "Asset Lifecycle",
+   "report": "lifecycle",
+   "rows": [
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q001",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 0,
+     "holders": 0,
+     "maintenance_tickets": 0,
+     "name": "Dell Latitude 5540",
+     "purchased": null,
+     "returns": 0,
+     "status": "In Stock",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q002",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 2,
+     "holders": 1,
+     "maintenance_tickets": 0,
+     "name": "Dell Latitude 5540",
+     "purchased": null,
+     "returns": 1,
+     "status": "In Stock",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q003",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 2,
+     "holders": 0,
+     "maintenance_tickets": 1,
+     "name": "HP LaserJet Pro",
+     "purchased": null,
+     "returns": 0,
+     "status": "Under Maintenance",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q004",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 0,
+     "holders": 0,
+     "maintenance_tickets": 0,
+     "name": "Epson Projector",
+     "purchased": null,
+     "returns": 0,
+     "status": "On Order",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q005",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 0,
+     "holders": 0,
+     "maintenance_tickets": 0,
+     "name": "Cisco Switch 24p",
+     "purchased": null,
+     "returns": 0,
+     "status": "In Stock",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q006",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 0,
+     "holders": 0,
+     "maintenance_tickets": 0,
+     "name": "Old Desktop Tower",
+     "purchased": null,
+     "returns": 0,
+     "status": "Retired",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 0,
+     "code": "NIF-INV-Q900",
+     "current_holder": "Inv_emp T",
+     "disposed_at": null,
+     "events_on_record": 7,
+     "holders": 1,
+     "maintenance_tickets": 0,
+     "name": "ThinkPad T14 Gen 4",
+     "purchased": null,
+     "returns": 0,
+     "status": "Assigned",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 77,
+     "code": "NIF-INV-Q901",
+     "current_holder": "",
+     "disposed_at": "2026-09-15 05:59:20.381453+00:00",
+     "events_on_record": 1,
+     "holders": 0,
+     "maintenance_tickets": 0,
+     "name": "Dell OptiPlex 3070",
+     "purchased": "2020-04-12",
+     "returns": 0,
+     "status": "Disposed",
+     "take_outs": 0,
+     "transfers": 0
+    },
+    {
+     "age_months": 58,
+     "code": "NIF-INV-Q902",
+     "current_holder": "",
+     "disposed_at": null,
+     "events_on_record": 0,
+     "holders": 0,
+     "maintenance_tickets": 0,
+     "name": "Canon imageRUNNER 2425",
+     "purchased": "2021-11-03",
+     "returns": 0,
+     "status": "In Stock",
+     "take_outs": 0,
+     "transfers": 0
+    }
+   ]
+  },
+  "lost": {
+   "label": "Lost Assets",
+   "report": "lost",
+   "rows": []
+  },
+  "ownership": {
+   "label": "Asset Ownership",
+   "report": "ownership",
+   "rows": [
+    {
+     "asset_code": "NIF-INV-Q001",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "Dell Latitude 5540",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "In Stock"
+    },
+    {
+     "asset_code": "NIF-INV-Q002",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "Dell Latitude 5540",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "In Stock"
+    },
+    {
+     "asset_code": "NIF-INV-Q003",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "HP LaserJet Pro",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "Under Maintenance"
+    },
+    {
+     "asset_code": "NIF-INV-Q004",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "Epson Projector",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "On Order"
+    },
+    {
+     "asset_code": "NIF-INV-Q005",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "Cisco Switch 24p",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "In Stock"
+    },
+    {
+     "asset_code": "NIF-INV-Q006",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "Old Desktop Tower",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "Retired"
+    },
+    {
+     "asset_code": "NIF-INV-Q900",
+     "category": "Laptop",
+     "custody": "held",
+     "department": "Engineering",
+     "name": "ThinkPad T14 Gen 4",
+     "owner": "Inv_emp T",
+     "owner_active": true,
+     "since": "2026-09-15",
+     "status": "Assigned"
+    },
+    {
+     "asset_code": "NIF-INV-Q902",
+     "category": "Laptop",
+     "custody": "unassigned",
+     "department": "Engineering",
+     "name": "Canon imageRUNNER 2425",
+     "owner": "",
+     "owner_active": null,
+     "since": null,
+     "status": "In Stock"
+    }
+   ]
+  },
+  "transfers": {
+   "label": "Transfer History",
+   "report": "transfers",
+   "rows": []
+  },
+  "unreturned": {
+   "label": "Unreturned Assets",
+   "report": "unreturned",
+   "rows": []
+  },
+  "warranty_expiring": {
+   "label": "Warranty Expiring",
+   "report": "warranty_expiring",
+   "rows": []
+  },
+  "write_off": {
+   "label": "Write-off Register",
+   "report": "write_off",
+   "rows": [
+    {
+     "accumulated": "84000.00",
+     "approved_by": "Inv_admin T",
+     "book_value": "4000.00",
+     "code": "NIF-INV-Q901",
+     "disposed_at": "2026-09-15 05:59:20.381453+00:00",
+     "gain": "2000.00",
+     "name": "Dell OptiPlex 3070",
+     "proceeds": "6000.00",
+     "purchase_cost": "88000.00",
+     "reference": "DSP-2026-0001",
+     "source": "Approved disposal",
+     "type": "Sold",
+     "written_off": "0"
+    }
+   ]
+  }
+ },
+ "request_id": "8bf8bcb7-a137-4187-bd87-1f833ed29fea",
+ "requests": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "acceptance_remarks": "Received with charger, sleeve and hub.",
+    "accepted_at": "2026-09-15T11:44:20.342854+05:45",
+    "accessories": "Charger, sleeve, USB-C hub",
+    "assignment": "b7564400-3d4f-4291-96ea-01c0a289a810",
+    "can_accept": false,
+    "can_cancel": false,
+    "can_hand_over": false,
+    "can_inventory_approve": false,
+    "can_supervisor_approve": false,
+    "category_name": "",
+    "created_at": "2026-09-15T11:44:20.324974+05:45",
+    "department": "168a3f32-ccff-4ffb-bbc8-0316a09bcd23",
+    "department_name": "Engineering",
+    "handed_over_at": "2026-09-15T11:44:20.339058+05:45",
+    "handover_condition": "new",
+    "id": "8bf8bcb7-a137-4187-bd87-1f833ed29fea",
+    "inventory_at": "2026-09-15T11:44:20.334108+05:45",
+    "inventory_officer_name": "Inv_officer T",
+    "inventory_remarks": "One in stock, serial verified.",
+    "is_open": false,
+    "item": "53c1e01a-91ce-40e8-81d0-452be779d1a9",
+    "item_code": "NIF-INV-Q900",
+    "item_name": "ThinkPad T14 Gen 4",
+    "needed_by": null,
+    "purpose": "My current machine cannot run the statistical tooling the survey analysis needs.",
+    "reference": "NIF-AR-2083-0001",
+    "rejected_by_name": "",
+    "rejection_reason": "",
+    "requested_by": "095b17cc-bd9a-42b9-b615-1d6ab9214db5",
+    "requested_by_name": "Inv_emp T",
+    "requested_category": null,
+    "status": "accepted",
+    "status_label": "Accepted",
+    "supervisor_at": "2026-09-15T11:44:20.328201+05:45",
+    "supervisor_name": "Inv_super T",
+    "supervisor_remarks": "Agreed; the analysis workload justifies it.",
+    "updated_at": "2026-09-15T11:44:20.342887+05:45"
+   }
+  ]
+ },
+ "return_id": "b12de892-7b96-4810-92ae-c3b53275ca67",
+ "returns": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "accepted_at": "2026-09-15T11:44:20.363991+05:45",
+    "assignment": "7b7bad32-d69c-489f-8858-741706d32bf2",
+    "can_accept": false,
+    "can_inspect": false,
+    "can_verify": false,
+    "condition_disputed": true,
+    "created_at": "2026-09-15T11:44:20.353967+05:45",
+    "declared_condition": "good",
+    "declared_remarks": "Working normally as far as I could tell.",
+    "id": "b12de892-7b96-4810-92ae-c3b53275ca67",
+    "inspected_at": "2026-09-15T11:44:20.359576+05:45",
+    "inspected_condition": "fair",
+    "inspection_remarks": "Casing scuffed and one hinge is loose; still serviceable.",
+    "item": "fd86a856-af3f-49e9-94d8-c79cbc7b803f",
+    "item_code": "NIF-INV-Q002",
+    "item_name": "Dell Latitude 5540",
+    "reason": "Moving to a desktop setup.",
+    "reference": "NIF-RT-2083-0001",
+    "rejection_reason": "",
+    "returned_by": "095b17cc-bd9a-42b9-b615-1d6ab9214db5",
+    "returned_by_name": "Inv_emp T",
+    "returned_date": "2026-09-15",
+    "status": "accepted",
+    "status_label": "Return Accepted",
+    "updated_at": "2026-09-15T11:44:20.364029+05:45",
+    "verified_at": "2026-09-15T11:44:20.356598+05:45",
+    "verified_by_name": "Inv_officer T"
+   }
+  ]
+ },
+ "ticket_id": "34d90f20-496a-4fc5-bad8-4528e7093869",
+ "visibility_options": {
+  "asset_types": [
+   {
+    "label": "IT / Computing",
+    "value": "it"
+   },
+   {
+    "label": "Peripheral",
+    "value": "peripheral"
+   },
+   {
+    "label": "Furniture",
+    "value": "furniture"
+   },
+   {
+    "label": "Vehicle",
+    "value": "vehicle"
+   },
+   {
+    "label": "Other",
+    "value": "other"
+   }
+  ],
+  "conditions": [
+   {
+    "label": "New",
+    "value": "new"
+   },
+   {
+    "label": "Good",
+    "value": "good"
+   },
+   {
+    "label": "Fair",
+    "value": "fair"
+   },
+   {
+    "label": "Damaged",
+    "value": "damaged"
+   }
+  ],
+  "departments": [
+   {
+    "label": "Administrative Department",
+    "value": "0e44193c-4298-483b-bd56-a00f097bc633"
+   },
+   {
+    "label": "Engineering",
+    "value": "168a3f32-ccff-4ffb-bbc8-0316a09bcd23"
+   },
+   {
+    "label": "Human Resource Department",
+    "value": "b7c17c97-53a1-4ea7-97ae-4542065cadc7"
+   },
+   {
+    "label": "ICT Department",
+    "value": "f28a9538-8ba8-4af7-a5f5-33eda0826455"
+   },
+   {
+    "label": "Operational Department",
+    "value": "29d3da89-4c8f-4836-b5a1-4ba657bd2be9"
+   }
+  ],
+  "owners": [
+   {
+    "label": "Inv_admin T",
+    "value": "d12cc5a8-0660-4699-9fb3-40781c9bdb8a"
+   },
+   {
+    "label": "Inv_emp T",
+    "value": "095b17cc-bd9a-42b9-b615-1d6ab9214db5"
+   },
+   {
+    "label": "Inv_head T",
+    "value": "5c17beac-7491-4629-b6ae-48f4bd2c948f"
+   },
+   {
+    "label": "Inv_hr T",
+    "value": "e1903cab-b8f7-431c-b1c5-e2ae93adea93"
+   },
+   {
+    "label": "Inv_officer T",
+    "value": "9c75caf1-f761-4cf2-a342-60abe3d1331b"
+   },
+   {
+    "label": "Inv_super T",
+    "value": "ff7dd35f-72ab-41ad-bd56-905e302ec764"
+   }
+  ],
+  "read_only": true,
+  "statuses": [
+   {
+    "label": "On Order",
+    "value": "procurement"
+   },
+   {
+    "label": "Received",
+    "value": "received"
+   },
+   {
+    "label": "In Stock",
+    "value": "available"
+   },
+   {
+    "label": "Assigned",
+    "value": "assigned"
+   },
+   {
+    "label": "Taken Out",
+    "value": "out"
+   },
+   {
+    "label": "Under Maintenance",
+    "value": "maintenance"
+   },
+   {
+    "label": "Retired",
+    "value": "retired"
+   },
+   {
+    "label": "Disposed",
+    "value": "disposed"
+   },
+   {
+    "label": "Archived",
+    "value": "archived"
+   }
+  ]
+ }
+}

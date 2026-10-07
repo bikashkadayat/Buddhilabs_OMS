@@ -1,0 +1,37 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  <h1 class="title">Asset {% if is_handover %}Handover{% else %}Assignment{% endif %} Receipt</h1>
+  <div class="muted">Acknowledgement of an office asset issued to an employee.</div>
+
+  <div class="section-title">Item</div>
+  <table class="kv">
+    <tr><td class="k">Asset Code</td><td><b>{{ asset_code }}</b></td>
+        <td class="k">Item</td><td>{{ item_name }}</td></tr>
+    <tr><td class="k">Type</td><td>{{ asset_type }}</td>
+        <td class="k">Category</td><td>{{ category }}</td></tr>
+  </table>
+
+  {% if specs %}
+  <div class="section-title">Specifications</div>
+  <table class="kv">
+    {% for s in specs %}{% if forloop.counter0|divisibleby:2 %}<tr>{% endif %}
+      <td class="k">{{ s.label }}</td><td>{{ s.value }}</td>
+    {% if forloop.counter|divisibleby:2 or forloop.last %}</tr>{% endif %}{% endfor %}
+  </table>
+  {% endif %}
+
+  <div class="section-title">Issued To</div>
+  <table class="kv">
+    <tr><td class="k">Employee</td><td>{{ holder }}</td>
+        <td class="k">Issued By</td><td>{{ assigned_by }}</td></tr>
+    <tr><td class="k">Date</td><td>{{ assigned_bs }} BS · {{ assigned_ad }}</td>
+        <td class="k">Condition</td><td>{{ condition }}</td></tr>
+    <tr><td class="k">Accessories</td><td colspan="3">{{ accessories }}</td></tr>
+    {% if remarks %}<tr><td class="k">Remarks</td><td colspan="3">{{ remarks }}</td></tr>{% endif %}
+  </table>
+
+  <div class="sign-grid">
+    <div class="sign-box"><div class="sign-line">Receiver's Signature</div></div>
+    <div class="sign-box"><div class="sign-line">Issued By (Manager)</div></div>
+  </div>
+{% endblock %}

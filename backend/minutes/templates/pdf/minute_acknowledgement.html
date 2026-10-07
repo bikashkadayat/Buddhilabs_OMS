@@ -1,0 +1,75 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  {% comment %}
+    The standalone acknowledgement signature sheet.
+
+    One page: the minute's identity, then a ruled row per member to sign against. This
+    is what gets printed and passed round the table, so it deliberately carries no
+    agenda text - a secretary should not print thirty pages of annexures to collect
+    four signatures.
+  {% endcomment %}
+  <style>
+    .sheet-head { font-size: 10.5px; margin-bottom: 12px; }
+    .sheet-head b { display: inline-block; min-width: 100px; }
+    table.sign { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    table.sign th, table.sign td {
+      border: 1px solid #666; padding: 6px; font-size: 9.5px; vertical-align: middle;
+    }
+    table.sign th { background: #f0f0f0; font-weight: 700; text-align: left; }
+    td.sign-col { width: 26%; }
+    .state { font-size: 8px; font-weight: 700; letter-spacing: .08em; }
+    .state.ack { color: #0c6b4f; }
+    .state.absent { color: #8c1d1d; }
+    .foot { font-size: 9px; color: #444; margin-top: 10px; }
+  </style>
+
+  <h2 style="font-size:13px; margin-bottom:8px;">Acknowledgement Sheet</h2>
+
+  <div class="sheet-head">
+    <div><b>Minute No:</b> {{ document_number }}</div>
+    <div><b>Minute Type:</b> {{ meeting_type }}</div>
+    <div><b>Meeting Date:</b> {{ meeting_date|date:"Y-m-d" }}
+      {% if meeting_time %}&nbsp;&nbsp;<b>Time:</b>
+        {{ meeting_time|time:"h:i A" }}{% endif %}</div>
+  </div>
+
+  <table class="sign">
+    <thead>
+      <tr>
+        <th style="width:5%">S.N.</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Attendance</th>
+        <th>Acknowledged</th>
+        <th class="sign-col">Signature</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in participants %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ row.display_name }}<br>
+            <span style="font-size:8px;color:#444">{{ row.designation|default:"" }}</span>
+          </td>
+          <td>{{ row.department_label|default:"—" }}</td>
+          <td>
+            {% if row.attendance == "absent" %}
+              <span class="state absent">ABSENT</span>
+            {% else %}{{ row.get_attendance_display }}{% endif %}
+          </td>
+          <td>
+            {% if row.ack_status == "acknowledged" %}
+              <span class="state ack">{{ row.acknowledged_at|date:"Y-m-d" }}</span>
+            {% else %}&nbsp;{% endif %}
+          </td>
+          <td class="sign-col">&nbsp;</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p class="foot">
+    {{ ack_summary.acknowledged }} of {{ ack_summary.total }} member(s) present have
+    acknowledged{% if archived_at %}; archived {{ archived_at|date:"Y-m-d H:i" }}{% endif %}.
+  </p>
+{% endblock %}

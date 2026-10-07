@@ -1,0 +1,245 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  {% comment %}
+    The circular PDF (Phase 50).
+
+    Section order is the brief's: header, reference, subject, department, issue
+    date, content, broadcast summary, acknowledgement summary, archive information.
+
+    Two things distinguish it from the memo PDF and both are deliberate.
+
+    First, a circular's "signatures" are one line, not a grid of certification
+    blocks. A memo collects a chain of approvals and each one is a distinct act
+    worth its own block; a circular is ISSUED by one person on one date, and
+    printing a five-card approval grid for it would overstate what happened.
+
+    Second, the registers are conditional on `show_registers`. A recipient
+    exporting their own copy is entitled to the circular and to the summary
+    figures; they are not entitled to a list naming which colleagues have not read
+    it. The view decides that and this template obeys it - the boundary lives in
+    permissions.can_view_registers, in one place, not in two.
+
+    A comment TAG rather than a hash comment: Django's {# #} is single-line only,
+    and a multi-line one prints onto the face of the document. That has already
+    happened once in this codebase.
+  {% endcomment %}
+  <style>
+    .cir-flags { margin: 6px 0 0; }
+    .flag {
+      display: inline-block; padding: 2px 9px; border-radius: 3px; font-size: 9px;
+      font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      border: 1px solid; margin-right: 6px;
+    }
+    .flag-internal     { background: #f3f4f6; color: #374151; border-color: #b8bfc9; }
+    .flag-public       { background: #eef7f0; color: #14532d; border-color: #86bf9c; }
+    .flag-confidential { background: #fdecec; color: #8c1d1d; border-color: #d98b8b; }
+    .flag-restricted   { background: #7f1d1d; color: #ffffff; border-color: #7f1d1d; }
+    .flag-category     { background: #eef2fb; color: #1e3a8a; border-color: #a9bce6; }
+
+    .cir-title { font-size: 15px; font-weight: 700; margin: 14px 0 2px; }
+    .cir-to {
+      font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+      color: #6b7280; margin-bottom: 10px;
+    }
+    .cir-body { font-size: 11px; line-height: 1.6; }
+    .stat-row { margin: 6px 0 10px; }
+    .stat {
+      display: inline-block; border: 1px solid #d7dae0; border-radius: 3px;
+      padding: 5px 10px; margin: 0 6px 6px 0; font-size: 9.5px;
+    }
+    .stat b { font-size: 12.5px; display: block; margin-bottom: 1px; }
+    .issued-line {
+      margin-top: 18px; padding-top: 10px; border-top: 1px solid #d7dae0;
+      font-size: 10.5px;
+    }
+    .issued-line .who { font-weight: 700; font-size: 12px; }
+    .archive-box {
+      margin-top: 16px; border: 1px solid #cfd4dc; border-radius: 3px;
+      padding: 9px 12px; font-size: 9.5px; color: #4b5563; background: #fafbfc;
+    }
+    .archive-box b { color: #1f2937; }
+  </style>
+
+  <div class="cir-flags">
+    <span class="flag flag-{{ classification }}">{{ classification_label }}</span>
+    <span class="flag flag-category">{{ category_label }}</span>
+    {% if circular.priority == "urgent" or circular.priority == "high" %}
+      <span class="flag flag-restricted">{{ priority_label }} priority</span>
+    {% endif %}
+  </div>
+
+  <table class="kv">
+    <tr><td class="k">Circular No.</td><td><b>{{ circular.circular_number }}</b></td></tr>
+    <tr><td class="k">Issue Date</td>
+        <td>{% if circular.issue_date %}{{ circular.issue_date|date:"Y-m-d" }}{% else %}—{% endif %}</td></tr>
+    <tr><td class="k">Department</td><td>{{ department_label }}</td></tr>
+    <tr><td class="k">Issued By</td><td>{{ issued_by_name }}</td></tr>
+    <tr><td class="k">Prepared By</td>
+        <td>{{ author_name }}{% if author_designation %} · {{ author_designation }}{% endif %}</td></tr>
+    {% if circular.external_reference %}
+      <tr><td class="k">Reference</td><td>{{ circular.external_reference }}</td></tr>
+    {% endif %}
+    {% if circular.memo_reference %}
+      <tr><td class="k">Arising From</td>
+          <td>Memo {{ circular.memo_reference.memo_number }}</td></tr>
+    {% endif %}
+    {% if circular.minute_reference %}
+      <tr><td class="k">Arising From</td>
+          <td>Minute {{ circular.minute_reference.minute_number }}</td></tr>
+    {% endif %}
+    <tr><td class="k">Status</td><td>{{ status_label }}</td></tr>
+  </table>
+
+  <div class="cir-title">{{ circular.subject }}</div>
+  {% if broadcasts %}
+    <div class="cir-to">To: {{ broadcasts.0.audience_label }}</div>
+  {% endif %}
+
+  <div class="section-title">Circular</div>
+  <div class="memo-body cir-body">{{ content_html|safe }}</div>
+
+  {% if attachments %}
+    <div class="section-title">Attachments</div>
+    <table class="trail" style="width:100%">
+      <tr><th>File</th><th>Issued By</th><th>Added</th></tr>
+      {% for file in attachments %}
+        <tr>
+          <td>{{ file.name }}</td>
+          <td>{{ file.uploaded_by }}</td>
+          <td>{{ file.uploaded_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <p class="muted" style="font-size:9px;">
+      Attachments are issued with this circular and held against it in the system;
+      they are not embedded in this document.
+    </p>
+  {% endif %}
+
+  {% if chain %}
+    <div class="section-title">Review and Issue</div>
+    <table class="matrix">
+      <thead>
+        <tr><th>S.N.</th><th>Role</th><th>Name</th><th>Designation</th>
+            <th>Department</th><th>Action Date</th><th>Status</th><th>Remarks</th></tr>
+      </thead>
+      <tbody>
+        {% for row in chain %}
+          <tr>
+            <td class="seq">{{ row.sequence }}</td>
+            <td class="role">{{ row.role_label }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.designation|default:"—" }}</td>
+            <td>{{ row.department|default:"—" }}</td>
+            <td>{% if row.acted_at %}{{ row.acted_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+            <td>{% if row.completed %}<span class="sig-ok">Completed</span>
+                {% else %}<span class="sig-wait">{{ row.status_label }}</span>{% endif %}</td>
+            <td>{{ row.remarks|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if broadcasts %}
+    <div class="section-title">Broadcast Summary</div>
+    <table class="matrix">
+      <thead>
+        <tr><th>S.N.</th><th>Audience</th><th>Recipients</th><th>Broadcast By</th>
+            <th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for row in broadcasts %}
+          <tr>
+            <td class="seq">{{ row.sequence }}</td>
+            <td>{{ row.audience_label }}</td>
+            <td>{{ row.recipient_count }}{% if row.already_present_count %}
+                  <span class="muted">(+{{ row.already_present_count }} already held it)</span>
+                {% endif %}</td>
+            <td>{{ row.broadcast_by }}</td>
+            <td>{{ row.broadcast_at|date:"Y-m-d H:i" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="stat-row">
+      <span class="stat"><b>{{ read_summary.total }}</b>Recipients</span>
+      <span class="stat"><b>{{ read_summary.read }}</b>Opened</span>
+      <span class="stat"><b>{{ read_summary.unread }}</b>Not yet opened</span>
+      <span class="stat"><b>{{ read_summary.percent }}%</b>Read</span>
+    </div>
+    <p class="muted" style="font-size:9px;">
+      Read figures are as at {{ printed_at|date:"Y-m-d H:i" }} and will change while
+      the circular remains in circulation. Opening a circular is recorded
+      automatically; it is not the same as acknowledging it.
+    </p>
+  {% endif %}
+
+  {% if acknowledgement.required %}
+    <div class="section-title">Acknowledgement Summary</div>
+    <div class="stat-row">
+      <span class="stat"><b>{{ acknowledgement.total }}</b>Asked</span>
+      <span class="stat"><b>{{ acknowledgement.acknowledged }}</b>Acknowledged</span>
+      <span class="stat"><b>{{ acknowledgement.pending }}</b>Pending</span>
+      <span class="stat"><b>{{ acknowledgement.declined }}</b>Declined</span>
+      <span class="stat"><b>{{ acknowledgement.late }}</b>Late</span>
+    </div>
+    <p class="muted" style="font-size:9px;">
+      Acknowledged, Pending and Declined are exclusive and sum to Asked. Late is an
+      overlay on the first two, not a fifth state: somebody who acknowledged after
+      the deadline is counted once as acknowledged and again as late.
+      {% if acknowledgement.deadline %}Due by {{ acknowledgement.deadline|date:"Y-m-d" }}.{% endif %}
+    </p>
+
+    {% if show_registers and acknowledgement_register %}
+      <table class="matrix">
+        <thead>
+          <tr><th>S.N.</th><th>Recipient</th><th>Department</th><th>Status</th>
+              <th>Responded</th><th>Remarks</th></tr>
+        </thead>
+        <tbody>
+          {% for row in acknowledgement_register %}
+            <tr>
+              <td class="seq">{{ forloop.counter }}</td>
+              <td>{{ row.name }}</td>
+              <td>{{ row.department|default:"—" }}</td>
+              <td>
+                {% if row.state == "acknowledged" %}<span class="sig-ok">Acknowledged</span>
+                {% elif row.state == "declined" %}<span class="sig-no">Declined</span>
+                {% else %}<span class="sig-wait">Pending</span>{% endif %}
+                {% if row.is_late %} <span class="sig-no">· late</span>{% endif %}
+              </td>
+              <td>{% if row.responded_at %}{{ row.responded_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+              <td>{{ row.remarks|default:"—" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  {% endif %}
+
+  {% if circular.issued_at %}
+    <div class="issued-line">
+      Issued under the authority of<br>
+      <span class="who">{{ issued_by_name }}</span><br>
+      on {{ circular.issued_at|date:"Y-m-d H:i" }}
+    </div>
+  {% endif %}
+
+  <div class="archive-box">
+    {% if circular.archived_at %}
+      <b>Archive Information.</b>
+      Filed to the permanent record on {{ circular.archived_at|date:"Y-m-d H:i" }}.
+      This circular is read-only; it can be viewed and exported but no longer
+      changed.
+    {% else %}
+      <b>Archive Information.</b>
+      This circular is {{ status_label|lower }} and has not yet been filed to the
+      permanent record.
+    {% endif %}
+    <br>Printed for {{ generated_for }} on {{ printed_at|date:"Y-m-d H:i" }}.
+    {% if not show_registers %}
+      Distribution and acknowledgement registers are omitted from this copy.
+    {% endif %}
+  </div>
+{% endblock %}

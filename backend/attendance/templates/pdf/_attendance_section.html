@@ -1,0 +1,41 @@
+{% autoescape on %}
+<div class="emp-section">
+  <h3 class="emp-head">{{ r.employee.name }}</h3>
+  <table class="emp-grid">
+    <tr><td class="k">Employee ID</td><td>{{ r.employee.employee_id }}</td><td class="k">Department</td><td>{{ r.employee.department }}</td></tr>
+    <tr><td class="k">Designation</td><td>{{ r.employee.designation }}</td><td class="k">Role</td><td>{{ r.employee.role }}</td></tr>
+  </table>
+
+  <table class="att-table">
+    <thead><tr>
+      <th>Date (BS)</th><th>Date (AD)</th><th>Day</th><th>Check In</th><th>Check Out</th><th>Hrs</th><th>Status</th><th>Remarks</th>
+    </tr></thead>
+    <tbody>
+      {% for row in r.rows %}
+      <tr class="{% if row.is_saturday %}sat{% endif %}">
+        <td>{{ row.date_bs }}</td><td>{{ row.date_ad }}</td><td>{{ row.day }}</td>
+        <td>{{ row.check_in }}</td><td>{{ row.check_out }}</td><td>{{ row.working_hours }}</td>
+        <td class="st st-{{ row.status }}">{{ row.status_label }}</td>
+        <td>{{ row.remarks }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="summary">
+    <div class="summary-title">Summary Totals</div>
+    <table class="sum-grid"><tr>
+      <td><span class="n">{{ r.summary.working_days }}</span><span class="l">Working Days</span></td>
+      <td><span class="n">{{ r.summary.present }}</span><span class="l">Present</span></td>
+      <td><span class="n">{{ r.summary.late }}</span><span class="l">Late</span></td>
+      <td><span class="n">{{ r.summary.half_day }}</span><span class="l">Half-day</span></td>
+      <td><span class="n">{{ r.summary.absent }}</span><span class="l">Absent</span></td>
+      <td><span class="n">{{ r.summary.wfh }}</span><span class="l">WFH</span></td>
+      <td><span class="n">{{ r.summary.on_leave }}</span><span class="l">On Leave</span></td>
+      <td><span class="n">{{ r.summary.holiday }}</span><span class="l">Holidays</span></td>
+    </tr></table>
+  </div>
+
+  <div class="sign-grid"><div class="sign-box"><div class="sign-line">Authorized Signature (HR)</div></div></div>
+</div>
+{% endautoescape %}

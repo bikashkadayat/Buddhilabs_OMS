@@ -1,0 +1,23 @@
+{% autoescape off %}Hello {{ organization_name }} team,
+
+{% if outcome == "approved" %}We've received your payment {{ reference }} ({{ amount }}) for the {{ plan_name }} plan. Your subscription is active{% if period_end %} until {{ period_end|date:"j F Y" }}{% endif %}.
+
+Nothing else to do — thank you.
+{% elif outcome == "rejected" %}We couldn't confirm your payment {{ reference }} ({{ amount }}).
+
+Why: {{ reason }}
+
+What to do next: check the details above, then upload the receipt again from your subscription page. If the money left your account, include the transaction ID your bank or wallet shows.
+{% else %}We need a little more before we can confirm your payment {{ reference }} ({{ amount }}).
+
+What we need: {{ message }}
+
+Reply by uploading the receipt again, with the details above, from your subscription page. Your request stays open until you do.
+{% endif %}
+Your subscription page: {{ subscription_url }}
+{% if support_email %}Questions? Write to {{ support_email }}.{% endif %}
+
+--
+{{ org_name }}
+{{ powered_by }}
+{% endautoescape %}

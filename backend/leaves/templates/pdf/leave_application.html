@@ -1,0 +1,31 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  <h1 class="title">Leave Application</h1>
+  <div class="muted" style="font-size:11px;"><span class="badge">Approved</span></div>
+
+  <table class="kv">
+    <tr><td class="k">Employee</td><td>{{ employee_name }}</td></tr>
+    <tr><td class="k">Department</td><td>{{ department }}</td></tr>
+    <tr><td class="k">Leave type</td><td>{{ leave.get_leave_type_display }}</td></tr>
+    <tr><td class="k">From</td><td>{{ leave.start_date }}</td></tr>
+    <tr><td class="k">To</td><td>{{ leave.end_date }}</td></tr>
+    <tr><td class="k">Days</td><td>{{ working_days }} working day(s)</td></tr>
+    <tr><td class="k">Reason</td><td>{{ leave.reason }}</td></tr>
+    {% if leave.handover_notes %}<tr><td class="k">Handover</td><td>{{ leave.handover_notes }}</td></tr>{% endif %}
+  </table>
+
+  <div class="section-title">Balance impact</div>
+  <p>{{ balance_statement }}</p>
+
+  <div class="section-title">Approval chain</div>
+  <table class="trail" style="width:100%">
+    <tr><th>Stage</th><th>Name</th><th>Decision</th></tr>
+    <tr><td>Applicant</td><td>{{ employee_name }}</td><td>Submitted</td></tr>
+    <tr><td>Approver</td><td>{{ approver_name }}</td><td>Approved</td></tr>
+  </table>
+
+  <div class="sign-grid">
+    <div class="sign-box"><div class="sign-line">{{ approver_name }}<br><span class="muted">Authorized approver</span></div></div>
+    <div class="sign-box"><div class="sign-line">{{ employee_name }}<br><span class="muted">Applicant</span></div></div>
+  </div>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% autoescape on %}<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @page {
+    size: A4;
+    margin: 1.8cm 1.6cm 2.4cm 1.6cm;
+    @bottom-center {
+      {% comment %}PHASE S9 PART 7. Was the four fields assembled here in the
+      template, which meant a customer's own `report_footer_text` -- offered
+      by the console since S1 -- was stored and never printed. Assembled in
+      `documents.pdf._footer_line` now, which also strips the two characters
+      that would end this CSS string early.{% endcomment %}
+      content: "{{ org.footer_text }}";
+      font-size: 8px; color: #9ca3af;
+    }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8px; color: #9ca3af; }
+    {% comment %}The platform's attribution, on the opposite corner from the
+    page numbers so it never collides with the tenant's own footer line in
+    the centre. Under the customer's letterhead rather than instead of it:
+    the document is theirs, the software is ours.{% endcomment %}
+    @bottom-left { content: "{{ powered_by|default:'Powered by Buddhi Labs' }}"; font-size: 7px; color: #c3c9d2; }
+  }
+  /* Fonts fall back to Helvetica if the optional TTFs are not installed. */
+  body { font-family: "Inter", "Poppins", Helvetica, Arial, sans-serif; color: #1f2937; font-size: 12px; line-height: 1.55; }
+  .letterhead { border-bottom: 3px solid #2563EB; padding-bottom: 14px; margin-bottom: 6px; }
+  .letterhead-logo { height: 90px; width: auto; display: block; }
+  /* Larger logo, smaller balanced org name (Fix 5). */
+  .org-name { font-size: 15px; font-weight: 700; color: #111827; letter-spacing: .2px; }
+  .org-meta { font-size: 9px; color: #6b7280; margin-top: 3px; }
+  .doc-meta { text-align: right; font-size: 10px; color: #6b7280; }
+  .doc-number { font-size: 12px; font-weight: 700; color: #2563EB; }
+  h1.title { font-size: 17px; margin: 18px 0 4px; color: #111827; }
+  .muted { color: #6b7280; }
+  table.kv { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  table.kv td { padding: 4px 6px; vertical-align: top; font-size: 12px; }
+  table.kv td.k { color: #6b7280; width: 90px; }
+  /* `break-after: avoid` keeps a section heading with the table it introduces.
+     Without it WeasyPrint will happily leave "BROADCAST SUMMARY" alone at the foot
+     of a page with its table overleaf, which reads as a missing section. Applies to
+     every document type, because all three share this stylesheet and all three are
+     long enough to break across pages. */
+  .section-title { font-size: 12px; font-weight: 700; color: #2563EB; text-transform: uppercase; letter-spacing: .4px; margin: 18px 0 6px; border-bottom: 1px solid #e5e7eb; padding-bottom: 3px; break-after: avoid; page-break-after: avoid; }
+  /* A table header repeated on each page it spans, rather than a body with no
+     column names on the second page. */
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  .trail td, .trail th { padding: 5px 8px; font-size: 11px; border-bottom: 1px solid #eee; text-align: left; }
+  .trail th { color: #6b7280; text-transform: uppercase; font-size: 9px; }
+  .sign-grid { display: flex; justify-content: space-between; margin-top: 30px; }
+  .sign-box { width: 45%; }
+  .sign-line { border-top: 1px solid #374151; margin-top: 34px; padding-top: 4px; font-size: 11px; }
+  .footer-qr { position: running(qr); }
+  .qr-block { margin-top: 24px; display: flex; align-items: center; gap: 12px; }
+  .qr-block img { width: 84px; height: 84px; }
+  .qr-note { font-size: 9px; color: #6b7280; }
+  /* Legible but not alarming: this is a deployment note on an otherwise valid
+     document, not a defect in the document itself. */
+  .qr-warning { color: #92400e; border: 1px solid #fcd34d; background: #fffbeb;
+                padding: 6px 9px; border-radius: 4px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+
+  /* ==========================================================================
+     Author-supplied body content (Phase 13/20).
+
+     The sanitizer now permits tables, images, alignment, colour and inline
+     styling, so the PDF has to be able to DRAW all of it. Without these rules an
+     authored table rendered borderless and full-bleed - the formatting survived
+     the round trip and then vanished at the last step, which looks identical to
+     the sanitizer having eaten it.
+
+     Keep this in step with memos/sanitizers.py: anything allowed there needs a
+     rule here, or it prints unstyled.
+     ========================================================================== */
+  .memo-body { font-size: 12px; line-height: 1.55; }
+  .memo-body p { margin: 0 0 8px; }
+  .memo-body h1 { font-size: 16px; margin: 14px 0 6px; }
+  .memo-body h2 { font-size: 14px; margin: 13px 0 5px; }
+  .memo-body h3 { font-size: 12.5px; margin: 12px 0 4px; }
+  .memo-body h4, .memo-body h5, .memo-body h6 { font-size: 12px; margin: 10px 0 4px; }
+  .memo-body ul, .memo-body ol { margin: 0 0 8px; padding-left: 20px; }
+  .memo-body li { margin-bottom: 3px; }
+  .memo-body blockquote {
+    margin: 8px 0; padding: 4px 0 4px 12px;
+    border-left: 3px solid #d1d5db; color: #4b5563;
+  }
+  .memo-body hr { border: 0; border-top: 1px solid #d1d5db; margin: 12px 0; }
+  .memo-body a { color: #2563EB; }
+  .memo-body code { font-family: monospace; font-size: 11px; background: #f3f4f6; padding: 1px 3px; }
+  .memo-body pre {
+    font-family: monospace; font-size: 10.5px; background: #f3f4f6;
+    padding: 8px 10px; white-space: pre-wrap;
+  }
+  /* Images are data: URIs (the sanitizer permits nothing else), so they are
+     already embedded; this only stops an oversized one running off the page. */
+  .memo-body img { max-width: 100%; height: auto; }
+
+  /* Tables. `table-layout: fixed` honours the per-column widths the editor's
+     resize handles write into <td colwidth>; without it WeasyPrint re-computes
+     every width from content and the author's column sizing is lost. */
+  .memo-body table {
+    width: 100%; border-collapse: collapse; margin: 10px 0;
+    table-layout: fixed; font-size: 11px;
+  }
+  .memo-body table td, .memo-body table th {
+    border: 1px solid #9ca3af; padding: 5px 7px;
+    vertical-align: top; word-wrap: break-word;
+  }
+  .memo-body table th { background: #f3f4f6; font-weight: 700; text-align: left; }
+  .memo-body table caption {
+    caption-side: top; font-size: 10.5px; font-weight: 700;
+    color: #374151; text-align: left; padding-bottom: 4px;
+  }
+  /* A row must not be torn across a page boundary, and a header row repeats on
+     each page a long table spills onto - the two things that make a multi-page
+     financial table readable rather than a puzzle. */
+  .memo-body table tr { page-break-inside: avoid; }
+  .memo-body table thead { display: table-header-group; }
+  .memo-body table tfoot { display: table-footer-group; }
+  .memo-body table.memo-table-striped tbody tr:nth-child(even) { background: #f9fafb; }
+  .memo-body table.memo-table-compact td, .memo-body table.memo-table-compact th { padding: 3px 5px; }
+  /* Financial tables right-align every cell but the first, which is the label. */
+  .memo-body table.memo-table-financial td, .memo-body table.memo-table-financial th { text-align: right; }
+  .memo-body table.memo-table-financial td:first-child,
+  .memo-body table.memo-table-financial th:first-child { text-align: left; }
+
+  /* An explicit page break the author inserted. */
+  .memo-body .memo-page-break { page-break-after: always; height: 0; }
+  .memo-body .memo-divider { border-top: 2px solid #374151; margin: 14px 0; height: 0; }
+
+  /* TipTap's checklist: a data-typed <ul>, so it needs its own reset rather than
+     inheriting the bullet list above. */
+  .memo-body ul[data-type="taskList"] { list-style: none; padding-left: 4px; }
+  .memo-body ul[data-type="taskList"] li { padding-left: 16px; text-indent: -16px; }
+  .memo-body ul[data-type="taskList"] li::before { content: "☐  "; }
+  .memo-body ul[data-type="taskList"] li[data-checked="true"]::before { content: "☑  "; }
+</style>
+</head>
+<body>
+  <table style="width:100%" class="letterhead"><tr>
+    <td style="border:none; width:105px; vertical-align:middle; padding:0;">
+      {% if logo %}<img src="{{ logo }}" alt="{{ org.name|default:'Buddhi Labs' }} logo" class="letterhead-logo">{% endif %}
+    </td>
+    <td style="border:none; vertical-align:middle; padding:0 0 0 14px;">
+      {% include "pdf/_org_contact.html" %}
+    </td>
+    <td class="doc-meta" style="border:none; vertical-align:middle;">
+      <div class="doc-number">{{ document_number }}</div>
+      <div>Date (BS): {{ issue_date_bs }}</div>
+      <div>Date (AD): {{ issue_date }}</div>
+    </td>
+  </tr></table>
+
+  {% block content %}{% endblock %}
+
+  {% comment %}
+    Phase 49.5: never print a localhost QR. documents.pdf.verify_url returns None
+    when SITE_URL is unset or local, and this prints a visible warning in its place
+    - so a misconfiguration is caught on the first document somebody looks at,
+    instead of being baked silently into every archived export.
+
+    {% comment %} and not {# #}: Django's hash comment is SINGLE-LINE only, so a
+    multi-line one renders literally into the document. An existing test
+    (test_pdf_html_renders_the_panels_and_leaks_no_template_source) asserts that no
+    raw template source reaches the page, and it caught exactly that.
+  {% endcomment %}
+  {% if verify_qr %}
+  <div class="qr-block">
+    <img src="{{ verify_qr }}" alt="Verification QR code">
+    <div class="qr-note">
+      <b>Authenticity:</b> Scan the QR code or visit<br>{{ verify_url }}<br>
+      to verify this document's validity.
+    </div>
+  </div>
+  {% else %}
+  <div class="qr-block">
+    <div class="qr-note qr-warning">
+      <b>Verification link unavailable.</b><br>
+      {{ verify_warning }}
+    </div>
+  </div>
+  {% endif %}
+</body>
+</html>{% endautoescape %}

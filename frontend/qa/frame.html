@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Minute module — visual QA (width frame)</title>
+    <style>
+      html, body { margin: 0; padding: 0; background: #0f172a; }
+      iframe { display: block; border: 0; background: #fff; }
+      #hoisted { margin: 0; padding: 10px 14px; background: #111827; color: #fca5a5;
+                 font: 11px/1.5 ui-monospace, monospace; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <!--
+      A width frame, because headless Chrome CLAMPS --window-size to a 500px minimum and
+      the brief names 390px. An iframe of exactly 390px is a real 390px viewport for CSS:
+      media queries, `window.innerWidth` and every layout calculation inside it resolve
+      against the frame, not the window. So the probe running inside measures the mobile
+      layout honestly, and the screenshot is a genuine 390px-wide render.
+
+      The child's #overflow-report is copied out into this document so that --dump-dom on
+      this page carries the findings, which it cannot do across a frame boundary.
+    -->
+    <script>
+      const params = new URLSearchParams(location.search);
+      const width = Number(params.get('w') || 390);
+      const height = Number(params.get('h') || 3400);
+      const screen = params.get('screen') || 'dashboard';
+      // Phase 100.1: forwarded so a modal can be opened inside the framed viewport.
+      const click = params.get('click');
+
+      const frame = document.createElement('iframe');
+      frame.width = width;
+      frame.height = height;
+      frame.src = `./visual-qa.html?screen=${encodeURIComponent(screen)}`
+        + (click ? `&click=${encodeURIComponent(click)}` : '');
+      document.body.appendChild(frame);
+
+      // Poll rather than listen: the child signals readiness by stamping
+      // data-qa-ready AFTER its probe has run, which is later than onload.
+      const started = performance.now();
+      const poll = setInterval(() => {
+        const doc = frame.contentDocument;
+        const report = doc && doc.getElementById('overflow-report');
+        if (report) {
+          clearInterval(poll);
+          const out = document.createElement('pre');
+          out.id = 'overflow-report';
+          out.textContent = report.textContent;
+          document.body.appendChild(out);
+        } else if (performance.now() - started > 20000) {
+          clearInterval(poll);
+          const out = document.createElement('pre');
+          out.id = 'overflow-report';
+          out.textContent = `[${screen} @ ${width}px] PROBE DID NOT RUN — the framed `
+            + 'page did not finish rendering within 20s';
+          document.body.appendChild(out);
+        }
+      }, 100);
+    </script>
+  </body>
+</html>

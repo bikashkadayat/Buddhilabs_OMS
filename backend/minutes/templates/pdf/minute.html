@@ -1,0 +1,110 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  {% comment %}
+    The minute PDF, laid out as the manual's minute page is (E-minute-manual p.8):
+
+      Date / Time on one line, then Minute Type, then Members Present and Members
+      Absent, then the agenda table, then one signature block per member stamped
+      ACKNOWLEDGED or ABSENT.
+
+    The agenda arrives as sanitized HTML holding the manual's S.N. / Agendas /
+    Responsibility / Deadline table, so this template styles `.agenda-body table`
+    rather than rebuilding the table itself - the secretary's own columns survive.
+
+    A comment TAG, not a hash comment: Django's hash comment is single-line only, so
+    spanning one across several lines does not comment anything out - it prints onto
+    the face of the document.
+  {% endcomment %}
+  <style>
+    .minute-head { margin-bottom: 10px; }
+    .minute-head .row { font-size: 10.5px; margin-bottom: 2px; }
+    .minute-head .row b { display: inline-block; min-width: 96px; }
+    .minute-head .time { float: right; }
+
+    .section-title {
+      font-size: 11px; font-weight: 700; margin: 14px 0 6px;
+      border-bottom: 1px solid #999; padding-bottom: 2px;
+    }
+
+    /* The agenda body is authored HTML. Give whatever table it contains the ruled
+       look the manual's form has, without assuming a column count. */
+    .agenda-body { font-size: 10px; line-height: 1.5; }
+    .agenda-body table {
+      width: 100%; border-collapse: collapse; margin: 4px 0 10px;
+    }
+    .agenda-body table td, .agenda-body table th {
+      border: 1px solid #666; padding: 4px 6px; vertical-align: top;
+    }
+    .agenda-body table th { background: #f0f0f0; font-weight: 700; }
+    .agenda-body img { max-width: 100%; }
+
+    /* Signature blocks: four to a row, wrapping, as the manual shows. */
+    .sig-grid { margin-top: 18px; }
+    .sig {
+      display: inline-block; width: 23%; margin: 0 1% 10px 0;
+      border: 1px solid #666; vertical-align: top; min-height: 66px;
+    }
+    .sig-stamp { text-align: center; padding: 4px 2px 0; min-height: 16px; }
+    .sig-stamp span {
+      display: inline-block; border: 1px solid #0c6b4f; color: #0c6b4f;
+      border-radius: 9px; padding: 1px 7px; font-size: 7.5px; font-weight: 700;
+      letter-spacing: .1em;
+    }
+    .sig-stamp span.absent { border-color: #8c1d1d; color: #8c1d1d; }
+    .sig-line { border-top: 1px solid #666; margin: 10px 6px 0; }
+    .sig-name { font-size: 9px; font-weight: 700; padding: 3px 6px 0; }
+    .sig-meta { font-size: 8px; color: #444; padding: 0 6px 4px; }
+
+    .ack-note { font-size: 9px; color: #444; margin-top: 8px; }
+  </style>
+
+  <div class="minute-head">
+    <div class="row time"><b>Time:</b> {{ meeting.time|time:"h:i A"|default:"—" }}</div>
+    <div class="row"><b>Date:</b> {{ meeting.date|date:"Y-m-d" }}</div>
+    <div class="row"><b>Minute Type:</b> {{ meeting.type }}</div>
+    {% if meeting.reference %}
+      <div class="row"><b>Reference No:</b> {{ meeting.reference }}</div>
+    {% endif %}
+    <div class="row"><b>Members Present:</b> {{ present_names }}</div>
+    {% if absent_names %}
+      <div class="row"><b>Members Absent:</b> {{ absent_names }}</div>
+    {% endif %}
+    {% if invitee_names %}
+      <div class="row"><b>Invitee Members:</b> {{ invitee_names }}</div>
+    {% endif %}
+    {% if meeting.fro %}
+      <div class="row"><b>FRO:</b> {{ meeting.fro }}</div>
+    {% endif %}
+  </div>
+
+  <div class="section-title">Meeting Agenda/Discussion/Decisions</div>
+  <div class="agenda-body">
+    {% if agenda_body %}{{ agenda_body|safe }}{% else %}<p>—</p>{% endif %}
+  </div>
+
+  <div class="sig-grid">
+    {% for block in signature_rows %}
+      <div class="sig">
+        <div class="sig-stamp">
+          {% if block.stamp == "ACKNOWLEDGED" %}<span>ACKNOWLEDGED</span>
+          {% elif block.stamp == "ABSENT" %}<span class="absent">ABSENT</span>
+          {% endif %}
+        </div>
+        <div class="sig-line"></div>
+        <div class="sig-name">{{ block.name }}</div>
+        <div class="sig-meta">
+          {{ block.department|default:"" }}<br>
+          Date: {{ block.date|date:"Y-m-d"|default:"" }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if ack_summary.total %}
+    <p class="ack-note">
+      Acknowledged by {{ ack_summary.acknowledged }} of {{ ack_summary.total }}
+      member(s) present{% if archived_at %}; archived
+      {{ archived_at|date:"Y-m-d H:i" }}{% endif %}.
+    </p>
+  {% endif %}
+{% endblock %}

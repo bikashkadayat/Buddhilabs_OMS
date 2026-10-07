@@ -1,0 +1,20 @@
+{{ organization_name }} — confirm your email address
+
+Somebody (we hope you) asked to create a workspace at:
+
+    {{ workspace_url }}
+
+Confirm this email address to finish setting it up:
+
+    {{ verify_url }}
+
+The link is good for {{ ttl_hours }} hours. Until you use it, nothing has been
+created: no workspace, no accounts, no data.
+
+You will sign in as {{ admin_email }} with the password you chose.
+
+{% if trial_days %}Your workspace starts on a {{ trial_days }}-day trial. We will not ask for
+payment details to begin.
+{% endif %}
+If you did not request this, ignore this email and nothing will happen. The
+request expires on its own.

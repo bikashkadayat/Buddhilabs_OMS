@@ -1,0 +1,10 @@
+[
+  {"date": "2026-01-01", "name": "English New Year", "holiday_type": "public"},
+  {"date": "2026-01-30", "name": "Martyrs' Day", "holiday_type": "public"},
+  {"date": "2026-02-19", "name": "Democracy Day", "holiday_type": "public"},
+  {"date": "2026-03-08", "name": "International Women's Day", "holiday_type": "optional"},
+  {"date": "2026-05-01", "name": "Labour Day", "holiday_type": "public"},
+  {"date": "2026-09-19", "name": "Constitution Day", "holiday_type": "public"},
+  {"date": "2026-10-20", "name": "Dashain (Vijaya Dashami)", "holiday_type": "religious"},
+  {"date": "2026-11-08", "name": "Tihar (Laxmi Puja)", "holiday_type": "religious"}
+]

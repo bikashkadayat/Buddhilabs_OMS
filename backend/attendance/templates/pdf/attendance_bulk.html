@@ -1,0 +1,35 @@
+{% extends "pdf/attendance_base.html" %}
+{% block body %}
+  <div class="cover-title">Organization-wide Attendance Summary</div>
+  <div class="report-sub">{{ employee_count }} employee(s) · Working days in period: {{ org_totals.working_days }}</div>
+
+  <div class="summary">
+    <div class="summary-title">Overall Totals</div>
+    <table class="sum-grid"><tr>
+      <td><span class="n">{{ org_totals.present }}</span><span class="l">Present</span></td>
+      <td><span class="n">{{ org_totals.late }}</span><span class="l">Late</span></td>
+      <td><span class="n">{{ org_totals.half_day }}</span><span class="l">Half-day</span></td>
+      <td><span class="n">{{ org_totals.absent }}</span><span class="l">Absent</span></td>
+      <td><span class="n">{{ org_totals.wfh }}</span><span class="l">WFH</span></td>
+      <td><span class="n">{{ org_totals.on_leave }}</span><span class="l">On Leave</span></td>
+      <td><span class="n">{{ org_totals.holiday }}</span><span class="l">Holidays</span></td>
+    </tr></table>
+  </div>
+
+  <div class="summary">
+    <div class="summary-title">Department Breakdown</div>
+    <table class="att-table">
+      <thead><tr><th>Department</th><th>Present</th><th>Late</th><th>Half-day</th><th>Absent</th><th>WFH</th><th>On Leave</th><th>Holiday</th></tr></thead>
+      <tbody>
+        {% for d in dept_breakdown %}
+        <tr><td>{{ d.department }}</td><td>{{ d.present }}</td><td>{{ d.late }}</td><td>{{ d.half_day }}</td><td>{{ d.absent }}</td><td>{{ d.wfh }}</td><td>{{ d.on_leave }}</td><td>{{ d.holiday }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% for r in reports %}
+    <div class="page-break"></div>
+    {% include "pdf/_attendance_section.html" with r=r %}
+  {% endfor %}
+{% endblock %}

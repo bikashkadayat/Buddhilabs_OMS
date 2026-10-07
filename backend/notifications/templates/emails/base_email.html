@@ -1,0 +1,81 @@
+{% autoescape on %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:24px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);">
+          <tr>
+            {% comment %}PHASE S9 PART 6. The header band and the button were hard-coded to
+       NIF's #274095, while the logo and the name beside them had been
+       tenant-aware since S6 -- so a customer's staff got their own mark on a
+       stranger's blue, which is the largest coloured area in the message.
+       `brand_color` was already being computed by `notifications.emails` and
+       thrown away.
+
+       Safe to interpolate: all three colour fields carry a HEX_COLOR
+       validator on the model, and both writers validate -- the console
+       through `full_clean()`, the customer's own page through
+       `portal._validate_colour` -- so this is six hex digits or blank.
+
+       SEMANTIC colours are NOT overridden here. A balance warning stays
+       amber and a leave decision stays green or red; those carry meaning
+       rather than identity, and a rejection rendered in a customer's
+       corporate green stops reading as a rejection. Same rule as
+       `utils/brandTheme.js` on the front end.{% endcomment %}
+            <td style="background:{% block accent %}{{ brand_color|default:"#274095" }}{% endblock %};padding:18px 28px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="vertical-align:middle;">
+                    {% if logo_url %}<img src="{{ logo_url }}" alt="{{ org_name }}" height="40" style="height:40px;vertical-align:middle;margin-right:10px;border:0;">{% endif %}
+                    <span style="display:inline-block;vertical-align:middle;">
+                      <span style="display:block;color:#ffffff;font-size:15px;font-weight:700;letter-spacing:.3px;">{{ org_name|default:"Buddhi Labs" }}</span>
+                      <span style="display:block;color:rgba(255,255,255,.82);font-size:11px;letter-spacing:.4px;">{{ product_name|default:"Office Management System" }}</span>
+                    </span>
+                  </td>
+                  <td style="vertical-align:middle;text-align:right;color:rgba(255,255,255,.9);font-size:12px;">{% block label %}Notification{% endblock %}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px;">
+              <p style="margin:0 0 8px;font-size:14px;color:#6b7280;">Hi {{ recipient_name }},</p>
+              <h1 style="margin:0 0 12px;font-size:20px;color:#111827;">{{ title }}</h1>
+              {% if module_name %}<p style="margin:0 0 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;">{{ module_name }}{% if reference %} &middot; {{ reference }}{% endif %}</p>{% endif %}
+              <div style="font-size:14px;line-height:1.6;color:#374151;">{% block content %}<p>{{ body }}</p>{% endblock %}</div>
+              {% if action_url %}
+              <p style="margin:24px 0 0;">
+                <a href="{{ action_url }}" style="display:inline-block;background:{% block button %}{{ brand_color|default:"#274095" }}{% endblock %};color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:10px 20px;border-radius:6px;">View in portal</a>
+              </p>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:18px 28px;border-top:1px solid #eee;font-size:11px;color:#9ca3af;">
+              {% comment %}THE TENANT'S NAME, NOT THE PLATFORM'S. This said
+              "your NIF Portal notification settings" in every email to every
+              customer's staff -- the previous platform owner's name in a
+              sentence about the reader's own workspace. `org_name` is the
+              tenant's display name, falling back to the platform's only when
+              a tenant has set none.{% endcomment %}
+              You received this because of your {{ org_name|default:"Buddhi Labs" }}
+              notification settings.
+              <a href="{{ unsubscribe_url }}" style="color:#6b7280;">Manage preferences / unsubscribe</a>.
+              <br>
+              {% comment %}The attribution, under the tenant's brand rather
+              than instead of it.{% endcomment %}
+              <span style="color:#b6bcc6;">{{ powered_by|default:"Powered by Buddhi Labs" }}</span>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>{% endautoescape %}

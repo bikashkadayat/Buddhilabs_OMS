@@ -1,0 +1,28 @@
+# Pinned base image - no floating tags. Node 22 LTS satisfies Vite 8's
+# Node >= 20.19 requirement.
+# Debian (glibc), NOT alpine. vite 8 bundles config through rolldown, whose
+# musl binding fails with "Cannot convert undefined or null to object" on
+# node:22-alpine — reproducible in a pristine image with no mounts and with the
+# glibc binding removed, so it is rolldown's musl build, not our dependency
+# tree. Debian slim is the same libc the CI runner and developer machines use.
+FROM node:22-slim
+
+WORKDIR /app
+
+# Install dependencies. (`npm ci` requires a fully in-sync lockfile - use it
+# once the lockfile is regenerated: `npm install` then commit package-lock.json.)
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+
+# Copy frontend code
+COPY frontend/ .
+
+# API base URL (overridden by docker-compose env).
+ENV VITE_API_URL=http://localhost:8000
+
+# Expose Vite dev server port
+EXPOSE 5173
+
+# Dev server. For production, build static assets (`npm run build`) and serve
+# them from the reverse proxy instead (see docs/DEPLOYMENT.md).
+CMD ["npm", "run", "dev", "--", "--host"]

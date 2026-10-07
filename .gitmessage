@@ -1,0 +1,8 @@
+# <type>(<scope>): <summary>   (≤100 chars; imperative, e.g. "add", not "added")
+#
+# Body — what & why (wrap ~72):
+#
+# Footer — BREAKING CHANGE: … / Refs #123
+#
+# type: feat fix perf refactor security test docs build ci chore revert
+# Enable: git config commit.template .gitmessage

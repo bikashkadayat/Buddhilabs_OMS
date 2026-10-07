@@ -1,0 +1,23 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  <h1 class="title" style="text-align:center;margin-top:30px;">Leave Certificate</h1>
+  <p class="muted" style="text-align:center;">Reference: {{ document_number }}</p>
+
+  <p style="margin-top:36px;font-size:14px;line-height:2;">
+    This is to certify that <b>{{ employee_name }}</b>{% if department %} of the {{ department }} department{% endif %}
+    was on approved <b>{{ leave.get_leave_type_display }}</b> from
+    <b>{{ leave.start_date }}</b> to <b>{{ leave.end_date }}</b>
+    ({{ working_days }} working day(s)).
+  </p>
+
+  <p style="margin-top:20px;font-size:12px;" class="muted">
+    This certificate is issued upon request and is valid subject to the verification link below.
+  </p>
+
+  <div class="sign-grid" style="margin-top:60px;">
+    <div class="sign-box"></div>
+    <div class="sign-box">
+      <div class="sign-line">{{ approver_name }}<br><span class="muted">Authorized signatory · {{ org.name }}</span></div>
+    </div>
+  </div>
+{% endblock %}

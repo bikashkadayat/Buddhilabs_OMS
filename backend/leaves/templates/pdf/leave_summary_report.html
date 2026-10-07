@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 22mm 16mm 18mm;
+    @bottom-center { content: "{{ org.name }} · {{ org.address }} · Phone: {{ org.tel }} · {{ org.email }}"; font-size: 8px; color: #9ca3af; }
+    @bottom-right { content: "Page " counter(page) " of " counter(pages); font-size: 8px; color: #9ca3af; }
+  }
+  body { font-family: "Inter", Helvetica, Arial, sans-serif; color: #1f2937; font-size: 11px; line-height: 1.5; }
+  /* Letterhead: larger logo, smaller org name (matches the shared PDF letterhead). */
+  .letterhead { width: 100%; border-bottom: 2px solid #274095; padding-bottom: 10px; margin-bottom: 16px; }
+  .letterhead td { vertical-align: middle; }
+  .letterhead-logo { height: 88px; width: auto; }
+  .org-name { font-size: 15px; font-weight: 700; color: #111827; letter-spacing: .2px; }
+  .org-meta { font-size: 9px; color: #6b7280; margin-top: 3px; }
+  .doc-meta { text-align: right; font-size: 9px; color: #6b7280; }
+  .report-title { font-size: 16px; font-weight: 700; color: #111827; margin: 6px 0 2px; }
+  .report-sub { font-size: 10px; color: #6b7280; }
+  .emp { width: 100%; margin: 10px 0 14px; }
+  .emp td { font-size: 10px; padding: 3px 6px; }
+  .emp .k { color: #6b7280; width: 90px; }
+  table.data { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  table.data th { background: #f3f4f6; color: #374151; font-size: 8.5px; text-transform: uppercase; letter-spacing: .3px; padding: 6px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+  table.data td { font-size: 9.5px; padding: 5px 6px; border-bottom: 1px solid #f0f0f0; }
+  table.data td.num, table.data th.num { text-align: right; }
+  table.data tr.total td { font-weight: 700; border-top: 2px solid #d1d5db; background: #fafafa; }
+  .muted { color: #6b7280; }
+  .empty { text-align: center; color: #9ca3af; padding: 24px; font-size: 11px; }
+</style>
+</head>
+<body>
+  <table class="letterhead">
+    <tr>
+      <td style="width: 55%;">
+        {% if logo %}<img class="letterhead-logo" src="{{ logo }}" alt="{{ org.name }}">{% endif %}
+      </td>
+      <td class="doc-meta">
+        {% include "pdf/_org_contact.html" %}
+        <div class="org-meta">Generated: {{ generated_bs }} BS · {{ generated_ad }}</div>
+      </td>
+    </tr>
+  </table>
+
+  <div class="report-title">{{ report_title }}</div>
+  <div class="report-sub">Period: {{ period_label }}</div>
+
+  <table class="emp">
+    <tr>
+      <td class="k">Employee</td><td><strong>{{ employee_name }}</strong></td>
+      <td class="k">Employee ID</td><td>{{ employee_id }}</td>
+    </tr>
+    <tr>
+      <td class="k">Department</td><td>{{ department }}</td>
+      <td class="k">Year</td><td>{{ period_label }}</td>
+    </tr>
+  </table>
+
+  {% if rows %}
+  <table class="data">
+    <thead>
+      <tr>
+        <th>{% if is_weekly %}Week{% else %}Month{% endif %}</th>
+        <th>Range</th>
+        <th class="num">Working days</th>
+        <th class="num">Approved</th>
+        <th class="num">Pending</th>
+        <th class="num">Attendance %</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.label }}</td>
+        <td class="muted">{{ r.sub }}</td>
+        <td class="num">{{ r.working }}</td>
+        <td class="num">{{ r.approved }}</td>
+        <td class="num">{{ r.pending }}</td>
+        <td class="num">{{ r.attendance }}%</td>
+      </tr>
+      {% endfor %}
+      <tr class="total">
+        <td colspan="2">Total</td>
+        <td class="num">{{ totals.working }}</td>
+        <td class="num">{{ totals.approved }}</td>
+        <td class="num">{{ totals.pending }}</td>
+        <td class="num">—</td>
+      </tr>
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">No leave summary data for {{ period_label }}.</div>
+  {% endif %}
+</body>
+</html>

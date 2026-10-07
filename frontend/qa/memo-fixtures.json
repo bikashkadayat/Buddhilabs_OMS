@@ -1,0 +1,1016 @@
+{
+ "_generated_by": "backend/memos/tests/test_qa_fixture.py (Phase 49)",
+ "audit_trail": [
+  {
+   "action": "Update",
+   "actor": "Maker1 Test",
+   "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "at": "2026-08-26 06:30:07.228914+00:00",
+   "id": "8ead7d32-1cfb-430f-aac2-bf8323be209c",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "count": 1,
+    "transition": "attachments_added"
+   },
+   "remarks": "",
+   "transition": "attachments_added",
+   "user_agent": ""
+  },
+  {
+   "action": "Update",
+   "actor": "Maker1 Test",
+   "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "at": "2026-08-26 06:30:07.250869+00:00",
+   "id": "c3d99ce1-e413-46a0-8051-adb86648d82f",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "count": 1,
+    "transition": "attachments_added"
+   },
+   "remarks": "",
+   "transition": "attachments_added",
+   "user_agent": ""
+  },
+  {
+   "action": "Update",
+   "actor": "Maker1 Test",
+   "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "at": "2026-08-26 06:30:07.287309+00:00",
+   "id": "e12df8a9-4b7e-4746-ab9b-fd0e2a24414c",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "steps": [
+     {
+      "assignee": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+      "role_type": "reviewer",
+      "sequence": 1
+     },
+     {
+      "assignee": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+      "role_type": "recommender",
+      "sequence": 2
+     },
+     {
+      "assignee": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+      "role_type": "supporter",
+      "sequence": 3
+     },
+     {
+      "assignee": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+      "role_type": "approver",
+      "sequence": 4
+     }
+    ],
+    "transition": "workflow_matrix_set"
+   },
+   "remarks": "",
+   "transition": "workflow_matrix_set",
+   "user_agent": ""
+  },
+  {
+   "action": "Submit",
+   "actor": "Maker1 Test",
+   "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "at": "2026-08-26 06:30:12.335152+00:00",
+   "id": "81a5da31-b3d9-4ba6-a883-93d0df9166ed",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "first_assignee": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+    "transition": "sent_for_review"
+   },
+   "remarks": "",
+   "transition": "sent_for_review",
+   "user_agent": ""
+  },
+  {
+   "action": "Update",
+   "actor": "Checker1 Test",
+   "actor_id": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+   "at": "2026-08-26 06:30:12.521078+00:00",
+   "id": "be623f24-1460-43de-bd2e-9afdc82e1780",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "admin_override": false,
+    "assignee": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+    "remarks": "Reviewed; scoring sheet checked against the bids.",
+    "role_type": "reviewer",
+    "sequence": 1,
+    "transition": "reviewed"
+   },
+   "remarks": "Reviewed; scoring sheet checked against the bids.",
+   "transition": "reviewed",
+   "user_agent": ""
+  },
+  {
+   "action": "Update",
+   "actor": "Checker2 Test",
+   "actor_id": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+   "at": "2026-08-26 06:30:12.708877+00:00",
+   "id": "a540648f-d707-4756-b547-f3a4fdd68b19",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "admin_override": false,
+    "assignee": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+    "remarks": "Recommended; within the approved Q3 ceiling.",
+    "role_type": "recommender",
+    "sequence": 2,
+    "transition": "recommended"
+   },
+   "remarks": "Recommended; within the approved Q3 ceiling.",
+   "transition": "recommended",
+   "user_agent": ""
+  },
+  {
+   "action": "Update",
+   "actor": "Admin1 Test",
+   "actor_id": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+   "at": "2026-08-26 06:30:12.878115+00:00",
+   "id": "04ffe2ee-a78f-4ed9-9b1a-796523701dab",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "admin_override": false,
+    "assignee": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+    "remarks": "Supported.",
+    "role_type": "supporter",
+    "sequence": 3,
+    "transition": "supported"
+   },
+   "remarks": "Supported.",
+   "transition": "supported",
+   "user_agent": ""
+  },
+  {
+   "action": "Approve",
+   "actor": "Approver1 Test",
+   "actor_id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+   "at": "2026-08-26 06:30:12.993099+00:00",
+   "id": "9e2d71a2-4001-45c6-8e90-2217cb7c775f",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "admin_override": false,
+    "assignee": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+    "remarks": "Approved within delegated authority.",
+    "role_type": "approver",
+    "sequence": 4,
+    "transition": "approved"
+   },
+   "remarks": "Approved within delegated authority.",
+   "transition": "approved",
+   "user_agent": ""
+  },
+  {
+   "action": "Other",
+   "actor": "Approver1 Test",
+   "actor_id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+   "at": "2026-08-26 06:30:13.003210+00:00",
+   "id": "145e0dfb-e8e8-46fe-864e-de677dde8832",
+   "ip_address": "127.0.0.1",
+   "metadata": {
+    "auto": true,
+    "transition": "archived"
+   },
+   "remarks": "",
+   "transition": "archived",
+   "user_agent": ""
+  }
+ ],
+ "charts": {
+  "by_department": [
+   {
+    "label": "Finance",
+    "total": 4
+   }
+  ],
+  "by_status": [
+   {
+    "label": "Draft",
+    "status": "draft",
+    "total": 0
+   },
+   {
+    "label": "Draft For Review",
+    "status": "draft_for_review",
+    "total": 0
+   },
+   {
+    "label": "Under Review",
+    "status": "under_review",
+    "total": 0
+   },
+   {
+    "label": "Recommended",
+    "status": "recommended",
+    "total": 0
+   },
+   {
+    "label": "Supported",
+    "status": "supported",
+    "total": 0
+   },
+   {
+    "label": "Approved",
+    "status": "approved",
+    "total": 0
+   },
+   {
+    "label": "Archived",
+    "status": "archived",
+    "total": 4
+   },
+   {
+    "label": "Rejected",
+    "status": "rejected",
+    "total": 0
+   },
+   {
+    "label": "Cancelled",
+    "status": "cancelled",
+    "total": 0
+   }
+  ],
+  "monthly_trend": [
+   {
+    "label": "Aug 2025",
+    "month": "2025-08-01",
+    "total": 0
+   },
+   {
+    "label": "Sep 2025",
+    "month": "2025-09-01",
+    "total": 0
+   },
+   {
+    "label": "Oct 2025",
+    "month": "2025-10-01",
+    "total": 0
+   },
+   {
+    "label": "Nov 2025",
+    "month": "2025-11-01",
+    "total": 0
+   },
+   {
+    "label": "Dec 2025",
+    "month": "2025-12-01",
+    "total": 0
+   },
+   {
+    "label": "Jan 2026",
+    "month": "2026-01-01",
+    "total": 0
+   },
+   {
+    "label": "Feb 2026",
+    "month": "2026-02-01",
+    "total": 0
+   },
+   {
+    "label": "Mar 2026",
+    "month": "2026-03-01",
+    "total": 0
+   },
+   {
+    "label": "Apr 2026",
+    "month": "2026-04-01",
+    "total": 0
+   },
+   {
+    "label": "May 2026",
+    "month": "2026-05-01",
+    "total": 0
+   },
+   {
+    "label": "Jun 2026",
+    "month": "2026-06-01",
+    "total": 0
+   },
+   {
+    "label": "Jul 2026",
+    "month": "2026-07-01",
+    "total": 0
+   },
+   {
+    "label": "Aug 2026",
+    "month": "2026-08-01",
+    "total": 4
+   }
+  ]
+ },
+ "dashboard": {
+  "approved": 1,
+  "archived": 1,
+  "assigned": 0,
+  "completed_notes": 0,
+  "department": 1,
+  "draft_for_review": 0,
+  "drafts": 0,
+  "inbox": 0,
+  "my_memos": 1,
+  "outbox": 0,
+  "pending_actions": 0,
+  "pending_approval": 0,
+  "pending_notes": 0,
+  "pending_recommendation": 0,
+  "pending_review": 0,
+  "pending_support": 0,
+  "rejected": 0,
+  "total_visible": 1
+ },
+ "detail": {
+  "ageing": {
+   "due_days": null,
+   "pending_days": null,
+   "pending_since": null,
+   "sla_days": null,
+   "state": "on_track"
+  },
+  "approval_certificate": {
+   "approved_at": "2026-08-26T12:15:12.970368+05:45",
+   "approved_by": "Approver1 Test",
+   "archived_at": "2026-08-26T12:15:12.994648+05:45",
+   "department": "Finance",
+   "designation": "\u2014",
+   "stamp": "Approved",
+   "verification_id": "9840-2C81-16D9"
+  },
+  "approval_steps": [
+   {
+    "acted_at": "2026-08-26T12:15:07.123074+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "created",
+    "actor": {
+     "department": "Finance",
+     "email": "maker1@nif.test",
+     "employee_id": null,
+     "full_name": "Maker1 Test",
+     "id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+     "role": "maker"
+    },
+    "comment": "",
+    "id": "5d36ab0f-cbf4-420c-bb58-cfb0f0e1be09",
+    "step_order": 1
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.329960+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "sent_for_review",
+    "actor": {
+     "department": "Finance",
+     "email": "maker1@nif.test",
+     "employee_id": null,
+     "full_name": "Maker1 Test",
+     "id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+     "role": "maker"
+    },
+    "comment": "",
+    "id": "da814a29-8442-4763-bd1e-cd5b8159342e",
+    "step_order": 2
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.492608+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "reviewed",
+    "actor": {
+     "department": "Finance",
+     "email": "checker1@nif.test",
+     "employee_id": null,
+     "full_name": "Checker1 Test",
+     "id": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+     "role": "checker"
+    },
+    "comment": "Reviewed; scoring sheet checked against the bids.",
+    "id": "d03168fb-3a92-4a25-b549-d0adfd6be0fa",
+    "step_order": 3
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.684533+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "recommended",
+    "actor": {
+     "department": "Finance",
+     "email": "checker2@nif.test",
+     "employee_id": null,
+     "full_name": "Checker2 Test",
+     "id": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+     "role": "checker"
+    },
+    "comment": "Recommended; within the approved Q3 ceiling.",
+    "id": "bf1a5682-5d5f-4daa-9caf-1056b60df463",
+    "step_order": 4
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.847484+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "supported",
+    "actor": {
+     "department": "Finance",
+     "email": "admin1@nif.test",
+     "employee_id": null,
+     "full_name": "Admin1 Test",
+     "id": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+     "role": "admin"
+    },
+    "comment": "Supported.",
+    "id": "be37afd6-57f5-4bda-9435-3df51425303c",
+    "step_order": 5
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.974908+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "approved",
+    "actor": {
+     "department": "Finance",
+     "email": "approver1@nif.test",
+     "employee_id": null,
+     "full_name": "Approver1 Test",
+     "id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+     "role": "approver"
+    },
+    "comment": "Approved within delegated authority.",
+    "id": "d7c32920-3dd8-4cf8-8a6e-9aba03f381c5",
+    "step_order": 6
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.999554+05:45",
+    "acted_at_bs": "2083-05-10",
+    "action": "archived",
+    "actor": {
+     "department": "Finance",
+     "email": "approver1@nif.test",
+     "employee_id": null,
+     "full_name": "Approver1 Test",
+     "id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+     "role": "approver"
+    },
+    "comment": "",
+    "id": "f469aed8-e43f-479f-a49b-18b9f6aa5bde",
+    "step_order": 7
+   }
+  ],
+  "approved_at": "2026-08-26T12:15:12.970368+05:45",
+  "archive_sharing": [],
+  "archived_at": "2026-08-26T12:15:12.994648+05:45",
+  "assignment_history": {
+   "transfers": [],
+   "unavailabilities": []
+  },
+  "attachment_url": null,
+  "attachments": [
+   {
+    "display_name": "",
+    "id": "58e7514f-0fba-4257-a94d-54fc5c98ff3b",
+    "label": "evaluation-committee-scoring.pdf",
+    "original_name": "evaluation-committee-scoring.pdf",
+    "size": 81,
+    "uploaded_at": "2026-08-26T12:15:07.222336+05:45",
+    "uploaded_by": {
+     "department": "Finance",
+     "email": "maker1@nif.test",
+     "employee_id": null,
+     "full_name": "Maker1 Test",
+     "id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+     "role": "maker"
+    },
+    "url": "/api/v1/media/?p=memos%2Fattachments%2F2026%2F08%2F9619cc11db3e4bcc822080393419d156%2Fevaluation-committee-scoring.pdf&e=1787726113&s=d4eed4e47aa20bb337625efea931062dc86f5bad5907726cfff005d702d2cd9a&u=0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c&dl=1"
+   },
+   {
+    "display_name": "",
+    "id": "1379fd52-f5e8-44a7-90d0-693ce696f204",
+    "label": "vendor-quotations.pdf",
+    "original_name": "vendor-quotations.pdf",
+    "size": 81,
+    "uploaded_at": "2026-08-26T12:15:07.248092+05:45",
+    "uploaded_by": {
+     "department": "Finance",
+     "email": "maker1@nif.test",
+     "employee_id": null,
+     "full_name": "Maker1 Test",
+     "id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+     "role": "maker"
+    },
+    "url": "/api/v1/media/?p=memos%2Fattachments%2F2026%2F08%2F0c62b2314e5a434ab1ca567324407055%2Fvendor-quotations.pdf&e=1787726113&s=b77125718466bbef248410e595909ad61b92ef684e48a7111fc247c93985a1ef&u=0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c&dl=1"
+   }
+  ],
+  "can_act": false,
+  "can_archive": false,
+  "can_delete": false,
+  "can_download_pdf": true,
+  "can_edit": false,
+  "can_edit_matrix": false,
+  "can_manage_assignments": true,
+  "can_note": false,
+  "can_request_notes": true,
+  "can_send_for_review": false,
+  "can_share_archive": true,
+  "can_withdraw": false,
+  "cc_department_names": [],
+  "created_at": "2026-08-26T12:15:07.114632+05:45",
+  "created_at_bs": "2083-05-10",
+  "created_by": {
+   "department": "Finance",
+   "email": "maker1@nif.test",
+   "employee_id": null,
+   "full_name": "Maker1 Test",
+   "id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "role": "maker"
+  },
+  "department": null,
+  "department_label": "Finance",
+  "department_sub_unit_name": "",
+  "department_unit_name": "",
+  "finalized_at": "2026-08-26T12:15:12.970368+05:45",
+  "id": "fe6c1e03-0d16-4181-b9b4-91245e4de0b9",
+  "is_read_only": true,
+  "is_restricted": true,
+  "keeps_log": true,
+  "memo_number": "NIFN-CON-2026-0001",
+  "memo_type": "confidential",
+  "memo_type_label": "CONFIDENTIAL",
+  "my_step": null,
+  "notes": {
+   "completed": 0,
+   "is_complete": false,
+   "is_open": false,
+   "opened_at": null,
+   "pending": 0,
+   "recipients": [],
+   "total": 0
+  },
+  "pending_with": null,
+  "reference_number": "TENDER/ICT/2026/11",
+  "sections": [
+   {
+    "body": "<table class=\"memo-table memo-table-financial\"><thead><tr><th>Item</th><th>Qty</th><th>Unit (NPR)</th><th>Amount (NPR)</th></tr></thead><tbody><tr><td>Rack mounted application servers</td><td>4</td><td>312,500</td><td>1,250,000</td></tr><tr><td>Core switches with redundant power</td><td>2</td><td>155,000</td><td>310,000</td></tr></tbody></table>",
+    "id": "bca35446-2b0b-48c0-afe7-c70fcdffc1ac",
+    "position": 0,
+    "title": "Background"
+   },
+   {
+    "body": "<p>Recommendation: approve as tabled.</p>",
+    "id": "a558462a-7810-49de-be63-fa76d22bb8bf",
+    "position": 1,
+    "title": "Recommendation"
+   }
+  ],
+  "signatures": [
+   {
+    "at": "2026-08-26T12:15:07.114632+05:45",
+    "department": "Finance",
+    "designation": "\u2014",
+    "heading": "Created By",
+    "initials": "MT",
+    "key": "created",
+    "name": "Maker1 Test",
+    "remarks": "",
+    "stamp": "Created",
+    "state": "done",
+    "status_label": "Created",
+    "verification_id": "2EB2-C1D8-8A78",
+    "verified": true
+   },
+   {
+    "at": "2026-08-26T12:15:12.486988+05:45",
+    "department": "Finance",
+    "designation": "\u2014",
+    "heading": "Reviewed By",
+    "initials": "CT",
+    "key": "reviewer",
+    "name": "Checker1 Test",
+    "remarks": "Reviewed; scoring sheet checked against the bids.",
+    "stamp": "Reviewed",
+    "state": "done",
+    "status_label": "Approved",
+    "verification_id": "4F0B-8E5C-10C4",
+    "verified": true
+   },
+   {
+    "at": "2026-08-26T12:15:12.678467+05:45",
+    "department": "Finance",
+    "designation": "\u2014",
+    "heading": "Recommended By",
+    "initials": "CT",
+    "key": "recommender",
+    "name": "Checker2 Test",
+    "remarks": "Recommended; within the approved Q3 ceiling.",
+    "stamp": "Recommended",
+    "state": "done",
+    "status_label": "Approved",
+    "verification_id": "FD21-32DC-74EE",
+    "verified": true
+   },
+   {
+    "at": "2026-08-26T12:15:12.841280+05:45",
+    "department": "Finance",
+    "designation": "\u2014",
+    "heading": "Supported By",
+    "initials": "AT",
+    "key": "supporter",
+    "name": "Admin1 Test",
+    "remarks": "Supported.",
+    "stamp": "Supported",
+    "state": "done",
+    "status_label": "Approved",
+    "verification_id": "B24F-EE57-18BC",
+    "verified": true
+   },
+   {
+    "at": "2026-08-26T12:15:12.970368+05:45",
+    "department": "Finance",
+    "designation": "\u2014",
+    "heading": "Approved By",
+    "initials": "AT",
+    "key": "approver",
+    "name": "Approver1 Test",
+    "remarks": "Approved within delegated authority.",
+    "stamp": "Approved",
+    "state": "done",
+    "status_label": "Approved",
+    "verification_id": "9840-2C81-16D9",
+    "verified": true
+   }
+  ],
+  "status": "archived",
+  "status_label": "Archived",
+  "subject": "Approval of NPR 1,745,000 for the server refresh programme",
+  "submitted_at": "2026-08-26T12:15:07.293826+05:45",
+  "timeline": [
+   {
+    "action": "created",
+    "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+    "actor_name": "Maker1 Test",
+    "at": "2026-08-26T12:15:07.123074+05:45",
+    "designation": "",
+    "id": "5d36ab0f-cbf4-420c-bb58-cfb0f0e1be09",
+    "kind": "history",
+    "label": "Created",
+    "remarks": "",
+    "sequence": 1,
+    "state": "done"
+   },
+   {
+    "action": "sent_for_review",
+    "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+    "actor_name": "Maker1 Test",
+    "at": "2026-08-26T12:15:12.329960+05:45",
+    "designation": "",
+    "id": "da814a29-8442-4763-bd1e-cd5b8159342e",
+    "kind": "history",
+    "label": "Sent for Review",
+    "remarks": "",
+    "sequence": 2,
+    "state": "done"
+   },
+   {
+    "action": "reviewed",
+    "actor_id": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+    "actor_name": "Checker1 Test",
+    "at": "2026-08-26T12:15:12.492608+05:45",
+    "designation": "",
+    "id": "d03168fb-3a92-4a25-b549-d0adfd6be0fa",
+    "kind": "history",
+    "label": "Reviewed",
+    "remarks": "Reviewed; scoring sheet checked against the bids.",
+    "sequence": 3,
+    "state": "done"
+   },
+   {
+    "action": "recommended",
+    "actor_id": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+    "actor_name": "Checker2 Test",
+    "at": "2026-08-26T12:15:12.684533+05:45",
+    "designation": "",
+    "id": "bf1a5682-5d5f-4daa-9caf-1056b60df463",
+    "kind": "history",
+    "label": "Recommended",
+    "remarks": "Recommended; within the approved Q3 ceiling.",
+    "sequence": 4,
+    "state": "done"
+   },
+   {
+    "action": "supported",
+    "actor_id": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+    "actor_name": "Admin1 Test",
+    "at": "2026-08-26T12:15:12.847484+05:45",
+    "designation": "",
+    "id": "be37afd6-57f5-4bda-9435-3df51425303c",
+    "kind": "history",
+    "label": "Supported",
+    "remarks": "Supported.",
+    "sequence": 5,
+    "state": "done"
+   },
+   {
+    "action": "approved",
+    "actor_id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+    "actor_name": "Approver1 Test",
+    "at": "2026-08-26T12:15:12.974908+05:45",
+    "designation": "",
+    "id": "d7c32920-3dd8-4cf8-8a6e-9aba03f381c5",
+    "kind": "history",
+    "label": "Approved",
+    "remarks": "Approved within delegated authority.",
+    "sequence": 6,
+    "state": "done"
+   },
+   {
+    "action": "archived",
+    "actor_id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+    "actor_name": "Approver1 Test",
+    "at": "2026-08-26T12:15:12.999554+05:45",
+    "designation": "",
+    "id": "f469aed8-e43f-479f-a49b-18b9f6aa5bde",
+    "kind": "history",
+    "label": "Archived",
+    "remarks": "",
+    "sequence": 7,
+    "state": "done"
+   }
+  ],
+  "to_line": "CEO",
+  "tracker": [
+   {
+    "actor": "Maker1 Test",
+    "at": "2026-08-26T12:15:07.114632+05:45",
+    "key": "created",
+    "label": "Created",
+    "state": "done"
+   },
+   {
+    "actor": "Checker1 Test",
+    "at": "2026-08-26T12:15:12.486988+05:45",
+    "key": "reviewed",
+    "label": "Reviewed",
+    "state": "done"
+   },
+   {
+    "actor": "Checker2 Test",
+    "at": "2026-08-26T12:15:12.678467+05:45",
+    "key": "recommended",
+    "label": "Recommended",
+    "state": "done"
+   },
+   {
+    "actor": "Admin1 Test",
+    "at": "2026-08-26T12:15:12.841280+05:45",
+    "key": "supported",
+    "label": "Supported",
+    "state": "done"
+   },
+   {
+    "actor": "Approver1 Test",
+    "at": "2026-08-26T12:15:12.970368+05:45",
+    "key": "approved",
+    "label": "Approved",
+    "state": "done"
+   },
+   {
+    "actor": "",
+    "at": null,
+    "key": "noted",
+    "label": "Noted",
+    "state": "skipped"
+   },
+   {
+    "actor": "",
+    "at": "2026-08-26T12:15:12.994648+05:45",
+    "key": "archived",
+    "label": "Archived",
+    "state": "done"
+   }
+  ],
+  "updated_at": "2026-08-26T12:15:12.994724+05:45",
+  "workflow_steps": [
+   {
+    "acted_at": "2026-08-26T12:15:12.486988+05:45",
+    "acted_at_bs": "2083-05-10",
+    "activated_at": "2026-08-26T12:15:07.293828+05:45",
+    "assignee": {
+     "department": "Finance",
+     "email": "checker1@nif.test",
+     "employee_id": null,
+     "full_name": "Checker1 Test",
+     "id": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+     "role": "checker"
+    },
+    "assignee_name": "Checker1 Test",
+    "department_label": "Finance",
+    "designation": "",
+    "display_name": "Checker1 Test",
+    "id": "a632e906-6651-47fa-95c1-f54ec0a5e1c0",
+    "remarks": "Reviewed; scoring sheet checked against the bids.",
+    "role_type": "reviewer",
+    "role_type_display": "Reviewer",
+    "sequence": 1,
+    "status": "completed",
+    "status_display": "Completed"
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.678467+05:45",
+    "acted_at_bs": "2083-05-10",
+    "activated_at": "2026-08-26T12:15:12.500850+05:45",
+    "assignee": {
+     "department": "Finance",
+     "email": "checker2@nif.test",
+     "employee_id": null,
+     "full_name": "Checker2 Test",
+     "id": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+     "role": "checker"
+    },
+    "assignee_name": "Checker2 Test",
+    "department_label": "Finance",
+    "designation": "",
+    "display_name": "Checker2 Test",
+    "id": "4f8138e9-bf13-4568-a6ba-15a1f88ca9e1",
+    "remarks": "Recommended; within the approved Q3 ceiling.",
+    "role_type": "recommender",
+    "role_type_display": "Recommender",
+    "sequence": 2,
+    "status": "completed",
+    "status_display": "Completed"
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.841280+05:45",
+    "acted_at_bs": "2083-05-10",
+    "activated_at": "2026-08-26T12:15:12.689969+05:45",
+    "assignee": {
+     "department": "Finance",
+     "email": "admin1@nif.test",
+     "employee_id": null,
+     "full_name": "Admin1 Test",
+     "id": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+     "role": "admin"
+    },
+    "assignee_name": "Admin1 Test",
+    "department_label": "Finance",
+    "designation": "",
+    "display_name": "Admin1 Test",
+    "id": "6a6daa38-914e-41d4-889e-81d8b784da69",
+    "remarks": "Supported.",
+    "role_type": "supporter",
+    "role_type_display": "Supporter",
+    "sequence": 3,
+    "status": "completed",
+    "status_display": "Completed"
+   },
+   {
+    "acted_at": "2026-08-26T12:15:12.970368+05:45",
+    "acted_at_bs": "2083-05-10",
+    "activated_at": "2026-08-26T12:15:12.856748+05:45",
+    "assignee": {
+     "department": "Finance",
+     "email": "approver1@nif.test",
+     "employee_id": null,
+     "full_name": "Approver1 Test",
+     "id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+     "role": "approver"
+    },
+    "assignee_name": "Approver1 Test",
+    "department_label": "Finance",
+    "designation": "",
+    "display_name": "Approver1 Test",
+    "id": "dd0ebdb9-0b94-4441-8d67-a3a6162ef6b9",
+    "remarks": "Approved within delegated authority.",
+    "role_type": "approver",
+    "role_type_display": "Approver",
+    "sequence": 4,
+    "status": "completed",
+    "status_display": "Completed"
+   }
+  ]
+ },
+ "list": {
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+   {
+    "ageing": {
+     "due_days": null,
+     "pending_days": null,
+     "pending_since": null,
+     "sla_days": null,
+     "state": "on_track"
+    },
+    "approved_at": "2026-08-26T12:15:12.970368+05:45",
+    "approved_by": "Approver1 Test",
+    "archived_at": "2026-08-26T12:15:12.994648+05:45",
+    "created_at": "2026-08-26T12:15:07.114632+05:45",
+    "created_by": {
+     "department": "Finance",
+     "email": "maker1@nif.test",
+     "employee_id": null,
+     "full_name": "Maker1 Test",
+     "id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+     "role": "maker"
+    },
+    "department_label": "Finance",
+    "id": "fe6c1e03-0d16-4181-b9b4-91245e4de0b9",
+    "memo_number": "NIFN-CON-2026-0001",
+    "memo_type": "confidential",
+    "memo_type_label": "CONFIDENTIAL",
+    "pending_with": null,
+    "reference_number": "TENDER/ICT/2026/11",
+    "status": "archived",
+    "status_label": "Archived",
+    "subject": "Approval of NPR 1,745,000 for the server refresh programme",
+    "submitted_at": "2026-08-26T12:15:07.293826+05:45",
+    "to_line": "CEO"
+   }
+  ]
+ },
+ "memo_id": "fe6c1e03-0d16-4181-b9b4-91245e4de0b9",
+ "status": "archived",
+ "timeline": [
+  {
+   "action": "created",
+   "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "actor_name": "Maker1 Test",
+   "at": "2026-08-26T12:15:07.123074+05:45",
+   "designation": "",
+   "id": "5d36ab0f-cbf4-420c-bb58-cfb0f0e1be09",
+   "kind": "history",
+   "label": "Created",
+   "remarks": "",
+   "sequence": 1,
+   "state": "done"
+  },
+  {
+   "action": "sent_for_review",
+   "actor_id": "0ac8f52e-7cc2-4a00-aa7a-1d2f6a36102c",
+   "actor_name": "Maker1 Test",
+   "at": "2026-08-26T12:15:12.329960+05:45",
+   "designation": "",
+   "id": "da814a29-8442-4763-bd1e-cd5b8159342e",
+   "kind": "history",
+   "label": "Sent for Review",
+   "remarks": "",
+   "sequence": 2,
+   "state": "done"
+  },
+  {
+   "action": "reviewed",
+   "actor_id": "a7aec734-0e3a-41ff-ac2f-0806a4902aa0",
+   "actor_name": "Checker1 Test",
+   "at": "2026-08-26T12:15:12.492608+05:45",
+   "designation": "",
+   "id": "d03168fb-3a92-4a25-b549-d0adfd6be0fa",
+   "kind": "history",
+   "label": "Reviewed",
+   "remarks": "Reviewed; scoring sheet checked against the bids.",
+   "sequence": 3,
+   "state": "done"
+  },
+  {
+   "action": "recommended",
+   "actor_id": "bb255620-76e6-457d-8d4d-9e9a8dfc630c",
+   "actor_name": "Checker2 Test",
+   "at": "2026-08-26T12:15:12.684533+05:45",
+   "designation": "",
+   "id": "bf1a5682-5d5f-4daa-9caf-1056b60df463",
+   "kind": "history",
+   "label": "Recommended",
+   "remarks": "Recommended; within the approved Q3 ceiling.",
+   "sequence": 4,
+   "state": "done"
+  },
+  {
+   "action": "supported",
+   "actor_id": "6997ac41-f65b-42b1-9e99-8b92bf86b23e",
+   "actor_name": "Admin1 Test",
+   "at": "2026-08-26T12:15:12.847484+05:45",
+   "designation": "",
+   "id": "be37afd6-57f5-4bda-9435-3df51425303c",
+   "kind": "history",
+   "label": "Supported",
+   "remarks": "Supported.",
+   "sequence": 5,
+   "state": "done"
+  },
+  {
+   "action": "approved",
+   "actor_id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+   "actor_name": "Approver1 Test",
+   "at": "2026-08-26T12:15:12.974908+05:45",
+   "designation": "",
+   "id": "d7c32920-3dd8-4cf8-8a6e-9aba03f381c5",
+   "kind": "history",
+   "label": "Approved",
+   "remarks": "Approved within delegated authority.",
+   "sequence": 6,
+   "state": "done"
+  },
+  {
+   "action": "archived",
+   "actor_id": "507d5c60-25ba-4ca7-b1d3-4ff9464755e8",
+   "actor_name": "Approver1 Test",
+   "at": "2026-08-26T12:15:12.999554+05:45",
+   "designation": "",
+   "id": "f469aed8-e43f-479f-a49b-18b9f6aa5bde",
+   "kind": "history",
+   "label": "Archived",
+   "remarks": "",
+   "sequence": 7,
+   "state": "done"
+  }
+ ]
+}

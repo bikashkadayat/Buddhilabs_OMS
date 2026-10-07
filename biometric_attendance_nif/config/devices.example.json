@@ -1,0 +1,29 @@
+{
+  "defaults": {
+    "port": 4370,
+    "password": 0,
+    "timeout": 10,
+    "force_udp": false,
+    "omit_ping": false,
+    "encoding": "UTF-8"
+  },
+  "devices": [
+    {
+      "name": "main-gate",
+      "host": "192.168.77.201"
+    },
+    {
+      "name": "warehouse",
+      "host": "192.168.77.202",
+      "encoding": "latin-1"
+    },
+    {
+      "name": "branch-office",
+      "host": "10.20.0.15",
+      "password": 1234,
+      "force_udp": true,
+      "omit_ping": true,
+      "timeout": 20
+    }
+  ]
+}

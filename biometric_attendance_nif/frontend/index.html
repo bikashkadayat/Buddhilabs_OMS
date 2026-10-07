@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attendance</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='14'>&#128337;</text></svg>">
+<script>
+  // Applied before first paint so a dark-theme user never sees a white flash.
+  try {
+    const saved = localStorage.getItem('morx-theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  } catch { /* private mode -- fall back to the OS preference */ }
+</script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

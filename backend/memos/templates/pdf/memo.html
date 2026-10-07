@@ -1,0 +1,413 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  {% comment %}
+    Phases 14, 16, 20, 26 and 30.
+
+    * the header carries memo number, reference, department, created date,
+      classification and status (Phase 14);
+    * the approval section is one certification BLOCK per signatory - Created By,
+      Recommended By, Supported By, Approved By and any Reviewer - rendered from
+      the same workflow.signature_blocks() the detail page uses, so the screen and
+      the paper cannot disagree (Phase 16/20);
+    * those blocks were web-style cards with avatar circles until Phase 26
+      replaced them with ruled banking-style certification blocks, and the
+      document now ends with the large certifying seal. The page order is fixed by
+      the brief: content, then workflow summary, then approval blocks, then seal;
+    * Phase 30 compacted the blocks and made the row width follow the chain
+      length - three steps sit in one row of three, five or more wrap in balanced
+      rows. The grouping arrives as `signature_rows`; this template contains no
+      block count and no per-count special case;
+    * author content renders inside .memo-body, which is where base_pdf.html
+      styles the tables, images and alignment the sanitizer now permits.
+
+    A comment TAG, not a hash comment: Django's hash comment is single-line only,
+    so spanning one across several lines does not comment anything out - it prints
+    onto the face of the document, which is exactly what it did until someone
+    opened the PDF.
+  {% endcomment %}
+  <style>
+    .memo-flags { margin-top: 6px; }
+    .flag {
+      display: inline-block; padding: 2px 9px; border-radius: 3px; font-size: 9px;
+      font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      border: 1px solid; margin-right: 6px;
+    }
+    .flag-normal       { background: #f3f4f6; color: #374151; border-color: #b8bfc9; }
+    .flag-confidential { background: #fdecec; color: #8c1d1d; border-color: #d98b8b; }
+    .flag-highly       { background: #7f1d1d; color: #ffffff; border-color: #7f1d1d; }
+    .flag-urgent       { background: #fff4e5; color: #8a4b08; border-color: #dda15e; }
+
+    /* The "fully approved" marker in the header. Only printed once the memo is
+       approved or archived, so its presence on a page is itself the assertion.
+       Small here on purpose - the certifying seal is at the FOOT of the document
+       (Phase 26 visual hierarchy); this is only so a reader riffling a stack of
+       paper can see the state without turning to the last page. */
+    .approved-stamp {
+      float: right; border: 2px solid #0c6b4f; color: #0c6b4f;
+      padding: 3px 11px; font-size: 10px; font-weight: 700;
+      letter-spacing: .16em; text-transform: uppercase; margin-top: 6px;
+    }
+
+    table.matrix { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    table.matrix th { background: #f3f4f6; color: #374151; font-size: 8.5px;
+      text-transform: uppercase; letter-spacing: .3px; padding: 5px 6px;
+      border: 1px solid #d1d5db; text-align: left; }
+    table.matrix td { padding: 5px 6px; border: 1px solid #e5e7eb;
+      font-size: 10px; vertical-align: top; }
+    table.matrix td.seq { width: 26px; text-align: center; color: #6b7280; }
+    table.matrix .role { font-weight: 700; color: #1f2937; white-space: nowrap; }
+    .sig-ok { color: #065f46; font-weight: 700; }
+    .sig-wait { color: #92400e; }
+    .sig-no { color: #991b1b; font-weight: 700; }
+
+    /* ------------------------------------------------------------------------
+       Approval certification blocks (Phase 26, compacted Phase 30).
+
+       These replaced rounded web-style cards with avatar circles. The brief was
+       office paperwork, not a dashboard, so the shape is the one used on bank
+       memoranda: a ruled caption bar naming the certification, a stamp band
+       carrying the certification word, then the signatory's particulars.
+
+       Phase 30 compacted them. They were two to a row with generous padding, which
+       spent most of a sheet on three signatures; the whole section now fits one
+       horizontal row whenever the chain is four steps or fewer. Everything here is
+       sized for a cell about 4.2cm wide - that is A4's usable width divided four
+       ways, the narrowest this layout ever goes.
+
+       Built as TABLES, one per row, and the bordered box IS the <td>. WeasyPrint
+       equalises cells in a row by table geometry, so blocks in a row end level even
+       when one carries remarks and the other does not. An inner div with
+       height:100% does NOT achieve this: it rendered pixel-identically to no rule at
+       all - byte-for-byte the same PNG - so it was removed rather than left in place
+       with a comment claiming it worked.
+
+       One table per row rather than one table with ragged rows: a balanced wrap puts
+       4 blocks in one row and 3 in the next, and separate tables let each row size
+       its own cells without colspan arithmetic.
+
+       Column count comes from workflow.signature_rows(). There is no block count in
+       this template.
+       ---------------------------------------------------------------------- */
+    table.cert-row-grid {
+      width: 100%; border-collapse: separate; border-spacing: 6px 0;
+      margin: 0 0 6px; table-layout: fixed;
+    }
+    table.cert-row-grid tr { page-break-inside: avoid; }
+    table.cert-row-grid td.cert-cell {
+      vertical-align: top; padding: 0; border: 1px solid #1f2937;
+    }
+    .cert-caption {
+      background: #eef1f5; border-bottom: 1px solid #1f2937;
+      padding: 2.5px 6px; font-size: 6.5px; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase; color: #1f2937;
+    }
+    /* The stamp band. Centred and boxed like an inked stamp; green only for a real
+       certification, so the colour is never the only thing that says "signed" - the
+       word inside it does that too, in greyscale and on a monochrome printer. */
+    .cert-stamp-wrap { padding: 5px 5px 4px; text-align: center; }
+    .cert-stamp {
+      display: inline-block; border: 1.5px solid #0c6b4f; color: #0c6b4f;
+      padding: 1.5px 7px; font-size: 8px; font-weight: 700;
+      letter-spacing: .13em; text-transform: uppercase;
+    }
+    .cert-cell.is-rejected .cert-stamp { border-color: #991b1b; color: #991b1b; }
+    .cert-cell.is-pending .cert-stamp {
+      border-style: dashed; border-color: #9ca3af; color: #6b7280;
+      letter-spacing: .08em; font-size: 7px;
+    }
+    /* Particulars stack without key labels: the caption bar already says what the
+       block certifies, and "DESIGNATION" set beside a value would eat a third of a
+       4.2cm cell to repeat something obvious. */
+    .cert-rows { padding: 0 6px 5px; text-align: center; }
+    .cert-name {
+      font-size: 8.5px; font-weight: 700; color: #111827; line-height: 1.25;
+      padding-bottom: 1px;
+    }
+    .cert-line { font-size: 7px; color: #4b5563; line-height: 1.35; }
+    .cert-line.is-date { color: #1f2937; font-weight: 700; padding-top: 1px; }
+    .cert-remarks {
+      font-size: 6.5px; color: #6b7280; font-style: italic; line-height: 1.3;
+      padding: 2px 6px 0; text-align: center;
+    }
+    /* One line, not the former three-line paragraph. The long "electronically
+       authorised, no wet signature required" sentence moved to a single footnote
+       under the section - it was identical on every block and repeating it per
+       signature is what made the old blocks tall. */
+    .cert-verify {
+      padding: 3px 6px 4px; font-size: 6px; color: #0c6b4f; text-align: center;
+      border-top: .5px solid #e5e7eb;
+    }
+    .cert-verify .vid { font-family: monospace; font-weight: 700; letter-spacing: .04em; }
+    .cert-unverified {
+      padding: 3px 6px 4px; font-size: 6px; color: #9ca3af; text-align: center;
+      border-top: .5px solid #e5e7eb;
+    }
+    .cert-footnote {
+      font-size: 6.5px; color: #9ca3af; margin: 2px 0 0; letter-spacing: .02em;
+    }
+
+    /* ------------------------------------------------------------------------
+       The certifying seal. Last thing on the document, and the largest single
+       element on it: the brief is that a reader should see the memo is approved
+       at a glance without reading the activity log.
+       ---------------------------------------------------------------------- */
+    .seal-wrap { margin-top: 22px; text-align: center; page-break-inside: avoid; }
+    .seal {
+      display: inline-block; border: 3px double #0c6b4f; padding: 12px 34px 10px;
+      color: #0c6b4f;
+    }
+    .seal-word {
+      font-size: 27px; font-weight: 700; letter-spacing: .3em;
+      text-transform: uppercase; line-height: 1.05;
+    }
+    .seal-rule { border-top: 1.2px solid #0c6b4f; margin: 7px 0 6px; }
+    .seal-meta { font-size: 8.5px; letter-spacing: .05em; line-height: 1.5; color: #14543f; }
+    .seal-meta b { font-size: 9.5px; }
+    .seal-vid { font-family: monospace; letter-spacing: .1em; }
+  </style>
+
+  {% if fully_approved %}<div class="approved-stamp">Approved</div>{% endif %}
+  <h1 class="title">Memorandum</h1>
+
+  {% comment %}
+    The manual has one Memo Type, and CONFIDENTIAL is a handling instruction rather
+    than metadata - so it is printed on the face of the document.
+  {% endcomment %}
+  <div class="memo-flags">
+    {% if memo_type == "confidential" %}
+      <span class="flag flag-confidential">CONFIDENTIAL</span>
+    {% elif memo_type == "draft" %}
+      <span class="flag flag-urgent">DRAFT — not a formal memo</span>
+    {% else %}
+      <span class="flag flag-normal">GENERAL</span>
+    {% endif %}
+    <span class="muted" style="font-size:10.5px;">
+      <span class="badge">{{ memo.get_status_display }}</span>
+    </span>
+  </div>
+
+  <table class="kv">
+    <tr><td class="k">Memo No.</td><td><b>{{ memo.memo_number }}</b></td></tr>
+    {% if memo.reference_number %}
+      <tr><td class="k">Reference</td><td>{{ memo.reference_number }}</td></tr>
+    {% endif %}
+    {% comment %}
+      From is the department, then the unit and sub-unit if the author narrowed it -
+      the manual's "From: Department / Department Unit / Department sub unit" (p.4).
+    {% endcomment %}
+    <tr><td class="k">From</td><td>
+      {{ department_label }}{% if memo.department_unit_name %} · {{ memo.department_unit_name }}{% endif %}{% if memo.department_sub_unit_name %} · {{ memo.department_sub_unit_name }}{% endif %}
+      <span class="muted">· {{ from_name }}{% if author_designation %}, {{ author_designation }}{% endif %}</span>
+    </td></tr>
+    <tr><td class="k">To</td><td>{{ memo.to_line|default:to_name }}</td></tr>
+    {% if cc_names %}<tr><td class="k">CC</td><td>{{ cc_names|join:", " }}</td></tr>{% endif %}
+    <tr><td class="k">Date</td><td>{{ memo.created_at|date:"Y-m-d" }}</td></tr>
+    <tr><td class="k">Subject</td><td><b>{{ memo.subject }}</b></td></tr>
+    <tr><td class="k">Memo Type</td><td>{{ memo_type_label }}</td></tr>
+  </table>
+
+  {% comment %}
+    Each authored block under its own heading: Background, Recommendation, and
+    anything "+ Add more" produced (p.3).
+  {% endcomment %}
+  {% for section in sections %}
+    <div class="section-title">{{ section.title }}</div>
+    <div class="memo-body">{{ section.body_html|safe }}</div>
+  {% endfor %}
+
+  {% if attachments %}
+    <div class="section-title">Attachments</div>
+    <table class="trail" style="width:100%">
+      <tr><th>File</th><th>Uploaded By</th><th>Uploaded</th></tr>
+      {% for file in attachments %}
+        <tr>
+          <td>{{ file.label|default:file.name }}</td>
+          <td>{{ file.uploaded_by }}</td>
+          <td>{{ file.uploaded_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <p class="muted" style="font-size:9px;">
+      Attachments are referenced here and held in the system against this memo;
+      they are not embedded in this document.
+    </p>
+  {% endif %}
+
+  <div class="section-title">Workflow Summary</div>
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>S.N.</th><th>Role</th><th>Name</th><th>Designation</th>
+        <th>Department</th><th>Action Date</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in matrix %}
+        <tr>
+          <td class="seq">{{ row.sequence }}</td>
+          <td class="role">{{ row.role_label }}</td>
+          <td>{{ row.name }}</td>
+          <td>{{ row.designation }}</td>
+          <td>{{ row.department }}</td>
+          <td>{% if row.acted_at %}{{ row.acted_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+          <td>
+            {% if row.signed %}<span class="sig-ok">Approved</span>
+            {% elif row.rejected %}<span class="sig-no">Rejected</span>
+            {% else %}<span class="sig-wait">{{ row.status_label }}</span>{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" class="muted">No approval workflow recorded.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% comment %}
+    Phase 49.5 registers. Each is guarded on having rows: a governance document
+    should not grow three empty tables to prove three features exist, and an
+    ordinary memo's PDF is byte-identical to before.
+
+    The Reviewed Register is separate from the Workflow Summary above even though
+    its rows are a subset of it. The summary answers "who was in the chain and did
+    they act"; this answers "what did the reviewer say" - and Reviewer is the one
+    role the module requires remarks from, so those remarks are the substance of
+    the review rather than a footnote to it.
+  {% endcomment %}
+  {% if reviewed_rows %}
+    <div class="section-title">Reviewed Register</div>
+    <table class="matrix">
+      <thead>
+        <tr><th>S.N.</th><th>Reviewed By</th><th>Designation</th>
+            <th>Reviewed On</th><th>Review Remarks</th></tr>
+      </thead>
+      <tbody>
+        {% for row in reviewed_rows %}
+          <tr>
+            <td class="seq">{{ row.sequence }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.designation }}</td>
+            <td>{% if row.acted_at %}{{ row.acted_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+            <td>{{ row.remarks|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if notes.total %}
+    <div class="section-title">Noted Register</div>
+    <table class="matrix">
+      <thead>
+        <tr><th>S.N.</th><th>Noted By</th><th>Designation</th><th>Department</th>
+            <th>Status</th><th>Noted Date</th><th>Remarks</th></tr>
+      </thead>
+      <tbody>
+        {% for row in notes.recipients %}
+          <tr>
+            <td class="seq">{{ forloop.counter }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.designation|default:"—" }}</td>
+            <td>{{ row.department|default:"—" }}</td>
+            <td>
+              {% if row.status == "noted" %}<span class="sig-ok">Noted</span>
+              {% else %}<span class="sig-wait">Pending Note</span>{% endif %}
+            </td>
+            <td>{% if row.noted_at %}{{ row.noted_at|date:"Y-m-d H:i" }}{% else %}—{% endif %}</td>
+            <td>{{ row.remarks|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="muted" style="font-size:9px;">
+      Noting records that a person has read this memo. It is informational, does
+      not block the approval workflow above, and is not an approval.
+      {{ notes.completed }} of {{ notes.total }} noted.
+    </p>
+  {% endif %}
+
+  {% if assignment_history.transfers %}
+    <div class="section-title">Approval Reassignments</div>
+    <table class="matrix">
+      <thead>
+        <tr><th>Step</th><th>Role</th><th>From</th><th>To</th><th>Basis</th>
+            <th>Authorised By</th><th>Date</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        {% for row in assignment_history.transfers %}
+          <tr>
+            <td class="seq">{{ row.step }}</td>
+            <td class="role">{{ row.role_label }}</td>
+            <td>{{ row.from }}</td>
+            <td>{{ row.to }}</td>
+            <td>{{ row.kind_label }}</td>
+            <td>{{ row.actor }}</td>
+            <td>{{ row.at|date:"Y-m-d H:i" }}</td>
+            <td>{{ row.reason }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if archive_sharing %}
+    <div class="section-title">Archive Sharing History</div>
+    <table class="matrix">
+      <thead>
+        <tr><th>S.N.</th><th>Granted To</th><th>Scope</th><th>Granted By</th>
+            <th>Granted</th><th>Status</th><th>Reason</th></tr>
+      </thead>
+      <tbody>
+        {% for row in archive_sharing %}
+          <tr>
+            <td class="seq">{{ forloop.counter }}</td>
+            <td>{{ row.granted_to }}</td>
+            <td>{{ row.target_label_kind }}{% if row.include_children %} (and sub-units){% endif %}</td>
+            <td>{{ row.granted_by }}</td>
+            <td>{{ row.granted_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              {% if row.is_live %}<span class="sig-ok">Active</span>
+              {% else %}<span class="sig-no">Withdrawn {{ row.revoked_at|date:"Y-m-d" }}</span>{% endif %}
+            </td>
+            <td>{{ row.reason }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="muted" style="font-size:9px;">
+      Withdrawn grants are retained rather than deleted, so who could read this
+      document at any past date stays answerable.
+    </p>
+  {% endif %}
+
+  <div class="section-title">Official Approvals</div>
+  {% comment %}
+    Phase 31: the block markup moved to pdf/_approval_blocks.html so the minute PDF
+    prints the identical section instead of a copy that has to be kept in step. The
+    styles stay here because the two documents size their blocks slightly differently.
+  {% endcomment %}
+  {% include "pdf/_approval_blocks.html" %}
+
+  {% comment %}
+    The certifying seal, last on the document and the largest thing on it. Driven
+    by `certificate`, which the workflow returns only for a memo that really is
+    approved or archived - so there is no template condition here that could be
+    got wrong and print an APPROVED seal over an in-flight memo.
+  {% endcomment %}
+  {% if certificate %}
+    <div class="seal-wrap">
+      <div class="seal">
+        <div class="seal-word">{{ certificate.stamp }}</div>
+        <div class="seal-rule"></div>
+        <div class="seal-meta">
+          <b>{{ certificate.approved_by }}</b>{% if certificate.designation != "—" %} · {{ certificate.designation }}{% endif %}<br>
+          {{ certificate.department }}<br>
+          Approved on {{ certificate.approved_at|date:"Y-m-d H:i" }}
+          {% if certificate.archived_at %}· Archived {{ certificate.archived_at|date:"Y-m-d" }}{% endif %}
+          {% if certificate.verification_id %}
+            <br>Verification ID <span class="seal-vid">{{ certificate.verification_id }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% comment %}
+Shared letterhead org/contact block for EVERY generated PDF. Included by
+base_pdf.html, attendance_base.html and leave_summary_report.html so the contact
+details live in one place; the values come from settings.ORG_INFO (passed as
+`org`). Larger logo + smaller org text is handled by the .org-name/.org-meta CSS
+that each letterhead already defines.
+{% endcomment %}
+<div class="org-name">{{ org.name|default:"Buddhi Labs" }}</div>
+<div class="org-meta">{{ org.address }}</div>
+<div class="org-meta">Phone: {{ org.tel }}{% if org.email %} &nbsp;|&nbsp; Email: {{ org.email }}{% endif %}{% if org.website %} &nbsp;|&nbsp; {{ org.website }}{% endif %}</div>

@@ -1,0 +1,34 @@
+{% extends "pdf/base_pdf.html" %}
+{% block content %}
+  <h1 class="title">Item Take-Out Gate Pass <span class="badge">{{ status_label }}</span></h1>
+  <div class="muted">Authorisation to remove an office asset from the premises.</div>
+
+  <div class="section-title">Item</div>
+  <table class="kv">
+    <tr><td class="k">Asset Code</td><td><b>{{ item_code }}</b></td>
+        <td class="k">Item</td><td>{{ item_name }}</td></tr>
+    <tr><td class="k">Reference</td><td>{{ reference }}</td>
+        <td class="k">Purpose</td><td>{{ purpose }}</td></tr>
+  </table>
+
+  <div class="section-title">Holder</div>
+  <table class="kv">
+    <tr><td class="k">Employee</td><td>{{ holder }}</td>
+        <td class="k">Department</td><td>{{ department }}</td></tr>
+    <tr><td class="k">Take-Out Date</td><td>{{ out_bs }} BS · {{ out_ad }}</td>
+        <td class="k">Return By</td><td>{{ return_bs }} BS · {{ return_ad }}</td></tr>
+    <tr><td class="k">Reason</td><td colspan="3">{{ reason }}</td></tr>
+  </table>
+
+  <div class="section-title">Authorisation</div>
+  <table class="kv">
+    <tr><td class="k">Approved By</td><td>{{ approver }}</td>
+        <td class="k">Approved On</td><td>{{ action_bs }} BS · {{ action_ad }}</td></tr>
+    {% if approver_remarks %}<tr><td class="k">Remarks</td><td colspan="3">{{ approver_remarks }}</td></tr>{% endif %}
+  </table>
+
+  <div class="sign-grid">
+    <div class="sign-box"><div class="sign-line">Holder's Signature</div></div>
+    <div class="sign-box"><div class="sign-line">Authorised By (Manager)</div></div>
+  </div>
+{% endblock %}
