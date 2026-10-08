@@ -17,7 +17,7 @@ import { tourFor } from '../../services/tours';
  * Shown once, remembered on the server (`ui_state.tours_done`), so a new
  * phone does not replay it. "Take the tour again" in Help restarts it.
  */
-const TOURS = {
+export const TOURS = { // eslint-disable-line react-refresh/only-export-components -- read by the anchor guard test
   employee: [
     { target: 'attendance', title: 'Your day starts here', body: 'Check in and out with one button. Your working time and location show here.' },
     { target: 'create', title: 'Start anything', body: 'Create a task, apply for leave or write a memo from here.' },

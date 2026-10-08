@@ -75,6 +75,11 @@ CMD_USERTEMP_RRQ = 9
 CMD_ATTLOG_RRQ = 13
 CMD_GET_TIME = 201
 CMD_GET_FREE_SIZES = 50
+# Device identity, for "Read Device Information". Both are reads: OPTIONS_RRQ
+# asks for one named option's value and never sets it (that is OPTIONS_WRQ,
+# 12, which is deliberately absent), GET_VERSION returns the firmware string.
+CMD_OPTIONS_RRQ = 11
+CMD_GET_VERSION = 1100
 
 FCT_ATTLOG = 1
 FCT_USER = 5
@@ -87,7 +92,18 @@ READ_ONLY_COMMANDS = frozenset({
     CMD_CONNECT, CMD_EXIT, CMD_AUTH,
     CMD_DATA_WRRQ, CMD_READ_BUFFER, CMD_FREE_DATA,
     CMD_USERTEMP_RRQ, CMD_ATTLOG_RRQ, CMD_GET_TIME, CMD_GET_FREE_SIZES,
+    CMD_OPTIONS_RRQ, CMD_GET_VERSION,
 })
+
+# Option names asked for by `device_info`, mapped to the key they are
+# reported under. Leading "~" is the firmware's own spelling for read-only
+# system options.
+DEVICE_INFO_OPTIONS = (
+    ("serial_number", "~SerialNumber"),
+    ("platform", "~Platform"),
+    ("device_name", "~DeviceName"),
+    ("mac", "MAC"),
+)
 
 DEFAULT_PORT = 4370
 DEFAULT_TIMEOUT = 20
@@ -441,6 +457,35 @@ class ZKReadOnlyClient:
         return {"users": fields[4], "fingers": fields[6], "records": fields[8],
                 "cards": fields[12], "users_capacity": fields[15],
                 "records_capacity": fields[16]}
+
+    def device_info(self):
+        """Serial, firmware, platform, model name and MAC, best-effort.
+
+        Every field is optional: older firmware refuses some options, and a
+        terminal that will not say its platform still syncs perfectly. A
+        refused option is left out rather than failing the connection test.
+        """
+        info = {}
+        try:
+            command, _s, _r, data = self._send(CMD_GET_VERSION)
+            if command == CMD_ACK_OK and data:
+                info["firmware"] = _text(data.split(b"\x00")[0], self.encoding)
+        except ZKError as exc:
+            logger.debug("%s: firmware version unreadable: %s", self.host, exc)
+        for key, option in DEVICE_INFO_OPTIONS:
+            try:
+                command, _s, _r, data = self._send(
+                    CMD_OPTIONS_RRQ, option.encode("ascii") + b"\x00")
+            except ZKError as exc:
+                logger.debug("%s: option %s unreadable: %s", self.host, option, exc)
+                continue
+            if command != CMD_ACK_OK or not data:
+                continue
+            raw = _text(data.split(b"\x00")[0], self.encoding)
+            value = raw.split("=", 1)[1] if "=" in raw else raw
+            if value.strip():
+                info[key] = value.strip()
+        return info
 
     def users(self):
         # The count comes first because it is what pins the record width; see

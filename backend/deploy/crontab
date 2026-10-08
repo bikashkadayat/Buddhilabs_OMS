@@ -66,13 +66,14 @@ PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 # A backup that has never been restored is a hypothesis (audit finding H4).
 15 3 * * * cd /app && python manage.py backup_verify > /proc/1/fd/1 2>/proc/1/fd/2
 
-# Every 5 minutes - collect punches from the biometric terminal (Phase 12).
-# This is the only path attendance takes into the system, so it is the most
-# important line in this file. It re-reads the terminal's whole log each time
-# and ingest discards what it already has, which is why a missed cycle needs no
-# catch-up: the next run collects it. Read-only on the device — it never
-# disables the terminal, so staff can punch while it runs.
-*/5 * * * * cd /app && python manage.py device_sync > /proc/1/fd/1 2>/proc/1/fd/2
+# Every minute - pull each biometric terminal whose own auto-sync interval
+# (5 / 15 / 30 minutes, set per device in Settings -> Biometric Devices) has
+# elapsed, in every organization. Replaces the single-device `device_sync`
+# line that ran every 5 minutes: existing terminals with an address were
+# migrated to a 5-minute interval, so their cadence is unchanged. A device
+# that is not due costs nothing but a query. Read-only on the device — it
+# never disables the terminal — and every pull is logged (DeviceSyncLog "pull").
+* * * * * cd /app && python manage.py device_sync_due > /proc/1/fd/1 2>/proc/1/fd/2
 
 # Every 10 minutes - safety net behind the inline derivation that runs at punch
 # ingest, so a punch that arrived during a restart still becomes attendance.
@@ -122,3 +123,12 @@ PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 # Late, so the day's work is in it. Read-only with respect to tasks; safe to
 # re-run, and backfillable with --date if a night is missed.
 30 23 * * * cd /app && python manage.py snapshot_task_evidence > /proc/1/fd/1 2>/proc/1/fd/2
+
+# Every 15 minutes - support SLA alerts: critical, overdue, unanswered and
+# stale tickets are emailed to the platform team once per condition, so a
+# ticket can no longer go overdue silently (Customer Success 2.0).
+*/15 * * * * cd /app && python manage.py customer_success_alerts > /proc/1/fd/1 2>/proc/1/fd/2
+
+# 08:00 daily - customer signals (trial expiring, no employees, no attendance,
+# inactive, long-open ticket) become success tasks plus one digest email.
+0 8 * * * cd /app && python manage.py customer_success_alerts --customers > /proc/1/fd/1 2>/proc/1/fd/2

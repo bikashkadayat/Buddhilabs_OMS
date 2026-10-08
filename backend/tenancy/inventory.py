@@ -161,6 +161,17 @@ PLATFORM_GLOBAL = frozenset({
     # platform, read from the console -- not tenant data, by the same reasoning
     # as Payment.
     "tenancy.SupportRequest",
+    # The Support Center's conversation, What's New and System Status notices:
+    # read from the console with no tenant bound, like SupportRequest. The
+    # updates and notices are the same for every customer.
+    "tenancy.SupportMessage", "tenancy.ProductUpdate", "tenancy.StatusNotice",
+    # Customer Success 2.0: the platform team's own follow-ups per customer.
+    "tenancy.SuccessTask",
+    # Support Desk 3.0: the platform team's organisation of its own work --
+    # teams and who is in them, @mentions, ticket links, known issues and
+    # outreach campaigns. Read from the console with no tenant bound.
+    "tenancy.SupportTeam", "tenancy.SupportTeamMember", "tenancy.SupportMention",
+    "tenancy.SupportTicketLink", "tenancy.KnownIssue", "tenancy.SuccessCampaign",
     # Phase S6.75: daily platform counters. Carries an `organization` column
     # and is still not tenant data -- it holds no identifying detail, and it
     # exists precisely so the console can draw a dashboard WITHOUT being able
@@ -381,6 +392,13 @@ INTENTIONALLY_GLOBAL = {
         "function, or one tenant registering another's serial diverts its "
         "punches. Contrast inventory.InventoryItem.serial_number, which is "
         "per-tenant for exactly the opposite reason.",
+    "biometric.BiometricDevice:uniq_biometric_device_hw_serial_global":
+        "The serial a PULLED terminal reports about itself, pinned on first "
+        "contact. Platform-wide for the same reason as the ADMS serial: if two "
+        "organizations could hold one terminal's serial, the second to enter "
+        "its IP address would pull the first one's attendance into its own "
+        "tenant. A database constraint because under RLS the application role "
+        "cannot see another tenant's devices to check in code.",
 }
 
 # Phase B rewrites applied in Phase S4: old global field -> new constraint.

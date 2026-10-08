@@ -1,6 +1,7 @@
 import GuidedTour from '../help/GuidedTour';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { PageNeedHelp } from '../help/NeedHelp';
 import Header from './Header';
 import AppSidebar from './AppSidebar';
 import MobileTabBar from './MobileTabBar';
@@ -117,6 +118,7 @@ const Layout = () => {
         <AppSidebar open={open} onClose={close} />
         <main className="main">
           <Outlet />
+          <PageNeedHelp />
         </main>
       </div>
       <div className={`drawer-backdrop ${open ? 'show' : ''}`} onClick={close} aria-hidden="true" />

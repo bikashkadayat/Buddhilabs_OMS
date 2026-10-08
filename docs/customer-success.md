@@ -44,7 +44,7 @@ The steps follow the brief's order. **All are measured from real data**; none is
 |---|---|
 | Upload your logo | a logo exists |
 | Add your employees | more than one active user |
-| Configure attendance | shift or policy changed from the seeded defaults |
+| Configure attendance | shift or policy changed from the seeded defaults, **or** an attendance mode chosen, **or** a biometric device added |
 | **Set up your departments** (new) | any department has a head |
 | **Invite your team** (new) | someone besides the administrator has signed in |
 | Create your first task | any task exists |
@@ -69,7 +69,7 @@ The steps follow the brief's order. **All are measured from real data**; none is
 
 `/help`, inside the product.
 
-- **One search box** over 24 articles, typed as **How to** (tutorials), **Questions** (FAQs) and **Guides**, each shown only to the roles it applies to.
+- **One search box** over 29 articles (5 added for biometric devices and the attendance mode), typed as **How to** (tutorials), **Questions** (FAQs) and **Guides**, each shown only to the roles it applies to.
 - Results rank title matches first. No match offers **Ask support**, with the query pre-filled.
 - **Articles** show numbered steps, buttons to the real page, **"Was this helpful?"** (1–5 stars), related articles, and **Still stuck? Ask support**.
 - **In Ctrl+K too.** "missed check" in the global search finds *Fix a missed check-in* in one click (measured).
@@ -142,11 +142,20 @@ For comparison, before the last three phases: check-in was on a different screen
 
 **User understanding** cannot be measured in a headless browser. A five-person hallway test per role, with these six tasks timed and no help offered, is the right next measure.
 
+### Revision: after the legacy biometric integration
+
+- **Help:** five new articles: *Choose how attendance is taken*, *Connect a biometric device*, *Match device users to employees*, *Why does my device show Offline?* and *Why is my check-in time different from when I tapped?*.
+- **Getting Started:** "Configure attendance" now also ticks for a mode or a device.
+- **Rate this feature** on the devices page, shown only after a device has actually worked.
+- **Sidebar and Ctrl+K "Biometric devices"** now open the per-tenant page instead of the iframe of NIF's single-tenant dashboard.
+- **Guards:** tests now pin every guided-tour stop to an anchor that exists (risk 3 below is closed), and catch `EmptyState` given `description` instead of `body`.
+- **Measured in Chrome:** connect a device and import attendance, 5 clicks; map two device users, 5 clicks; find the help, 1 click.
+
 ## 6. Remaining UX risks
 
 1. **Help content is product copy, and will drift** as features change. The dead-link test protects the links, but not the wording. Make "update the help article" part of each feature's definition of done.
 2. **Weekly active users is an upper bound** (person-days). Exact distinct weekly users needs per-person tracking. Deliberately not done; a product decision.
-3. **Tours anchor to `data-tour` attributes.** A redesign that drops one silently shortens the tour; the stop is skipped, nothing breaks. A test could pin the anchors per role.
+3. ~~**Tours anchor to `data-tour` attributes.**~~ Closed: `src/test/tourAnchors.guard.test.js` fails if any stop's anchor disappears.
 4. **The support inbox has no assignment or SLA.** With more than one operator, two people can answer the same request. It also has no tagging. Fine at current volume.
 5. **No in-app announcements or changelog** ("what's new"). Customers learn about features only by finding them.
 6. **No organization-wide activity feed.** It is still waiting on your visibility decision from the last phase.

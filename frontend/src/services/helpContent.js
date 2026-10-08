@@ -141,7 +141,7 @@ export const HELP = [
     summary: 'The eight steps that make the workspace ready for your staff.',
     steps: [
       'Open Getting started to see each step and whether it’s done. Steps tick themselves as you complete them.',
-      'Upload your logo, add your employees, set your attendance rules and department heads.',
+      'Upload your logo, add your employees, set your attendance rules (or connect a biometric device) and department heads.',
       'Then invite your team, create a first task and approve a first leave request to see the whole flow.',
     ],
     links: [{ label: 'Getting started', to: '/getting-started' }],
@@ -183,6 +183,64 @@ export const HELP = [
     ],
     links: [{ label: 'Attendance rules', to: '/admin/attendance/policies' }],
     keywords: 'office hours late grace half day overtime shift policy',
+  },
+  {
+    slug: 'attendance-mode', type: 'guide', roles: ['admin'],
+    title: 'Choose how attendance is taken',
+    summary: 'App only, biometric devices only, or both — and what happens when both record a day.',
+    steps: [
+      'Open Settings → Workspace setup → Attendance & biometric devices. The mode is at the top.',
+      'App only: staff check in from the web or mobile app. Punches from a device are kept but do not count.',
+      'Biometric only: attendance comes from your devices, and the app’s check-in button is hidden.',
+      'App + Biometric: both count. For each day the earliest check-in and the latest check-out win, whichever recorded them. Both are kept, and the change is logged.',
+      'Changing the mode applies from the next check-in or sync. Days already recorded are not recalculated.',
+    ],
+    links: [{ label: 'Attendance & biometric devices', to: '/settings/attendance' }],
+    keywords: 'attendance mode app only biometric only both mixed merge earliest latest',
+  },
+  {
+    slug: 'connect-device', type: 'tutorial', roles: ['admin'],
+    title: 'Connect a biometric device',
+    summary: 'Add your fingerprint device by its IP address, test it, and sync attendance from it.',
+    steps: [
+      'Open Settings → Workspace setup → Attendance & biometric devices, then Add device.',
+      'Enter a name, the device type (ZKTeco, or a ZK-compatible model such as eSSL), its IP address and port — 4370 unless someone changed it — and where it is.',
+      'If the device has a communication key (on the device: Comm → Security), enter it. Otherwise leave it blank.',
+      'Press Test connection. You should see Device online, its serial number, how many people are enrolled and how many attendance logs it holds.',
+      'Choose how often to sync — every 5, 15 or 30 minutes, or manual only — and save. Press Sync now for the first import.',
+      'The device must be reachable from our servers, not just from your office PC. If the test says Offline, ask your IT team about a port-forward or VPN.',
+    ],
+    links: [{ label: 'Attendance & biometric devices', to: '/settings/attendance' },
+      { label: 'Match device users to employees', to: '/help/map-device-users' }],
+    keywords: 'biometric fingerprint device zkteco essl terminal ip port connect sync add machine',
+  },
+  {
+    slug: 'map-device-users', type: 'tutorial', roles: ['admin', 'approver'],
+    title: 'Match device users to employees',
+    summary: 'A device knows people by a number. Tell the system which employee each number is.',
+    steps: [
+      'Open Attendance & biometric devices and press Users on the device. Unmatched users are shown first.',
+      'Fastest: if you enter each employee’s device number as their Biometric ID in Users, press Auto match by employee ID, check the list, then Apply.',
+      'Otherwise choose the employee beside each device user and press Map.',
+      'Punches from an unmatched user are stored, not lost — but they don’t count as attendance until the user is mapped.',
+      'Mapping counts new punches from then on. To count punches from before the mapping, ask support to run a backfill for that person.',
+    ],
+    links: [{ label: 'Attendance & biometric devices', to: '/settings/attendance' }],
+    keywords: 'unmatched unmapped device user id biometric id map match employee auto',
+  },
+  {
+    slug: 'device-offline', type: 'faq', roles: ['admin', 'approver'],
+    title: 'Why does my device show Offline, or a sync error?',
+    summary: 'The device didn’t answer our server. Usually power, network, or the address.',
+    steps: [
+      'Check the device is on and connected to the network, and that its IP address hasn’t changed (on the device: Comm → Ethernet).',
+      'The address must be reachable from our servers. A 192.168… address only works over a VPN or port-forward your IT team sets up.',
+      '“Rejected the communication key”: enter the key set on the device, or 0 if there is none.',
+      '“Reports serial …”: a different device now answers at that address. If you replaced the device, edit it and press “Replaced the device? Reset identity”, then test again.',
+      'Nothing is lost while a device is offline — it keeps its log, and the next successful sync collects everything.',
+    ],
+    links: [{ label: 'Attendance & biometric devices', to: '/settings/attendance' }],
+    keywords: 'device offline sync failed error unreachable biometric not working',
   },
   {
     slug: 'branding', type: 'tutorial', roles: ['admin'],
@@ -239,7 +297,21 @@ export const HELP = [
       'Biometric only: if Home says your attendance is recorded at the office device, use the device.',
     ],
     links: [{ label: 'Fix a missed check-in', to: '/help/correction' }],
-    keywords: 'check in disabled grey location permission biometric device',
+    keywords: 'check in disabled grey button missing gone location permission biometric device',
+  },
+  {
+    slug: 'two-sources', type: 'faq', roles: ['all'],
+    title: 'Why is my check-in time different from when I tapped?',
+    summary: 'When you use both the app and the office device, the earliest check-in and latest check-out count.',
+    steps: [
+      'If your organization uses both the app and a fingerprint device, both are recorded.',
+      'For each day, your earliest check-in and your latest check-out are used, whichever recorded them.',
+      'Your attendance shows where each time came from: Web app, Mobile app or Biometric device.',
+      'If a time is still wrong, ask for a correction.',
+    ],
+    links: [{ label: 'My attendance', to: '/my-attendance' },
+      { label: 'Ask for a correction', to: '/workforce/corrections' }],
+    keywords: 'check in time wrong different earlier device app both biometric source',
   },
   {
     slug: 'late-half-day', type: 'faq', roles: ['all'],
@@ -293,7 +365,105 @@ export const HELP = [
     links: [],
     keywords: 'role permission employee manager hr admin board',
   },
+  // --- Domains, billing and support (Customer Success Center) ------------
+  {
+    slug: 'custom-domain', type: 'tutorial', roles: ['admin'],
+    title: 'Use your own web address',
+    summary: 'Sign in at an address like hr.yourschool.edu.np instead of ours.',
+    steps: [
+      'Open Settings → Custom domain and enter the address, e.g. hr.yourschool.edu.np.',
+      'Publish the two records shown with your DNS provider: the TXT record proves the domain is yours; the CNAME record sends visitors to us.',
+      'Press Check now. DNS changes can take up to an hour to spread; check again if it isn’t found yet.',
+      'When it says Live, your team can sign in at the new address. Your usual address keeps working too.',
+    ],
+    links: [{ label: 'Custom domain', to: '/settings/domains' }],
+    keywords: 'domain custom address url dns txt cname subdomain own website',
+  },
+  {
+    slug: 'domain-not-working', type: 'faq', roles: ['admin'],
+    title: 'Our custom domain isn’t working',
+    summary: 'Usually a DNS record that isn’t published yet, or published in the wrong place.',
+    steps: [
+      '“Not found”: the TXT record isn’t visible yet. Compare it with Settings → Custom domain — some DNS providers add your domain to the name automatically, so enter only the part before it.',
+      'Verified but the site doesn’t open: the CNAME (serving) record is missing. Both records are needed.',
+      'Opens with a security warning: the secure certificate for a new address is set up by our team after verification. If it still warns after a day, open a Domain issue ticket.',
+    ],
+    links: [{ label: 'Custom domain', to: '/settings/domains' },
+      { label: 'Report a domain issue', to: '/help/contact?category=domain' }],
+    keywords: 'domain not working dns txt cname certificate https ssl security warning',
+  },
+  {
+    slug: 'trial-ends', type: 'faq', roles: ['admin'],
+    title: 'What happens when our trial or plan ends?',
+    summary: 'You’re reminded before it ends; renew from Subscription & billing.',
+    steps: [
+      'Settings → Subscription & billing shows your plan and when it ends. You’ll also get reminders before then.',
+      'To continue, choose a plan and send the payment receipt. Your data stays exactly as it is while we confirm.',
+      'If a plan lapses, there is a short grace period during which you can still pay and carry on.',
+    ],
+    links: [{ label: 'Subscription & billing', to: '/settings/subscription' }],
+    keywords: 'trial end expire expiry renew plan grace lapse subscription',
+  },
+  {
+    slug: 'report-problem', type: 'tutorial', roles: ['all'],
+    title: 'Report a problem and follow it',
+    summary: 'Open a ticket from any page — we see exactly where you were.',
+    steps: [
+      'Press Need help? on the page that isn’t working, or open Help & Support → Create ticket.',
+      'Choose what it’s about, give it a title and say what happened. Add a screenshot if you can — it’s the fastest way for us to understand.',
+      'We automatically include the page, your browser and device, and your organization, so you don’t have to.',
+      'Follow it under Help & Support → My tickets. We reply there and by email; you can reply back, attach files, and close it when it’s sorted.',
+    ],
+    links: [{ label: 'Create a ticket', to: '/help/contact' }, { label: 'My tickets', to: '/help/tickets' }],
+    keywords: 'support ticket problem bug report issue help contact track',
+  },
+  {
+    slug: 'find-document', type: 'tutorial', roles: ['all'],
+    title: 'Find a memo, minute or circular',
+    summary: 'Every document you can see, from one place.',
+    steps: [
+      'Open Documents. Memos, minutes and circulars each have their own section with an archive.',
+      'Or press Ctrl+K and type a subject or document number.',
+    ],
+    links: [{ label: 'Documents', to: '/documents' }],
+    keywords: 'document memo minute circular find archive number',
+  },
 ];
+
+/**
+ * Knowledge Base categories, in the order the Help Center lists them. An
+ * article's category is looked up by slug here rather than repeated in
+ * every entry, so the list reads as one decision.
+ */
+export const CATEGORIES = [
+  { key: 'getting-started', label: 'Getting started' },
+  { key: 'attendance', label: 'Attendance' },
+  { key: 'leave', label: 'Leave' },
+  { key: 'tasks', label: 'Tasks' },
+  { key: 'documents', label: 'Documents' },
+  { key: 'domains', label: 'Domains' },
+  { key: 'billing', label: 'Billing' },
+  { key: 'subscriptions', label: 'Subscriptions' },
+  { key: 'account', label: 'Account & support' },
+];
+
+const CATEGORY_OF = {
+  'getting-started': 'getting-started', 'add-user': 'getting-started', departments: 'getting-started',
+  branding: 'getting-started', roles: 'getting-started', search: 'getting-started',
+  'check-in': 'attendance', correction: 'attendance', 'team-today': 'attendance',
+  'attendance-rules': 'attendance', 'attendance-mode': 'attendance', 'connect-device': 'attendance',
+  'map-device-users': 'attendance', 'device-offline': 'attendance', 'checkin-disabled': 'attendance',
+  'two-sources': 'attendance', 'late-half-day': 'attendance',
+  'apply-leave': 'leave', 'approve-leave': 'leave',
+  'create-task': 'tasks', 'review-task': 'tasks',
+  'write-memo': 'documents', 'find-document': 'documents',
+  'custom-domain': 'domains', 'domain-not-working': 'domains',
+  'payment-rejected': 'billing', subscription: 'billing',
+  'trial-ends': 'subscriptions',
+};
+
+/** An article's category key; anything unlisted is account & support. */
+export const categoryOf = (slug) => CATEGORY_OF[slug] || 'account';
 
 export const TYPE_LABEL = { tutorial: 'How to', faq: 'Question', guide: 'Guide' };
 
@@ -315,6 +485,31 @@ export const searchHelp = (query, role) => {
     })
     .filter(Boolean)
     .sort((x, y) => y.score - x.score)
+    .map(({ a }) => a);
+};
+
+/**
+ * Looser ranking for the support assistant: a person describing a problem
+ * uses words the article doesn't ("button missing"), so an article matching
+ * at least a third of the meaningful words counts. Title hits rank higher.
+ */
+const STOP = new Set(['the', 'and', 'for', 'with', 'from', 'that', 'this', 'not', 'cant', 'can',
+  'does', 'doesnt', 'dont', 'have', 'has', 'was', 'when', 'what', 'why', 'how', 'any', 'into', 'our', 'your']);
+export const rankHelp = (text, role, limit = 3) => {
+  const terms = [...new Set((text || '').toLowerCase().replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/).filter((t) => t.length >= 3 && !STOP.has(t)))];
+  if (!terms.length) return [];
+  const need = Math.max(1, Math.ceil(terms.length / 3));
+  return helpFor(role)
+    .map((a) => {
+      const hay = `${a.title} ${a.summary} ${a.keywords} ${a.steps.join(' ')}`.toLowerCase();
+      const title = a.title.toLowerCase();
+      const hits = terms.filter((t) => hay.includes(t));
+      return { a, hits: hits.length, score: hits.length + terms.filter((t) => title.includes(t)).length * 2 };
+    })
+    .filter((x) => x.hits >= need)
+    .sort((x, y) => y.score - x.score)
+    .slice(0, limit)
     .map(({ a }) => a);
 };
 

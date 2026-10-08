@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Search, LifeBuoy, Rocket, BookOpen, HelpCircle, Compass } from 'lucide-react';
 
 import { useAuth } from '../../hooks/useAuth';
-import { searchHelp, TYPE_LABEL } from '../../services/helpContent';
+import { CATEGORIES, categoryOf, searchHelp, TYPE_LABEL } from '../../services/helpContent';
 import { restartTour } from '../../services/tours';
 
 /**
@@ -20,16 +20,24 @@ const FILTERS = [
 const HelpCenter = () => {
   const { role } = useAuth();
   const [params, setParams] = useSearchParams();
+  const notice = useLocation().state?.notice;
   const [query, setQuery] = useState(params.get('q') || '');
   const [type, setType] = useState('');
+  const [category, setCategory] = useState(params.get('category') || '');
 
+  const all = useMemo(() => searchHelp(query, role), [query, role]);
   const results = useMemo(
-    () => searchHelp(query, role).filter((a) => !type || a.type === type),
-    [query, role, type],
+    () => all.filter((a) => (!type || a.type === type)
+      && (!category || categoryOf(a.slug) === category)),
+    [all, type, category],
   );
+  // Only categories this person has articles in -- an empty "Billing" chip
+  // for an employee who can't see billing is a dead end.
+  const present = useMemo(() => new Set(searchHelp('', role).map((a) => categoryOf(a.slug))), [role]);
 
   return (
     <div className="page hc">
+      {notice && <p className="sp-ok" role="status">{notice}</p>}
       <header className="hc-hero">
         <h1>How can we help?</h1>
         <label className="hc-search">
@@ -45,9 +53,20 @@ const HelpCenter = () => {
           <button type="button" className="hc-chip" onClick={restartTour}>
             <Compass size={15} aria-hidden="true" /> Take the tour again
           </button>
-          <Link className="hc-chip" to="/help/contact"><LifeBuoy size={15} aria-hidden="true" /> Contact support</Link>
+          <Link className="hc-chip" to="/help/contact"><LifeBuoy size={15} aria-hidden="true" /> Create a ticket</Link>
         </div>
       </header>
+
+      <div className="hc-cats" role="group" aria-label="Category">
+        <button type="button" className={`hc-chip${!category ? ' is-on' : ''}`} aria-pressed={!category}
+                onClick={() => setCategory('')}>All topics</button>
+        {CATEGORIES.filter((c) => present.has(c.key)).map((c) => (
+          <button key={c.key} type="button" className={`hc-chip${category === c.key ? ' is-on' : ''}`}
+                  aria-pressed={category === c.key} onClick={() => setCategory(c.key)}>
+            {c.label}
+          </button>
+        ))}
+      </div>
 
       <div className="pf-tabs" role="tablist" aria-label="Kind of help">
         {FILTERS.map((f) => (

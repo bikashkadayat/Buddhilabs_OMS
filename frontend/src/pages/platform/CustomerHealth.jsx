@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Activity, Users, CalendarCheck, Palmtree, ListChecks, FileText } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Users, CalendarCheck, Palmtree, ListChecks, FileText } from 'lucide-react';
 
 import PageHeader from '../../components/common/PageHeader';
 import EmptyState from '../../components/common/EmptyState';
 import { platformService } from '../../services/platformService';
+import HealthScore from '../../components/platform/success/HealthScore';
+import Executive from '../../components/platform/success/Executive';
+import Adoption from '../../components/platform/success/Adoption';
+import Onboarding from '../../components/platform/success/Onboarding';
+import Tasks from '../../components/platform/success/Tasks';
+import Alerts from '../../components/platform/success/Alerts';
+import Campaigns from '../../components/platform/success/Campaigns';
 
 /**
  * Customer health and adoption: who is using the product, and who needs a
@@ -34,103 +41,117 @@ const USAGE = [
   ['document', 'Documents', FileText],
 ];
 
-const FILTERS = [
-  ['', 'All'],
-  ['attention', 'Needs attention'],
-  ['inactive', 'Inactive'],
-  ['no_attendance', 'Not using attendance'],
-  ['no_employees', 'No employees'],
-  ['expiring', 'Near expiry'],
+const TABS = [
+  ['center', 'Command center'], ['executive', 'Founder view'], ['adoption', 'Adoption'],
+  ['onboarding', 'Onboarding'], ['campaigns', 'Campaigns'], ['tasks', 'Tasks'], ['alerts', 'Alerts'],
 ];
 
 const CustomerHealth = () => {
+  const [params, setParams] = useSearchParams();
+  const tab = params.get('tab') || 'center';
+  const [segment, setSegment] = useState(null);
   const [data, setData] = useState(null);
+  const [center, setCenter] = useState(null);
+  const [agents, setAgents] = useState([]);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('attention');
 
   useEffect(() => {
-    platformService.customerHealth(30)
-      .then(({ data: d }) => setData(d))
-      .catch(() => setError('Customer health couldn’t be loaded.'));
+    platformService.customerHealth(30).then(({ data: d }) => setData(d)).catch(() => setError('Customer success couldn’t be loaded.'));
+    platformService.successCommandCenter().then(({ data: d }) => setCenter(d)).catch(() => setCenter({ segments: [], organizations: [] }));
+    platformService.supportAgents().then(({ data: d }) => setAgents(d)).catch(() => setAgents([]));
   }, []);
 
   if (error) return <div className="page"><EmptyState variant="error" title="Unavailable" body={error} /></div>;
-  if (!data) return <div className="page"><p className="pc-muted">Loading…</p></div>;
+  if (!data || !center) return <div className="page"><p className="pc-muted">Loading…</p></div>;
 
-  const { platform, organizations } = data;
-  const shown = organizations.filter((o) => (!filter ? true
-    : filter === 'attention' ? o.reasons.length > 0
-      : o.reasons.some((r) => r.code === filter || (filter === 'expiring' && r.code === 'expired'))));
+  const { platform } = data;
+  // Open on "at risk" when somebody is, otherwise on everyone -- an empty
+  // first view reads as "nothing loaded".
+  const atRisk = center.segments.find((x) => x.key === 'at_risk');
+  const active = segment || (atRisk?.count ? 'at_risk' : 'all');
+  const seg = center.segments.find((x) => x.key === active);
+  const members = new Set(seg ? seg.organizations : []);
+  const shown = active === 'all' ? center.organizations : center.organizations.filter((o) => members.has(o.slug));
 
   return (
     <div className="page">
-      <PageHeader breadcrumb="Customers" title="Customer health"
-                  description="Who is using the product, and who needs a call. From usage counts only — no customer records are read." />
-
-      <section className="ch-adopt" aria-label="Adoption">
-        <div className="pf-rev is-lead">
-          <span><Users size={13} aria-hidden="true" /> Active people today</span>
-          <b>{platform.dau_today}</b>
-          <small>{platform.active_person_days_7d} person-days this week</small>
-          <Spark series={platform.series.active_users} label="Active people" />
-        </div>
-        {USAGE.map(([key, label, Icon]) => (
-          <div className="pf-rev" key={key}>
-            <span><Icon size={13} aria-hidden="true" /> {label}</span>
-            <b>{platform.totals_30d[key] ?? 0}</b>
-            <small>created in 30 days</small>
-            <Spark series={platform.series[key] || []} label={label} />
-          </div>
+      <PageHeader breadcrumb="Customers" title="Customer success"
+                  description="Who needs us before they say so. From usage counts, subscriptions and support only — no customer records are read." />
+      <div className="pf-tabs" role="tablist" aria-label="Customer success views">
+        {TABS.map(([key, label]) => (
+          <button key={key} type="button" role="tab" aria-selected={tab === key}
+                  className={`pf-tab${tab === key ? ' is-active' : ''}`} onClick={() => setParams({ tab: key })}>{label}</button>
         ))}
-      </section>
-
-      <div className="pf-tabs" role="tablist" aria-label="Show">
-        {FILTERS.map(([key, label]) => {
-          const n = key === '' ? organizations.length
-            : key === 'attention' ? organizations.filter((o) => o.reasons.length).length
-              : organizations.filter((o) => o.reasons.some((r) => r.code === key || (key === 'expiring' && r.code === 'expired'))).length;
-          return (
-            <button key={key} type="button" role="tab" aria-selected={filter === key}
-                    className={`pf-tab${filter === key ? ' is-active' : ''}`} onClick={() => setFilter(key)}>
-              {label} <span className="ch-n">{n}</span>
-            </button>
-          );
-        })}
       </div>
 
-      {shown.length === 0 ? (
-        <EmptyState variant="cleared" title="Nobody here"
-                    body={filter === 'attention' ? 'Every customer is active and set up. Nice.' : 'No customer matches this filter.'} />
-      ) : (
-        <div className="pc-list">
-          {shown.map((o) => (
-            <article className="pc-card ch-org" key={o.slug} aria-label={o.name}>
-              <div className={`ch-score is-${o.health >= 75 ? 'good' : o.health >= 50 ? 'warn' : 'bad'}`}
-                   aria-label={`Health ${o.health} of 100`}>
-                <Activity size={14} aria-hidden="true" /> {o.health}
+      {tab === 'executive' && <Executive />}
+      {tab === 'adoption' && <Adoption />}
+      {tab === 'onboarding' && <Onboarding />}
+      {tab === 'campaigns' && <Campaigns agents={agents} />}
+      {tab === 'tasks' && <Tasks agents={agents} />}
+      {tab === 'alerts' && <Alerts />}
+
+      {tab === 'center' && (
+        <>
+          <section className="ch-adopt" aria-label="Activity">
+            <div className="pf-rev is-lead">
+              <span><Users size={13} aria-hidden="true" /> Active people today</span>
+              <b>{platform.dau_today}</b>
+              <small>Average health {center.average_health ?? '—'} · {center.bands.at_risk} at risk · {center.bands.watch} to watch</small>
+              <Spark series={platform.series.active_users} label="Active people" />
+            </div>
+            {USAGE.map(([key, label, Icon]) => (
+              <div className="pf-rev" key={key}>
+                <span><Icon size={13} aria-hidden="true" /> {label}</span>
+                <b>{platform.totals_30d[key] ?? 0}</b>
+                <small>created in 30 days</small>
+                <Spark series={platform.series[key] || []} label={label} />
               </div>
-              <div className="ch-main">
-                <Link className="pc-org" to={`/platform/organizations/${o.slug}`}>{o.name}</Link>
-                <p className="pc-muted">
-                  {o.status_display} · {o.seats} {o.seats === 1 ? 'person' : 'people'}
-                  {o.last_active ? ` · last active ${o.last_active}` : ' · never active'}
-                </p>
-                {o.reasons.length > 0 && (
-                  <ul className="ch-reasons">
-                    {o.reasons.map((r) => <li key={r.code}>{r.text}</li>)}
+            ))}
+          </section>
+
+          <div className="cs-segments" role="tablist" aria-label="Segment">
+            {[...center.segments, { key: 'all', label: 'All customers', count: center.organizations.length }].map((x) => (
+              <button key={x.key} type="button" role="tab" aria-selected={active === x.key}
+                      className={`cs-seg${active === x.key ? ' is-on' : ''}${x.key === 'at_risk' && x.count ? ' is-bad' : ''}`}
+                      onClick={() => setSegment(x.key)}>
+                <b>{x.count}</b><span>{x.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {shown.length === 0 ? (
+            <EmptyState variant="cleared" title="Nobody here" body="No customer is in this segment right now." />
+          ) : (
+            <div className="pc-list">
+              {shown.map((o) => (
+                <article className="pc-card ch-org" key={o.slug} aria-label={o.name}>
+                  <HealthScore org={o} detailed />
+                  <div className="ch-main">
+                    <Link className="pc-org" to={`/platform/organizations/${o.slug}`}>{o.name}</Link>
+                    <p className="pc-muted">
+                      {o.status_display} · {o.plan || 'no plan'} · {o.seats} {o.seats === 1 ? 'person' : 'people'}
+                      {o.last_active ? ` · last active ${o.last_active}` : ' · never active'}
+                      {o.is_new && ` · joined ${o.age_days} days ago`}
+                    </p>
+                    {o.reasons.length > 0 && (
+                      <ul className="ch-reasons">{o.reasons.map((r) => <li key={r.code}>{r.text}</li>)}</ul>
+                    )}
+                    <Link className="btn btn-ghost btn-xs" to={`/platform/organizations/${o.slug}#success`}>Timeline & tasks</Link>
+                  </div>
+                  <ul className="ch-usage" aria-label="Used in 30 days">
+                    {USAGE.map(([key, label]) => (
+                      <li key={key} className={o.usage_30d[key] ? 'is-on' : ''}><b>{o.usage_30d[key] ?? 0}</b> {label.toLowerCase()}</li>
+                    ))}
                   </ul>
-                )}
-              </div>
-              <ul className="ch-usage" aria-label="Used in 30 days">
-                {USAGE.map(([key, label]) => (
-                  <li key={key} className={o.usage_30d[key] ? 'is-on' : ''}>
-                    <b>{o.usage_30d[key] ?? 0}</b> {label.toLowerCase()}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
+                </article>
+              ))}
+            </div>
+          )}
+          <p className="pc-muted">
+            Health = {center.weights.map((w) => `${w.label} ${w.weight}%`).join(' · ')}. 75+ healthy, 50–74 watch, under 50 needs attention.
+          </p>
+        </>
       )}
     </div>
   );

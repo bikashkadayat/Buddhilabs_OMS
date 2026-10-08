@@ -668,9 +668,9 @@ const LeaveSidebar = ({ open = false, onClose }) => {
       {['checker', 'approver', 'admin'].includes(role) && (
         <Section id="attendance" title="Attendance">
           {isAdmin && (
-            <NavLink to="/admin/biometric-attendance" className={({ isActive }) => `sb-item ${isActive ? 'on' : ''}`}>
+            <NavLink to="/settings/attendance" className={({ isActive }) => `sb-item ${isActive ? 'on' : ''}`}>
               <span className="sb-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="M12 17a5 5 0 005-5 5 5 0 00-10 0 5 5 0 005 5z"/><circle cx="12" cy="12" r="1"/></svg></span>
-              Biometric Attendance
+              Biometric devices
             </NavLink>
           )}
           <NavLink to="/attendance/records" className={({ isActive }) => `sb-item ${isActive ? 'on' : ''}`}>

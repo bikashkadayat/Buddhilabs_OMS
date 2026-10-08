@@ -435,3 +435,109 @@ def backfill_punches(mapping, actor=None, date_from=None, date_to=None,
         unbounded=lower is None)
     logger.info("Biometric backfill: %s claimed %d punches", mapping, updated)
     return updated
+
+
+# ===========================================================================
+# Auto-match by employee ID
+# ===========================================================================
+
+MATCH_ON_BIOMETRIC_ID = "biometric_id"
+MATCH_ON_EMPLOYEE_ID = "employee_id"
+
+
+def _identity_index(users, attribute, normalise):
+    """{key: user} for keys held by exactly ONE user, plus the ambiguous keys.
+
+    A key two employees share proves nothing about which of them a device
+    user is, so it is set aside rather than resolved by whichever comes first.
+    """
+    index, ambiguous = {}, set()
+    for user in users:
+        key = normalise(getattr(user, attribute, None))
+        if not key:
+            continue
+        if key in index:
+            ambiguous.add(key)
+        else:
+            index[key] = user
+    for key in ambiguous:
+        index.pop(key, None)
+    return index, ambiguous
+
+
+def auto_match(*, device=None, apply=False, actor=None, request=None):
+    """Propose -- and with ``apply`` make -- mappings from an exact ID match.
+
+    A device user is matched to an employee only when the device user ID is
+    EXACTLY that employee's ``biometric_id`` (the field HR fills in with the
+    terminal's enrolment number), or exactly their ``employee_id``. Nothing
+    looser: name similarity and "the number at the end of the employee code"
+    stay as suggestions for a human (``matching.suggest_for_mapping``),
+    because a wrong automatic match silently files one person's attendance
+    under another's.
+
+    Like ``map_employee``, this never backfills history. Each applied
+    mapping reports how many unattributed punches it could claim, and the
+    existing backfill preview/execute endpoints do that deliberately.
+
+    Returns ``{"matched": [...], "skipped": [...], "applied": bool}``.
+    """
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    unmapped = (BiometricEmployee.objects.active().unmapped()
+                .select_related("device").order_by("device__name", "device_user_id"))
+    if device is not None:
+        unmapped = unmapped.filter(device=device)
+    unmapped = list(unmapped)
+
+    users = list(User.objects.filter(is_active=True)
+                 .only("id", "first_name", "last_name", "employee_id", "biometric_id"))
+    by_bio, ambiguous_bio = _identity_index(
+        users, "biometric_id", lambda v: str(v).strip() if v else "")
+    by_code, ambiguous_code = _identity_index(
+        users, "employee_id", lambda v: str(v).strip().upper() if v else "")
+
+    taken = set(BiometricEmployee.objects.active().mapped()
+                .values_list("device_id", "user_id"))
+
+    matched, skipped = [], []
+    for mapping in unmapped:
+        raw = str(mapping.device_user_id).strip()
+        user, matched_on = by_bio.get(raw), MATCH_ON_BIOMETRIC_ID
+        if user is None:
+            user, matched_on = by_code.get(raw.upper()), MATCH_ON_EMPLOYEE_ID
+        row = {"mapping_id": str(mapping.pk), "device": str(mapping.device_id),
+               "device_name": mapping.device.name,
+               "device_user_id": mapping.device_user_id,
+               "device_user_name": mapping.device_name}
+        if user is None:
+            if raw in ambiguous_bio or raw.upper() in ambiguous_code:
+                skipped.append({**row, "reason": "More than one employee has this ID."})
+            continue
+        if (mapping.device_id, user.pk) in taken:
+            skipped.append({**row, "user": str(user.pk), "user_name": user.get_full_name(),
+                            "reason": f"{user.get_full_name()} is already mapped on this device."})
+            continue
+        taken.add((mapping.device_id, user.pk))
+        matched.append({**row, "user": str(user.pk), "user_name": user.get_full_name(),
+                        "employee_id": user.employee_id, "matched_on": matched_on,
+                        "_mapping": mapping, "_user": user})
+
+    if apply and matched:
+        # All or nothing: half an auto-match is harder to reason about than
+        # either outcome.
+        with transaction.atomic():
+            for row in matched:
+                map_employee(row["_mapping"], row["_user"], actor=actor, request=request)
+                row["unattributed_punches"] = backfill_queryset(row["_mapping"])[0].count()
+            log_action(actor, AuditLog.Action.UPDATE, changes={
+                "event": "BIOMETRIC_AUTO_MATCH_APPLIED",
+                "device": str(device.pk) if device else None,
+                "mapped": len(matched),
+                "pairs": [{"device_user_id": r["device_user_id"], "user": r["user"],
+                           "matched_on": r["matched_on"]} for r in matched],
+            }, request=request)
+    for row in matched:
+        row.pop("_mapping"), row.pop("_user")
+    return {"matched": matched, "skipped": skipped, "applied": bool(apply)}

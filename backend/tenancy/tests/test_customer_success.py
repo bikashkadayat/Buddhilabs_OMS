@@ -203,3 +203,28 @@ def test_the_new_getting_started_steps_are_measured(org, django_user_model):
                              start_date=datetime.date(2026, 9, 1), end_date=datetime.date(2026, 9, 1),
                              reason="Rest")
         assert all(steps()[k] for k in ("department", "invite", "approve_leave"))
+
+
+@pytest.mark.parametrize("how", ["device", "mode"])
+def test_connecting_a_device_or_choosing_a_mode_configures_attendance(org, django_user_model, how):
+    """A customer whose attendance setup IS the gate terminal, or who picked
+    app-only deliberately, has configured attendance. Before the legacy
+    device integration this step could never tick for them."""
+    from biometric.models import BiometricDevice
+    from tenancy import onboarding
+    from tenancy.models import OrganizationSettings
+
+    with tenant_context(org):
+        admin = django_user_model.objects.create_user(
+            username="cs-att-admin", email="att@abc.test", password="x-Pass-12345",
+            role="admin", organization=org)
+        done = lambda: {s["key"]: s["done"] for s in onboarding.state(admin)["checklist"]}["attendance"]  # noqa: E731
+        assert done() is False
+        if how == "device":
+            BiometricDevice.objects.create(name="Gate", label="gate", host="192.168.1.10")
+        else:
+            row, _ = OrganizationSettings.objects.get_or_create(organization=org)
+            row.attendance_mode = "app_only"
+            row.save()
+            org.refresh_from_db()
+        assert done() is True

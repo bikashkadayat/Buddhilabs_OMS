@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
+  Megaphone,
   Activity, Building2, ClipboardList, CreditCard, Wallet, Gauge, Globe, HeartPulse, LifeBuoy,
   LayoutDashboard, LogOut, Receipt, SlidersHorizontal, Tags,
 } from 'lucide-react';
@@ -51,7 +52,7 @@ const NAV = [
       { to: '/platform/payments', label: 'Payments', Icon: CreditCard },
       { to: '/platform/payment-methods', label: 'Payment methods', Icon: Wallet },
       { to: '/platform/domains', label: 'Domains', Icon: Globe },
-      { to: '/platform/customer-health', label: 'Customer health', Icon: HeartPulse },
+      { to: '/platform/customer-health', label: 'Customer success', Icon: HeartPulse },
       { to: '/platform/support', label: 'Support', Icon: LifeBuoy },
     ],
   },
@@ -61,6 +62,7 @@ const NAV = [
       { to: '/platform/plans', label: 'Plans', Icon: Tags },
       { to: '/platform/usage', label: 'Usage', Icon: Gauge },
       { to: '/platform/health', label: 'Health', Icon: Activity },
+      { to: '/platform/updates', label: 'Updates & status', Icon: Megaphone },
       { to: '/platform/audit', label: 'Audit', Icon: ClipboardList },
       { to: '/platform/settings', label: 'Settings', Icon: SlidersHorizontal },
     ],

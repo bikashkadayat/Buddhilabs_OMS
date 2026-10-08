@@ -94,10 +94,38 @@ PLATFORM_SIDE = [
     # requests and ratings this customer's people sent us are words they
     # wrote, and "everything you hold about us" plainly covers them.
     ("tenancy.SupportRequest", "organization"),
+    # The conversation on those tickets -- the customer's own words and our
+    # replies to them. Internal staff notes are filtered out (below): they
+    # are the platform's working notes, not something the customer sent or
+    # was sent.
+    ("tenancy.SupportMessage", "ticket__organization"),
 ]
+
+# Extra filters for a PLATFORM_SIDE table, applied after its lookup.
+PLATFORM_SIDE_FILTERS = {
+    "tenancy.SupportMessage": {"is_internal": False},
+}
 
 # Platform models NOT included, and why -- the same discipline as EXCLUDED.
 PLATFORM_EXCLUDED = {
+    "tenancy.SuccessTask": "the platform team's own working list about this "
+                           "customer (calls, follow-ups); like an internal "
+                           "ticket note, not something the customer sent",
+    "tenancy.SupportTeam": "how the platform's support staff are organised; "
+                           "not this customer's data",
+    "tenancy.SupportTeamMember": "as SupportTeam",
+    "tenancy.SupportMention": "platform staff @mentioning each other in "
+                              "internal notes, which are themselves excluded",
+    "tenancy.SupportTicketLink": "the support team's own cross-references "
+                                 "between tickets, possibly other customers'",
+    "tenancy.KnownIssue": "the platform's write-up of a problem shared by "
+                          "every customer; not this customer's data",
+    "tenancy.SuccessCampaign": "the platform team's outreach plan, as "
+                               "SuccessTask",
+    "tenancy.ProductUpdate": "What's New notes published to every customer "
+                             "alike; not this customer's data",
+    "tenancy.StatusNotice": "platform incident notices shown to every "
+                            "customer alike; not this customer's data",
     "tenancy.Plan": "the platform's price list, not this customer's data; the "
                     "plans their subscription references are exported with it",
     "tenancy.PlanPrice": "as Plan",
@@ -332,6 +360,7 @@ def _build(export, organization, storage):
                 rows = list(model.objects.filter(pk=organization.pk))
             else:
                 rows = list(model.objects.filter(**{lookup: organization})
+                            .filter(**PLATFORM_SIDE_FILTERS.get(label, {}))
                             .order_by("pk"))
             platform_tables[label] = {"rows": len(rows), "files": {}}
             if rows and wants_json:

@@ -15,9 +15,19 @@ Design constraints this file exists to honour:
 * Every operation is idempotent: deriving a day once or a hundred times leaves
   the database in the same state.
 
-Precedence for authoring a row:  HR > Biometric > Browser.
+Precedence for authoring a row:  HR > Biometric > App.
+
+MIXED MODE (App + Biometric). When a day has both an employee's own app
+check-in and device punches, the row takes the EARLIEST VALID CHECK-IN and the
+LATEST VALID CHECK-OUT from either source. Neither source is discarded: the app
+times stay in ``browser_check_in``/``browser_check_out``, every punch stays in
+``AttendancePunch``, ``check_in_source``/``check_out_source`` record which one
+won each end, and a change in the merged result is written to the audit log.
+In Biometric-only mode the device times alone are used (the app times are
+still snapshotted, so switching modes later loses nothing).
 """
 import logging
+from datetime import timedelta
 
 from django.db import transaction
 from django.utils import timezone
@@ -98,11 +108,91 @@ def select_boundary_punches(punches):
     return first, last
 
 
+# A punch stamped further ahead of the server clock than this is not a real
+# punch yet -- it is a terminal whose clock has glitched (the main-gate device
+# holds seven records dated 2033). "Earliest VALID check-in / latest VALID
+# check-out" means such a punch can never become a day's check-out.
+FUTURE_PUNCH_TOLERANCE = timedelta(minutes=5)
+
+
+def valid_punches(punches, now=None):
+    """The punches that may set a day's boundaries."""
+    limit = (now or timezone.now()) + FUTURE_PUNCH_TOLERANCE
+    return [p for p in punches if p.timestamp <= limit]
+
+
 def _snapshot_browser_times(record):
-    """Preserve an employee's own check-in before a device punch overwrites it."""
-    if record.source == Attendance.Source.BROWSER and record.browser_check_in is None:
+    """Preserve an employee's own check-in before device punches are merged in."""
+    if record.source in Attendance.SELF_SOURCES and record.browser_check_in is None:
         record.browser_check_in = record.check_in
         record.browser_check_out = record.check_out
+        record.app_source = record.source
+
+
+def merge_day_times(punches, app_in, app_out, app_source, *, include_app=True):
+    """The merge rule, as a pure function so it can be tested on its own.
+
+    Returns ``(check_in, check_in_source, check_out, check_out_source)``.
+
+    * check-in  = the earliest of the first device punch and the app check-in;
+    * check-out = the latest of the last device punch and the app check-out;
+    * a lone device punch that comes AFTER an earlier app check-in is that
+      day's departure, not a second arrival -- otherwise "checked in on the
+      phone at 9, punched out at the gate at 6" would read as no check-out.
+    """
+    biometric = Attendance.Source.BIOMETRIC
+    first, last = select_boundary_punches(punches)
+    check_in, in_source = (first.timestamp, biometric) if first else (None, "")
+    check_out, out_source = (last.timestamp, biometric) if last else (None, "")
+
+    if include_app:
+        app_source = app_source or Attendance.Source.BROWSER
+        if app_in is not None and (check_in is None or app_in < check_in):
+            check_in, in_source = app_in, app_source
+        if app_out is not None and (check_out is None or app_out > check_out):
+            check_out, out_source = app_out, app_source
+        if check_out is None and punches and in_source != biometric:
+            latest = max(p.timestamp for p in punches)
+            if latest > check_in:
+                check_out, out_source = latest, biometric
+
+    if check_out is not None and check_in is not None and check_out <= check_in:
+        check_out, out_source = None, ""
+    return check_in, in_source, check_out, out_source
+
+
+def _audit_merge(record, before, app_in, app_out, punches):
+    """Write the merge to the audit log -- only when it changed something.
+
+    Derivation runs on every sync and is idempotent, so logging every run
+    would bury the one entry that matters under hundreds that say nothing.
+    """
+    after = (record.check_in, record.check_out)
+    if after == before:
+        return
+    try:
+        from audit.models import AuditLog
+        from audit.services import log_action
+
+        def iso(value):
+            return value.isoformat() if value else None
+
+        log_action(None, AuditLog.Action.UPDATE, instance=record, changes={
+            "event": "ATTENDANCE_SOURCES_MERGED",
+            "rule": "earliest valid check-in, latest valid check-out",
+            "app": {"source": record.app_source, "check_in": iso(app_in),
+                    "check_out": iso(app_out)},
+            "biometric": {"first_punch": iso(punches[0].timestamp),
+                          "last_punch": iso(punches[-1].timestamp),
+                          "punch_count": len(punches)},
+            "before": {"check_in": iso(before[0]), "check_out": iso(before[1])},
+            "after": {"check_in": iso(record.check_in), "check_in_source": record.check_in_source,
+                      "check_out": iso(record.check_out), "check_out_source": record.check_out_source},
+        })
+    except Exception:                                   # noqa: BLE001
+        # The audit trail must never be the reason attendance fails to derive.
+        logger.warning("could not audit attendance merge for %s %s",
+                       record.employee_id, record.date, exc_info=True)
 
 
 def _revert(record):
@@ -124,11 +214,15 @@ def _revert(record):
         record.delete()
         return None
 
+    app_source = record.app_source or Attendance.Source.BROWSER
     record.check_in = record.browser_check_in
     record.check_out = record.browser_check_out
     record.browser_check_in = None
     record.browser_check_out = None
-    record.source = Attendance.Source.BROWSER
+    record.source = app_source
+    record.app_source = ""
+    record.check_in_source = app_source
+    record.check_out_source = app_source if record.check_out else ""
     record.marked_by = Attendance.MarkedBy.SELF
     record.first_punch_at = None
     record.last_punch_at = None
@@ -187,20 +281,27 @@ def derive_daily_attendance(user, day, force=False):
         _mark_processed(punches)
         return record
 
-    if not punches:
+    for p in punches:
+        require_aware(p.timestamp, context=f"user {user.pk} on {day}")
+    usable = valid_punches(punches)
+    if not usable:
+        # Nothing but future-dated punches: a terminal clock fault. They stay
+        # in the raw log as evidence; they do not make an attendance day.
+        _mark_processed(punches)
         return _revert(record)
 
-    first, last = select_boundary_punches(punches)
-    for p in (first, last):
-        require_aware(p.timestamp if p else None, context=f"user {user.pk} on {day}")
-
+    before = (None, None)
     if record is None:
         record = Attendance(employee=user, date=day)
     else:
+        before = (record.check_in, record.check_out)
         _snapshot_browser_times(record)
 
-    record.check_in = first.timestamp
-    record.check_out = last.timestamp if last else None
+    include_app = attendance_config.attendance_mode() == attendance_config.MODE_BOTH
+    (record.check_in, record.check_in_source,
+     record.check_out, record.check_out_source) = merge_day_times(
+        usable, record.browser_check_in, record.browser_check_out,
+        record.app_source, include_app=include_app)
     record.source = Attendance.Source.BIOMETRIC
     record.marked_by = Attendance.MarkedBy.SYSTEM
     _apply_punch_metadata(record, punches)
@@ -209,6 +310,9 @@ def derive_daily_attendance(user, day, force=False):
     # times a day has, never what those times mean.
     attendance_services.recompute_status(record)
     record.save()
+    if include_app and record.browser_check_in is not None:
+        _audit_merge(record, before, record.browser_check_in,
+                     record.browser_check_out, usable)
 
     _mark_processed(punches)
     # Queued for after commit, and best-effort — a broken channel layer must

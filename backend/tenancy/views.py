@@ -42,6 +42,7 @@ from rest_framework.views import APIView
 
 from . import (archive, console, counters, platform_audit, plans,
                resolver, services)
+from .context import no_tenant
 from .exceptions import TenancyError
 from .lifecycle import IllegalOrganizationTransition
 from .models import Organization, Plan
@@ -1029,19 +1030,430 @@ class CustomerHealthView(PlatformConsoleMixin, APIView):
 
 
 class SupportInboxView(PlatformConsoleMixin, APIView):
+    """GET the support desk: filtered tickets plus the header numbers."""
+
     def get(self, request):
         from . import support
 
+        p = request.query_params
         return Response(support.platform_list(
-            request.user, kind=request.query_params.get("kind") or None,
-            state=request.query_params.get("status") or None))
+            request.user, kind=p.get("kind") or None, state=p.get("status") or None,
+            filters={k: p.get(k) for k in ("view", "organization", "priority",
+                                           "category", "assigned", "q") if p.get(k)}))
 
 
 class SupportRequestView(PlatformConsoleMixin, APIView):
+    """GET one ticket with the full thread (internal notes included); PATCH it."""
+
+    def get(self, request, request_id):
+        from . import support
+
+        return Response(self.run(support.platform_detail, request.user, request_id))
+
     def patch(self, request, request_id):
         from . import support
 
+        d = request.data
+        if "known_issue" in d:
+            from . import desk
+            self.run(desk.set_ticket_issue, request.user, request_id, d.get("known_issue"))
         return Response(self.run(
             support.platform_update, request.user, request_id,
-            state=request.data.get("status"), response=request.data.get("response"),
-            request=request))
+            state=d.get("status"), response=d.get("response"), request=request,
+            priority=d.get("priority"), category=d.get("category"),
+            assigned_to=d.get("assigned_to"), assign="assigned_to" in d,
+            escalate=bool(d.get("escalate")), escalate_reason=d.get("escalate_reason") or "",
+            roadmap_status=d.get("roadmap_status")))
+
+
+class SupportMessageView(PlatformConsoleMixin, APIView):
+    """POST a reply (emailed to the customer) or an internal note."""
+
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def post(self, request, request_id):
+        from . import support
+
+        upload = support._validate_file(request.FILES.get("attachment"), "attachment")
+        internal = str(request.data.get("internal", "")).lower() in ("1", "true", "yes")
+        return Response(self.run(support.platform_message, request.user, request_id,
+                                 body=request.data.get("body", ""), internal=internal,
+                                 attachment=upload), status=http_status.HTTP_201_CREATED)
+
+
+class SupportFileConsoleView(PlatformConsoleMixin, APIView):
+    def get(self, request, request_id, which, message_id=None):
+        from . import support
+
+        return support._serve(self.run(support.platform_file, request.user,
+                                       request_id, which, message_id))
+
+
+class SupportOverviewView(PlatformConsoleMixin, APIView):
+    """GET the Support Overview card: open, assigned, critical, overdue, times."""
+
+    def get(self, request):
+        from . import support
+
+        console.require_platform(request.user)
+        with no_tenant():
+            return Response(support.overview())
+
+
+class SupportAgentsView(PlatformConsoleMixin, APIView):
+    def get(self, request):
+        from . import support
+
+        return Response(self.run(support.agents, request.user))
+
+
+class ProductUpdatesConsoleView(PlatformConsoleMixin, APIView):
+    """GET every update (drafts too); POST a new one."""
+
+    def get(self, request):
+        from . import support
+        from .models import ProductUpdate
+
+        console.require_platform(request.user)
+        with no_tenant():
+            return Response([support.update_row(u) for u in ProductUpdate.objects.all()[:200]])
+
+    def post(self, request):
+        from . import support
+
+        serializer = support.ProductUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(support.save_update(request.user, serializer.validated_data),
+                        status=http_status.HTTP_201_CREATED)
+
+
+class ProductUpdateConsoleView(PlatformConsoleMixin, APIView):
+    def patch(self, request, update_id):
+        from . import support
+
+        serializer = support.ProductUpdateSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(support.save_update(request.user, serializer.validated_data, update_id))
+
+    def delete(self, request, update_id):
+        from .models import ProductUpdate
+
+        console.require_platform(request.user)
+        with no_tenant():
+            ProductUpdate.objects.filter(pk=update_id).delete()
+        return Response(status=http_status.HTTP_204_NO_CONTENT)
+
+
+class StatusNoticesConsoleView(PlatformConsoleMixin, APIView):
+    """GET recent notices; POST a new incident or maintenance notice."""
+
+    def get(self, request):
+        from . import support
+        from .models import StatusNotice
+
+        console.require_platform(request.user)
+        with no_tenant():
+            return Response([support.notice_row(n) for n in StatusNotice.objects.all()[:100]])
+
+    def post(self, request):
+        from . import support
+        from .models import StatusNotice
+
+        console.require_platform(request.user)
+        serializer = support.StatusNoticeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with no_tenant():
+            notice = StatusNotice.objects.create(created_by=request.user,
+                                                 **serializer.validated_data)
+        support._forget_status()
+        return Response(support.notice_row(notice), status=http_status.HTTP_201_CREATED)
+
+
+class StatusNoticeConsoleView(PlatformConsoleMixin, APIView):
+    """POST resolves a notice."""
+
+    def post(self, request, notice_id):
+        from django.utils import timezone as tz
+
+        from . import support
+        from .models import StatusNotice
+
+        console.require_platform(request.user)
+        with no_tenant():
+            notice = StatusNotice.objects.filter(pk=notice_id).first()
+            if notice is None:
+                raise Http404
+            notice.resolved_at = notice.resolved_at or tz.now()
+            notice.save(update_fields=["resolved_at"])
+        support._forget_status()
+        return Response(support.notice_row(notice))
+
+
+# ---------------------------------------------------------------------------
+# Customer Success 2.0 (console)
+# ---------------------------------------------------------------------------
+class _SuccessView(PlatformConsoleMixin, APIView):
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        console.require_platform(request.user)
+
+
+class SuccessCommandCenterView(_SuccessView):
+    """GET segments + every organization's health score with its components."""
+
+    def get(self, request):
+        from . import success
+        return Response(success.command_center())
+
+
+class SuccessAdoptionView(_SuccessView):
+    def get(self, request):
+        from . import success
+        try:
+            weeks = max(4, min(int(request.query_params.get("weeks") or 12), 26))
+        except ValueError:
+            weeks = 12
+        return Response(success.adoption(weeks))
+
+
+class SuccessOnboardingView(_SuccessView):
+    def get(self, request):
+        from . import success
+        return Response(success.milestones())
+
+
+class SuccessExecutiveView(_SuccessView):
+    def get(self, request):
+        from . import success
+        return Response(success.executive(request.user))
+
+
+class SuccessAlertsView(_SuccessView):
+    """GET what needs the team now: ticket SLA alerts and customer signals."""
+
+    def get(self, request):
+        from . import success
+        from . import desk
+        return Response({"tickets": success.ticket_alerts(),
+                         "customers": success.customer_alerts(),
+                         "mentions": desk.mentions_for(request.user, unread_only=True)})
+
+
+class OrganizationTimelineView(_SuccessView):
+    def get(self, request, slug):
+        from . import success
+        return Response(success.timeline(self.organization(slug)))
+
+
+class SuccessTasksView(_SuccessView):
+    """GET tasks (?organization=&status=&mine=1); POST one."""
+
+    def get(self, request):
+        from . import success
+        from .models import SuccessTask
+
+        p = request.query_params
+        with no_tenant():
+            qs = SuccessTask.objects.select_related("organization", "assigned_to", "ticket", "campaign")
+            if p.get("organization"):
+                qs = qs.filter(organization__slug=p["organization"])
+            if p.get("campaign"):
+                qs = qs.filter(campaign_id=p["campaign"])
+            if p.get("ticket"):
+                qs = qs.filter(ticket_id=p["ticket"])
+            if p.get("status"):
+                qs = qs.filter(status=p["status"])
+            if p.get("mine") == "1":
+                qs = qs.filter(assigned_to=request.user)
+            return Response([success.task_row(t) for t in qs[:300]])
+
+    def post(self, request):
+        from . import success
+        from .models import SuccessTask
+
+        d = request.data
+        kind = d.get("kind") or SuccessTask.Kind.FOLLOW_UP
+        if kind not in SuccessTask.Kind.values:
+            raise ValidationError({"kind": "Unknown task type."})
+        title = (d.get("title") or "").strip() or dict(SuccessTask.Kind.choices)[kind]
+        organization = self.organization(d.get("organization") or "")
+        with no_tenant():
+            task = SuccessTask.objects.create(
+                organization=organization, kind=kind, title=title[:200],
+                notes=(d.get("notes") or "").strip(), due_date=d.get("due_date") or None,
+                assigned_to=self._agent(d.get("assigned_to")), created_by=request.user)
+            task = SuccessTask.objects.select_related("organization", "assigned_to").get(pk=task.pk)
+            return Response(success.task_row(task), status=http_status.HTTP_201_CREATED)
+
+    @staticmethod
+    def _agent(agent_id):
+        from django.contrib.auth import get_user_model
+
+        if not agent_id:
+            return None
+        agent = get_user_model().all_tenants.filter(
+            pk=agent_id, is_platform_staff=True, organization__isnull=True).first()
+        if agent is None:
+            raise ValidationError({"assigned_to": "Tasks are assigned to platform staff."})
+        return agent
+
+
+class SuccessTaskView(_SuccessView):
+    def patch(self, request, task_id):
+        from django.utils import timezone as tz
+
+        from . import success
+        from .models import SuccessTask
+
+        d = request.data
+        with no_tenant():
+            task = SuccessTask.objects.select_related("organization", "assigned_to").filter(pk=task_id).first()
+            if task is None:
+                raise Http404
+            for field in ("title", "notes"):
+                if field in d:
+                    setattr(task, field, (d[field] or "").strip())
+            if "due_date" in d:
+                task.due_date = d["due_date"] or None
+            if "kind" in d and d["kind"] in SuccessTask.Kind.values:
+                task.kind = d["kind"]
+            if "assigned_to" in d:
+                task.assigned_to = SuccessTasksView._agent(d["assigned_to"])
+            if "status" in d:
+                if d["status"] not in SuccessTask.Status.values:
+                    raise ValidationError({"status": "Unknown status."})
+                task.status = d["status"]
+                task.completed_at = tz.now() if d["status"] == SuccessTask.Status.DONE else None
+            task.save()
+            task = SuccessTask.objects.select_related("organization", "assigned_to").get(pk=task.pk)
+            return Response(success.task_row(task))
+
+
+# ---------------------------------------------------------------------------
+# Support Desk 3.0 (console)
+# ---------------------------------------------------------------------------
+class SupportTeamsView(PlatformConsoleMixin, APIView):
+    """GET every team with members and queue numbers; POST a new team."""
+
+    def get(self, request):
+        from . import desk
+        return Response(self.run(desk.teams, request.user))
+
+    def post(self, request):
+        from . import desk
+        return Response(self.run(desk.save_team, request.user, request.data),
+                        status=http_status.HTTP_201_CREATED)
+
+
+class SupportTeamView(PlatformConsoleMixin, APIView):
+    def patch(self, request, team_id):
+        from . import desk
+        return Response(self.run(desk.save_team, request.user, request.data, team_id))
+
+
+class SupportTeamMembersView(PlatformConsoleMixin, APIView):
+    """POST {user, role?, is_available?, remove?}: add, change or remove."""
+
+    def post(self, request, team_id):
+        from . import desk
+
+        d = request.data
+        return Response(self.run(
+            desk.set_member, request.user, team_id, d.get("user"), role=d.get("role"),
+            is_available=d.get("is_available") if "is_available" in d else None,
+            remove=bool(d.get("remove"))))
+
+
+class SupportTransferView(PlatformConsoleMixin, APIView):
+    def post(self, request, request_id):
+        from . import desk
+
+        d = request.data
+        return Response(self.run(desk.transfer, request.user, request_id, d.get("team"),
+                                 agent_id=d.get("assigned_to"), note=d.get("note") or ""))
+
+
+class SupportLinksView(PlatformConsoleMixin, APIView):
+    """POST {ticket: "SUP-000042" | uuid, remove?} -> the linked tickets."""
+
+    def post(self, request, request_id):
+        from . import desk
+        return Response(self.run(desk.link, request.user, request_id, request.data.get("ticket"),
+                                 remove=bool(request.data.get("remove"))))
+
+
+class SupportTicketTasksView(PlatformConsoleMixin, APIView):
+    def post(self, request, request_id):
+        from . import desk
+        return Response(self.run(desk.create_ticket_task, request.user, request_id, request.data),
+                        status=http_status.HTTP_201_CREATED)
+
+
+class SupportSlaBoardView(PlatformConsoleMixin, APIView):
+    def get(self, request):
+        from . import desk
+        return Response(self.run(desk.sla_board, request.user,
+                                 team=request.query_params.get("team") or None))
+
+
+class SupportMentionsView(PlatformConsoleMixin, APIView):
+    """GET my mentions; POST marks them read (all, or ?ticket=)."""
+
+    def get(self, request):
+        from . import desk
+        return Response(self.run(desk.mentions_for, request.user,
+                                 unread_only=request.query_params.get("unread") == "1"))
+
+    def post(self, request):
+        from . import desk
+        return Response({"marked": self.run(desk.mark_mentions_read, request.user,
+                                            request.data.get("ticket") or None)})
+
+
+class KnownIssuesView(PlatformConsoleMixin, APIView):
+    """GET known issues; POST one (``from_ticket`` links that ticket)."""
+
+    def get(self, request):
+        from . import desk
+        return Response(self.run(desk.known_issues, request.user))
+
+    def post(self, request):
+        from . import desk
+        return Response(self.run(desk.save_issue, request.user, request.data,
+                                 from_ticket=request.data.get("from_ticket") or None),
+                        status=http_status.HTTP_201_CREATED)
+
+
+class KnownIssueView(PlatformConsoleMixin, APIView):
+    """PATCH; {state: "fixed", resolve_linked: true, fix_note} closes the loop."""
+
+    def patch(self, request, issue_id):
+        from . import desk
+        return Response(self.run(desk.save_issue, request.user, request.data, issue_id))
+
+
+class SuccessCampaignsView(_SuccessView):
+    """GET campaigns and segment sizes; POST {segment, ...} launches one."""
+
+    def get(self, request):
+        from . import desk
+
+        segment = request.query_params.get("segment")
+        if segment:
+            return Response({"segment": segment,
+                             "organizations": self.run(desk.segment_members, segment)})
+        return Response({"campaigns": self.run(desk.campaigns, request.user),
+                         "segments": self.run(desk.segments_summary, request.user)})
+
+    def post(self, request):
+        from . import desk
+        return Response(self.run(desk.create_campaign, request.user, request.data),
+                        status=http_status.HTTP_201_CREATED)
+
+
+class SuccessOperationsView(_SuccessView):
+    """GET the founder view: revenue, customers, risk, support, renewals."""
+
+    def get(self, request):
+        from . import desk
+        return Response(desk.operations(request.user))

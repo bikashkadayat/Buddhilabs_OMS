@@ -71,8 +71,31 @@ class BiometricDevice(models.Model):
         OFFLINE = "offline", "Offline"
         UNKNOWN = "unknown", "Unknown"
 
+    class DeviceType(models.TextChoices):
+        """Which wire protocol the terminal speaks.
+
+        Only protocols this codebase can actually read are offered. Every
+        option here goes through ``zk_client`` -- the ZK binary protocol on
+        TCP 4370 -- which ZKTeco and its OEM rebadges (eSSL, Realtime,
+        Identix) all share. A vendor with its own protocol (Hikvision,
+        Suprema) is not listed because choosing it would save a device that
+        can never sync, which is worse than not offering it.
+        """
+        ZKTECO = "zkteco", "ZKTeco"
+        ZK_COMPATIBLE = "zk_compatible", "ZK-compatible (eSSL, Realtime, Identix)"
+
+    class SyncInterval(models.IntegerChoices):
+        """How often the scheduler pulls this terminal. 0 = only on demand."""
+        MANUAL = 0, "Manual sync only"
+        EVERY_5 = 5, "Every 5 minutes"
+        EVERY_15 = 15, "Every 15 minutes"
+        EVERY_30 = 30, "Every 30 minutes"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, help_text="Human-friendly name, e.g. 'Main Gate'.")
+    device_type = models.CharField(
+        max_length=20, choices=DeviceType.choices, default=DeviceType.ZKTECO,
+        db_default=DeviceType.ZKTECO)
     # Phase S2 (tenant isolation, Phase A).
     organization = models.ForeignKey(
         "tenancy.Organization", on_delete=models.PROTECT, related_name="+",
@@ -115,6 +138,16 @@ class BiometricDevice(models.Model):
         help_text="Device serial number (device menu: Info > Device). Required "
                   "for PUSH/ADMS terminals — it is how they identify themselves.",
     )
+    # The serial the terminal REPORTS when pulled, recorded on first contact.
+    # Separate from `serial_number` on purpose: that field is the PUSH/ADMS
+    # credential, and filling it in from a pull would quietly start accepting
+    # unauthenticated iClock posts for a device that never asked to push.
+    # Unique platform-wide (below), which is what stops a second organization
+    # registering the same physical terminal and pulling its attendance.
+    hardware_serial = models.CharField(
+        max_length=64, blank=True, default="", db_default="",
+        help_text="Serial reported by the terminal on first contact. A pull "
+                  "from a terminal reporting a different serial is refused.")
     port = models.PositiveIntegerField(default=4370)
     location = models.CharField(max_length=255, blank=True, default="")
     # Device clocks are set to wall-clock local time and pyzk reports them naive.
@@ -147,6 +180,31 @@ class BiometricDevice(models.Model):
         default=0, help_text="Punches sitting unsent in the collector's spool at last contact.")
     successful_batches = models.PositiveIntegerField(default=0)
     failed_batches = models.PositiveIntegerField(default=0)
+
+    # --- scheduled pull (Organization Settings -> Biometric Devices) --------
+    # The scheduler (`device_sync_due`) reads these. db_default on the NOT
+    # NULL columns for the same reason attendance.Attendance uses it: code
+    # that predates them must still be able to INSERT after a rollback.
+    sync_interval_minutes = models.PositiveSmallIntegerField(
+        choices=SyncInterval.choices, default=SyncInterval.EVERY_15,
+        db_default=SyncInterval.EVERY_15,
+        help_text="How often the server pulls this terminal. 0 = manual only.")
+    # The terminal's COMM key (device menu: Comm > Security). Per device, not
+    # per deployment, because two tenants' terminals will not share one. It
+    # is a 0-999999 PIN that the ZK handshake sends in a scrambled form, so
+    # it is never returned by the API -- write-only, like a password field.
+    comm_key = models.PositiveIntegerField(default=0, db_default=0)
+    last_sync_attempt_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text="Last time a pull was attempted, successful or not. Drives the schedule.")
+    last_sync_status = models.CharField(max_length=10, blank=True, default="", db_default="")
+    last_sync_error = models.TextField(blank=True, default="", db_default="")
+    last_sync_imported = models.PositiveIntegerField(
+        default=0, db_default=0, help_text="New punches stored by the last pull.")
+    # What the terminal said about itself at the last successful connection
+    # test or sync: serial, firmware, platform, user and record counts.
+    device_info = models.JSONField(default=dict, blank=True)
+    device_info_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -192,6 +250,14 @@ class BiometricDevice(models.Model):
                 fields=["serial_number"],
                 condition=~models.Q(serial_number=""),
                 name="uniq_biometric_device_serial_global"),
+            # Same reasoning for the pulled identity. A database constraint,
+            # not an application check, because under row-level security the
+            # application role cannot SEE another tenant's devices to compare
+            # against -- but the unique index is enforced over every row.
+            models.UniqueConstraint(
+                fields=["hardware_serial"],
+                condition=~models.Q(hardware_serial=""),
+                name="uniq_biometric_device_hw_serial_global"),
         ]
 
     def __str__(self):
@@ -545,12 +611,25 @@ class DeviceSyncLog(models.Model):
         LIVE = "live", "Live punch"
         ROSTER = "roster", "Employee roster"
         IMPORT = "import", "Manual import"
+        # One row per server-initiated pull, success or failure. The per-batch
+        # HISTORY rows ingest writes still exist beneath it; this is the row
+        # that says "the scheduler tried at 10:05 and the terminal was off".
+        PULL = "pull", "Device pull"
+        TEST = "test", "Connection test"
+
+    class Trigger(models.TextChoices):
+        AUTO = "auto", "Scheduled"
+        MANUAL = "manual", "Manual (Sync now)"
+        TEST = "test", "Connection test"
 
     class Status(models.TextChoices):
         STARTED = "started", "Started"
         SUCCESS = "success", "Success"
         PARTIAL = "partial", "Partial"
         FAILED = "failed", "Failed"
+        # A pull that did not run because another was already reading the
+        # terminal. Not a failure: the device keeps its log, nothing is lost.
+        SKIPPED = "skipped", "Skipped"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # Phase S5 (tenant isolation, Phase C). Ownership chain declared in
@@ -590,6 +669,12 @@ class DeviceSyncLog(models.Model):
 
     error = models.TextField(blank=True, default="")
     client_ip = models.GenericIPAddressField(null=True, blank=True)
+    # Blank on rows written by the push/ingest paths, which predate it.
+    trigger = models.CharField(max_length=10, choices=Trigger.choices, blank=True,
+                               default="", db_default="")
+    triggered_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="+")
 
     class Meta:
         ordering = ["-started_at"]

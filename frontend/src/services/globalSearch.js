@@ -200,7 +200,12 @@ export const NAV_INDEX = [
   { id: 'nav:users', label: 'User management', to: '/admin/users', gate: 'userManagement' },
   { id: 'nav:health', label: 'System health', to: '/monitoring', gate: 'systemMonitoring' },
   { id: 'nav:help', label: 'Help center', to: '/help', alias: 'how to faq tutorial guide question' },
-  { id: 'nav:support', label: 'Contact support', to: '/help/contact', alias: 'report problem bug feature request feedback' },
+  { id: 'nav:support', label: 'Create a support ticket', to: '/help/contact', alias: 'contact support report problem bug issue help desk' },
+  { id: 'nav:tickets', label: 'My support tickets', to: '/help/tickets', alias: 'ticket support request reply status' },
+  { id: 'nav:features', label: 'Feature requests', to: '/help/features', alias: 'suggest idea integration improvement roadmap' },
+  { id: 'nav:updates', label: 'What’s new', to: '/help/updates', alias: 'product updates release notes changelog new features' },
+  { id: 'nav:status', label: 'System status', to: '/help/status', alias: 'outage down status incident is it working' },
+  { id: 'nav:contact-us', label: 'Contact Buddhi Labs', to: '/help/contact-us', alias: 'contact support team email reach us' },
   { id: 'nav:getting-started', label: 'Getting started', to: '/getting-started', alias: 'setup onboarding checklist', gate: 'userManagement' },
   { id: 'nav:task-drafts', label: 'My task drafts', to: '/tasks/drafts', alias: 'unfinished draft task' },
   { id: 'nav:memo-all', label: 'All memos', to: '/memos/all', gate: 'allMemos' },
@@ -221,7 +226,7 @@ export const NAV_INDEX = [
   { id: 'nav:leave-types', label: 'Leave types', to: '/admin/leaves/leave-types', alias: 'annual sick casual', gate: 'userManagement' },
   { id: 'nav:holidays', label: 'Holidays & events', to: '/admin/leaves/holidays', alias: 'public holiday calendar events', gate: 'userManagement' },
   { id: 'nav:bulk', label: 'Bulk leave actions', to: '/admin/leaves/bulk-actions', alias: 'approve many reject many', gate: 'userManagement' },
-  { id: 'nav:biometric', label: 'Biometric attendance', to: '/admin/biometric-attendance', alias: 'device punches fingerprint', gate: 'userManagement' },
+  { id: 'nav:biometric', label: 'Biometric devices', to: '/settings/attendance', alias: 'device punches fingerprint zkteco attendance mode sync', gate: 'userManagement' },
 ];
 
 /** Case-insensitive substring match over label + aliases + keywords. */

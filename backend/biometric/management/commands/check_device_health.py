@@ -13,8 +13,36 @@ from biometric.models import BiometricDevice
 from biometric.services import set_device_status
 
 from monitoring import heartbeat
+from tenancy.context import tenant_context
 
 DEFAULT_OFFLINE_MINUTES = 15
+
+
+def _organizations():
+    from tenancy.context import no_tenant
+    from tenancy.models import Organization
+
+    with no_tenant():
+        return list(Organization.objects.exclude(status=Organization.Status.ARCHIVED))
+
+
+def _cutoff_for(device, default_cutoff):
+    """The silence that means "offline" for THIS device, or None to skip it.
+
+    A pulled device is only heard from when the server pulls it, so silence
+    is measured against its own interval: a terminal pulled every 30 minutes
+    is not offline after 15. Two missed pulls is the threshold. A pulled
+    device set to manual sync is heard from only when someone presses Sync
+    now, so silence says nothing about it -- its status is whatever the last
+    test or sync found, and this command leaves it alone.
+    """
+    if not device.host:
+        return default_cutoff                  # pushes: silence is the signal
+    interval = device.sync_interval_minutes or 0
+    if interval <= 0:
+        return None
+    allowed = timezone.timedelta(minutes=interval * 2 + 1)
+    return min(default_cutoff, timezone.now() - allowed)
 
 
 class Command(BaseCommand):
@@ -42,17 +70,26 @@ class Command(BaseCommand):
         cutoff = timezone.now() - timezone.timedelta(minutes=minutes)
 
         changed = []
-        for device in BiometricDevice.objects.filter(is_active=True):
-            # A device that has never checked in is not "offline" — it has never
-            # been configured. Reporting it as a failure every 5 minutes would
-            # train people to ignore the alert.
-            if device.last_seen_at is None:
-                continue
-            online = device.last_seen_at >= cutoff
-            # immediate=True: a management command is not inside a transaction,
-            # so there is no commit to wait for.
-            if set_device_status(device, online, immediate=True):
-                changed.append((device, online))
+        total = 0
+        # Every tenant, one at a time: with no tenant bound the scoped manager
+        # would only ever see the single-tenant fallback organization.
+        for organization in _organizations():
+            with tenant_context(organization):
+                for device in BiometricDevice.objects.filter(is_active=True):
+                    total += 1
+                    # A device that has never checked in is not "offline" — it
+                    # has never been configured. Reporting it as a failure
+                    # every 5 minutes would train people to ignore the alert.
+                    if device.last_seen_at is None:
+                        continue
+                    device_cutoff = _cutoff_for(device, cutoff)
+                    if device_cutoff is None:
+                        continue
+                    online = device.last_seen_at >= device_cutoff
+                    # immediate=True: a management command is not inside a
+                    # transaction, so there is no commit to wait for.
+                    if set_device_status(device, online, immediate=True):
+                        changed.append((device, online))
 
         if changed:
             for device, online in changed:
@@ -61,5 +98,4 @@ class Command(BaseCommand):
                 self.stdout.write(style(
                     f"{device.label} -> {state} (last seen {device.last_seen_at:%Y-%m-%d %H:%M})"))
         elif not options["quiet"]:
-            total = BiometricDevice.objects.filter(is_active=True).count()
             self.stdout.write(f"No status changes across {total} active device(s).")

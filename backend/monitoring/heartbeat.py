@@ -38,6 +38,8 @@ CRON_JOBS = {
     # Critical and short: this is the only thing that moves attendance from the
     # terminal into the OMS. If it stops, nobody is recorded as present and the
     # dashboards look plausible right up until payroll.
+    # Written by `device_sync_due` (every minute, all tenants), and by the
+    # older `device_sync` / `device_sync_loop` when an operator runs them.
     "DEVICE_SYNC": ("Biometric device collection", 10, True),
     "PROCESS_PUNCHES": ("Punch derivation safety net", 10, True),
     "CHECK_DEVICE_HEALTH": ("Device health sweep", 5, True),
@@ -66,6 +68,12 @@ CRON_JOBS = {
     # here. A missed task reminder means nobody is chased about a hard due date;
     # a missed appraisal reminder means somebody is nudged tomorrow instead.
     "APPRAISAL_REMINDERS": ("Appraisal deadline reminders", 1440, False),
+    # Customer Success 2.0. SLA alerts are critical: their whole point is
+    # that an overdue ticket no longer goes unnoticed, and a silent alert job
+    # puts that straight back. The daily customer signals are not -- a missed
+    # day delays an outreach task by a day.
+    "SUPPORT_SLA_ALERTS": ("Support SLA alerts", 15, True),
+    "SUCCESS_CUSTOMERS": ("Customer success signals", 1440, False),
 }
 
 # How late a job may be before it is amber / red, as a multiple of its interval.

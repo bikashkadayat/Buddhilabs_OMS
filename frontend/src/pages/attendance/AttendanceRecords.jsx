@@ -23,6 +23,30 @@ const STATUS_META = {
   holiday: { label: 'Holiday', color: 'var(--text-muted)' },
 };
 
+// Where each row came from. `source_display` is the server's label ("Web
+// app", "Mobile app", "Biometric device", "HR entry"); a biometric row also
+// names the terminal. With App + Biometric the two ends of one day can come
+// from different places, so each time carries its own small tag when it
+// differs from the row's source.
+const SourceCell = ({ row }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <span style={{ fontWeight: 600 }}>{row.source_display || '—'}</span>
+    {row.source === 'biometric' && row.device_name && (
+      <span style={{ fontSize: 'var(--fs-meta)', color: 'var(--text-muted)' }}>{row.device_name}</span>
+    )}
+  </div>
+);
+
+const EndSource = ({ row, end }) => {
+  const own = row[`${end}_source`];
+  if (!own || own === row.source) return null;
+  return (
+    <div style={{ fontSize: 'var(--fs-meta)', color: 'var(--text-muted)' }}>
+      via {row[`${end}_source_display`]}
+    </div>
+  );
+};
+
 const STATUS_FILTERS = ['present', 'late', 'half_day', 'absent', 'on_leave', 'holiday'];
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -205,6 +229,7 @@ const AttendanceRecords = () => {
                   <th scope="col">Department</th>
                   <th scope="col">Date</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Source</th>
                   <th scope="col">Check-in</th>
                   <th scope="col">Check-in location</th>
                   <th scope="col">Check-out</th>
@@ -224,14 +249,15 @@ const AttendanceRecords = () => {
                       <div style={{ fontSize: 'var(--fs-meta)', color: 'var(--text-muted)' }}>B.S. {r.date_bs}</div>
                     </td>
                     <td><StatusChip status={r.status} /></td>
-                    <td>{fmtTime(r.check_in)}</td>
+                    <td><SourceCell row={r} /></td>
+                    <td>{fmtTime(r.check_in)}<EndSource row={r} end="check_in" /></td>
                     <td>
                       <LocationCell address={r.check_in_address} lat={r.check_in_lat} lng={r.check_in_lng}
                         accuracy={r.check_in_accuracy} distance={r.check_in_distance_m} within={r.check_in_within_office}
                         onView={() => setPinned(r)} hasEvent={!!r.check_in}
                         viewLabel={`View check-in location for ${r.employee_name || 'employee'} on ${r.date}`} />
                     </td>
-                    <td>{fmtTime(r.check_out)}</td>
+                    <td>{fmtTime(r.check_out)}<EndSource row={r} end="check_out" /></td>
                     <td>
                       <LocationCell address={r.check_out_address} lat={r.check_out_lat} lng={r.check_out_lng}
                         accuracy={r.check_out_accuracy} distance={r.check_out_distance_m} within={r.check_out_within_office}

@@ -45,6 +45,8 @@ const gAssetReports = (r) => can(r, 'assetRegisterRead');
 
 /** Badge selectors. Read the cached dashboard payloads; never fetch. */
 const b = {
+  helpTickets: (c) => c.support?.tickets_unread || null,
+  helpUpdates: (c) => c.support?.updates_unseen || null,
   memoPending: (c) => c.memo?.pending_actions || null,
   memoDrafts: (c) => c.memo?.drafts || null,
   memoReview: (c) => c.memo?.draft_for_review || null,
@@ -103,6 +105,25 @@ const WORKSPACE = [
  */
 export const CONTEXTS = {
   workspace: { key: 'workspace', items: WORKSPACE },
+
+  /* Help & Support -- the Customer Success Center. Its own rail rather than
+     a workspace entry: the workspace rail is at its 10/8 budget, and Help is
+     reached from everywhere already (the account menu, Ctrl+K, and the
+     "Need help?" box on every major page). Seven entries, the module ceiling. */
+  help: {
+    key: 'help',
+    title: 'Help & Support',
+    back: { label: '← Back to workspace', to: '/' },
+    items: [
+      { key: 'h-tickets', label: 'My tickets', icon: 'inbox', to: '/help/tickets', badge: b.helpTickets },
+      { key: 'h-create', label: 'Create ticket', icon: 'create', to: '/help/contact' },
+      { key: 'h-kb', label: 'Knowledge base', icon: 'documents', to: '/help', end: true },
+      { key: 'h-features', label: 'Feature requests', icon: 'insights', to: '/help/features' },
+      { key: 'h-updates', label: 'Product updates', icon: 'circular-create', to: '/help/updates', badge: b.helpUpdates },
+      { key: 'h-status', label: 'System status', icon: 'health', to: '/help/status' },
+      { key: 'h-contact', label: 'Contact Buddhi Labs', icon: 'people', to: '/help/contact-us' },
+    ],
+  },
 
   memo: {
     key: 'memo',
@@ -323,7 +344,12 @@ export const CONTEXTS = {
       // Settings hub ("Workspace setup"): each is configured a few times a
       // year, and they were taking rail space from the pages an
       // administrator opens every day.
-      { key: 'ad-biometric', label: 'Biometric devices', icon: 'biometric', to: '/admin/biometric-attendance', gate: gAdmin },
+      // The tenant's own devices (Settings -> Attendance & biometric devices).
+      // This used to open /admin/biometric-attendance: an iframe of NIF's
+      // single-tenant morx dashboard, which is blank for every other tenant
+      // and, pointed at the real service, would show NIF's punches to them.
+      // That page is still reachable by URL for NIF's deployment.
+      { key: 'ad-biometric', label: 'Biometric devices', icon: 'biometric', to: '/settings/attendance', gate: gAdmin },
       { key: 'ad-bulk', label: 'Bulk actions', icon: 'bulk', to: '/admin/leaves/bulk-actions', gate: gAdmin },
       { key: 'ad-health', label: 'System health', icon: 'health', to: '/monitoring', gate: gMonitoring },
       // ONE entry for three account pages -- subscription, branding and
@@ -346,6 +372,7 @@ export const CONTEXTS = {
  * to reports rather than being shadowed by a shorter match.
  */
 const PREFIXES = [
+  ['/help', 'help'],
   ['/memos', 'memo'],
   ['/minutes', 'minute'],
   ['/tasks', 'task'],

@@ -30,6 +30,8 @@ from biometric.zk_client import (
     CMD_FREE_DATA,
     CMD_GET_FREE_SIZES,
     CMD_GET_TIME,
+    CMD_GET_VERSION,
+    CMD_OPTIONS_RRQ,
     CMD_PREPARE_DATA,
     CMD_READ_BUFFER,
     CMD_USERTEMP_RRQ,
@@ -98,7 +100,11 @@ class FakeZKDevice:
     def __init__(self, users=b"", attendance=b"", *, comm_key=0,
                  transfer_mode="buffer", clock=None, sizes=None,
                  chunk_bytes=None, garbage=False, announce_extra=0,
-                 short_chunk=0):
+                 short_chunk=0, firmware=None, options=None):
+        # Device identity for CMD_GET_VERSION / CMD_OPTIONS_RRQ. Unset means
+        # the firmware refuses, which is what older terminals do.
+        self.firmware = firmware
+        self.options = options or {}
         self.users = users
         self.attendance = attendance
         self.comm_key = comm_key
@@ -234,6 +240,20 @@ class FakeZKDevice:
             fields[4] = self.sizes.get("users", 0)
             fields[8] = self.sizes.get("records", 0)
             self._reply(conn, CMD_ACK_OK, reply, struct.pack("<20i", *fields))
+            return True
+
+        if command == CMD_GET_VERSION:
+            payload = (self.firmware.encode() + b"\x00") if self.firmware else b""
+            self._reply(conn, CMD_ACK_OK if self.firmware else CMD_ACK_ERROR, reply, payload)
+            return True
+
+        if command == CMD_OPTIONS_RRQ:
+            name = data.split(b"\x00")[0].decode()
+            if name in self.options:
+                self._reply(conn, CMD_ACK_OK, reply,
+                            f"{name}={self.options[name]}".encode() + b"\x00")
+            else:
+                self._reply(conn, CMD_ACK_ERROR, reply)
             return True
 
         if command == CMD_DATA_WRRQ:

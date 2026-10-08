@@ -7,7 +7,7 @@ from rest_framework import serializers
 
 from users.models import User
 
-from .models import AttendancePunch, BiometricEmployee
+from .models import AttendancePunch, BiometricDevice, BiometricEmployee, DeviceSyncLog
 
 DEFAULT_MAX_BATCH = 500
 
@@ -243,3 +243,162 @@ class RosterEmployeeSerializer(serializers.Serializer):
 class RosterSyncSerializer(serializers.Serializer):
     """POST /roster-sync/ — the device's enrolled users."""
     employees = serializers.ListField(child=RosterEmployeeSerializer(), allow_empty=True)
+
+
+# ===========================================================================
+# Organization Settings -> Attendance -> Biometric Devices
+# ===========================================================================
+
+class BiometricDeviceSerializer(serializers.ModelSerializer):
+    """A device as an organization administrator sees and edits it.
+
+    ``comm_key`` is write-only: it is the terminal's PIN, and nothing the
+    browser does needs it back. ``has_comm_key`` says whether one is set.
+    ``label`` is optional on create -- the form asks for a name, and the
+    short handle the management commands use is derived from it.
+    """
+    device_type_display = serializers.CharField(source="get_device_type_display", read_only=True)
+    connection_status_display = serializers.CharField(
+        source="get_connection_status_display", read_only=True)
+    sync_interval_display = serializers.CharField(
+        source="get_sync_interval_minutes_display", read_only=True)
+    comm_key = serializers.IntegerField(write_only=True, required=False,
+                                        min_value=0, max_value=999999)
+    has_comm_key = serializers.SerializerMethodField()
+    label = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    sync_mode = serializers.SerializerMethodField()
+    next_sync_due_at = serializers.SerializerMethodField()
+    # Annotated by the viewset; absent (None) when the serializer is used on
+    # a bare instance, e.g. straight after create.
+    attendance_imported = serializers.IntegerField(read_only=True, default=None)
+    mapped_users = serializers.IntegerField(read_only=True, default=None)
+    unmapped_users = serializers.IntegerField(read_only=True, default=None)
+
+    class Meta:
+        model = BiometricDevice
+        fields = [
+            "id", "name", "label", "device_type", "device_type_display",
+            "host", "port", "location", "is_active", "device_timezone",
+            "sync_interval_minutes", "sync_interval_display", "sync_mode",
+            "comm_key", "has_comm_key",
+            "connection_status", "connection_status_display",
+            "last_seen_at", "last_sync_at", "last_sync_attempt_at",
+            "last_sync_status", "last_sync_error", "last_sync_imported",
+            "next_sync_due_at", "clock_drift_seconds",
+            "device_info", "device_info_at", "hardware_serial", "serial_number",
+            "attendance_imported", "mapped_users", "unmapped_users",
+            "created_at", "updated_at",
+        ]
+        read_only_fields = [
+            "connection_status", "last_seen_at", "last_sync_at", "last_sync_attempt_at",
+            "last_sync_status", "last_sync_error", "last_sync_imported",
+            "clock_drift_seconds", "device_info", "device_info_at", "hardware_serial",
+            "serial_number", "created_at", "updated_at",
+        ]
+        # The model-level (organization, name) constraints are checked in
+        # validate(), where the organization is known, with a readable message.
+        validators = []
+
+    def get_has_comm_key(self, obj):
+        return bool(obj.comm_key)
+
+    def get_sync_mode(self, obj):
+        # A device with no address cannot be pulled: it pushes (ADMS or an
+        # on-site collector posting to the ingest API).
+        return "pull" if obj.host else "push"
+
+    def get_next_sync_due_at(self, obj):
+        if not (obj.is_active and obj.host and obj.sync_interval_minutes):
+            return None
+        if obj.last_sync_attempt_at is None:
+            return timezone.now().isoformat()
+        return (obj.last_sync_attempt_at
+                + timedelta(minutes=obj.sync_interval_minutes)).isoformat()
+
+    def validate_name(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Enter a name for the device.")
+        return value
+
+    def validate_device_timezone(self, value):
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError) as exc:
+            raise serializers.ValidationError(f"{value!r} is not a known timezone.") from exc
+        return value
+
+    def validate(self, attrs):
+        from django.utils.text import slugify
+
+        from .devices import DeviceAddressError, check_device_address
+
+        instance = self.instance
+        host = attrs.get("host", instance.host if instance else "")
+        port = attrs.get("port", instance.port if instance else 4370)
+        if "host" in attrs or "port" in attrs:
+            if host:
+                try:
+                    check_device_address(host, port)
+                except DeviceAddressError as exc:
+                    raise serializers.ValidationError({"host": str(exc)}) from exc
+            attrs["host"] = (host or "").strip()
+
+        existing = BiometricDevice.objects.all()
+        if instance is not None:
+            existing = existing.exclude(pk=instance.pk)
+        name = attrs.get("name")
+        if name and existing.filter(name__iexact=name).exists():
+            raise serializers.ValidationError(
+                {"name": "Another device in your organization already has this name."})
+
+        label = (attrs.get("label") or "").strip()
+        if instance is None and not label:
+            base = slugify(attrs.get("name", "")) or "device"
+            label, n = base[:90], 2
+            while existing.filter(label=label).exists():
+                label = f"{base[:90]}-{n}"
+                n += 1
+        if label:
+            if existing.filter(label=label).exists():
+                raise serializers.ValidationError(
+                    {"label": "Another device in your organization already uses this label."})
+            attrs["label"] = label
+        elif "label" in attrs:
+            attrs.pop("label")
+        return attrs
+
+
+class DeviceConnectionTestSerializer(serializers.Serializer):
+    """"Test before saving": the address fields of the Add Device form."""
+    host = serializers.CharField(max_length=255)
+    port = serializers.IntegerField(default=4370, min_value=1, max_value=65535)
+    comm_key = serializers.IntegerField(default=0, min_value=0, max_value=999999)
+    device_type = serializers.ChoiceField(
+        choices=BiometricDevice.DeviceType.choices, default=BiometricDevice.DeviceType.ZKTECO)
+
+
+class DeviceSyncLogSerializer(serializers.ModelSerializer):
+    sync_type_display = serializers.CharField(source="get_sync_type_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    trigger_display = serializers.CharField(source="get_trigger_display", read_only=True)
+    triggered_by_name = serializers.SerializerMethodField()
+    duration_seconds = serializers.FloatField(read_only=True)
+
+    class Meta:
+        model = DeviceSyncLog
+        fields = ["id", "sync_type", "sync_type_display", "status", "status_display",
+                  "trigger", "trigger_display", "triggered_by_name",
+                  "started_at", "finished_at", "duration_seconds",
+                  "records_received", "records_created", "records_duplicate",
+                  "records_unmapped", "records_invalid", "error"]
+        read_only_fields = fields
+
+    def get_triggered_by_name(self, obj):
+        return obj.triggered_by.get_full_name() if obj.triggered_by_id else None
+
+
+class AutoMatchRequestSerializer(serializers.Serializer):
+    device = serializers.UUIDField(required=False, allow_null=True)
+    apply = serializers.BooleanField(default=False)

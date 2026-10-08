@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 
 import UserAvatar from '../common/UserAvatar.jsx';
+import { supportService } from '../../services/supportService';
 
 /**
  * The account menu behind the avatar.
@@ -30,7 +31,17 @@ const ITEMS = [
 
 const AccountMenu = ({ user, roleLabel, isAdmin = false, compact = false, onSignOut }) => {
   const [open, setOpen] = useState(false);
+  const [help, setHelp] = useState(0);
   const ref = useRef(null);
+
+  // Fetched when the menu opens, not on every page: a dot that costs a
+  // request per navigation is not worth it.
+  useEffect(() => {
+    if (!open) return;
+    supportService.badges()
+      .then((d) => setHelp((d?.tickets_unread || 0) + (d?.updates_unseen || 0)))
+      .catch(() => {});
+  }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -85,6 +96,9 @@ const AccountMenu = ({ user, roleLabel, isAdmin = false, compact = false, onSign
                   onClick={() => setOpen(false)}>
               <Icon size={16} aria-hidden="true" />
               {label}
+              {to === '/help' && help > 0 && (
+                <span className="am-new" aria-label={`${help} new`}>{help} new</span>
+              )}
             </Link>
           ))}
           <button type="button" role="menuitem" className="am-item am-out"

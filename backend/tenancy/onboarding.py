@@ -64,7 +64,9 @@ STEPS = [
         "key": "attendance",
         "title": "Configure attendance",
         "detail": "A general shift and a default policy are ready. Set the "
-                  "office hours, grace period and half-day rules.",
+                  "office hours, grace period and half-day rules — or choose "
+                  "how attendance is taken and connect a biometric device "
+                  "under Settings → Attendance & biometric devices.",
         "action": "/admin/attendance/policies",
     },
     {
@@ -274,6 +276,18 @@ def _measure(organization):
                         if getattr(policy, field, value) != value:
                             attendance_reviewed = True
                             break
+
+        # A customer whose attendance setup IS the gate terminal -- or who
+        # chose app-only / biometric-only deliberately -- has configured
+        # attendance as surely as one who edited the shift. Before the
+        # legacy device integration this step could never tick for them.
+        if not attendance_reviewed:
+            from biometric.models import BiometricDevice
+
+            attendance_reviewed = (
+                BiometricDevice.objects.exists()
+                or bool(getattr(getattr(organization, "settings", None),
+                                "attendance_mode", "")))
 
         first_task = Task.objects.exists()
 

@@ -305,6 +305,18 @@ BIOMETRIC_DEVICE_COMM_KEY = _int_env('BIOMETRIC_DEVICE_COMM_KEY', 0)
 # and a timeout mid-transfer costs a whole retry cycle.
 BIOMETRIC_DEVICE_TIMEOUT = _int_env('BIOMETRIC_DEVICE_TIMEOUT', 20)
 
+# Organization-managed devices (Settings -> Biometric Devices). The SERVER
+# dials whatever address an organization administrator enters, so loopback
+# and link-local (cloud metadata) are always refused. Private ranges are where
+# terminals live and are allowed by default; a cloud deployment that reaches
+# customer sites only over public addresses or a VPN can switch them off.
+# BIOMETRIC_DEVICE_ALLOW_LOOPBACK is for development against the ZK simulator
+# or an SSH tunnel -- never set it in production.
+BIOMETRIC_DEVICE_ALLOW_PRIVATE_HOSTS = os.getenv(
+    'BIOMETRIC_DEVICE_ALLOW_PRIVATE_HOSTS', '1').strip().lower() in ('1', 'true', 'yes')
+BIOMETRIC_DEVICE_ALLOW_LOOPBACK = os.getenv(
+    'BIOMETRIC_DEVICE_ALLOW_LOOPBACK', '').strip().lower() in ('1', 'true', 'yes')
+
 # iClock / PUSH (Phase 12). The protocol has no authentication — a terminal
 # identifies itself with ?SN=<serial> and nothing else, and the firmware cannot
 # be made to send a key. Devices are therefore allow-listed by serial number on
@@ -1008,6 +1020,12 @@ PLATFORM_POWERED_BY = os.getenv('PLATFORM_POWERED_BY',
 # welcome email and the handover package. Blank means the line is left out
 # rather than pointing at an inbox nobody reads.
 PLATFORM_SUPPORT_EMAIL = os.getenv('PLATFORM_SUPPORT_EMAIL', '').strip()
+# Support Desk 3.0. Who is emailed when a ticket is escalated (comma list;
+# team leads are added, and PLATFORM_SUPPORT_EMAIL is the fallback), and the
+# escalation rules: priority -> hours of SLA clock before automatic escalation.
+SUPPORT_LEADERSHIP_EMAILS = [e.strip() for e in os.getenv('SUPPORT_LEADERSHIP_EMAILS', '').split(',')
+                             if e.strip()]
+SUPPORT_ESCALATION_HOURS = {'critical': float(os.getenv('SUPPORT_ESCALATE_CRITICAL_HOURS', '4') or 4)}
 NOTIFICATIONS_RUN_SYNC = os.getenv('NOTIFICATIONS_RUN_SYNC', 'False').lower() in ('true', '1', 'yes')
 # Autosave snapshots (Phase 111). Retention runs off last-touched, so a document
 # someone returns to each week survives regardless of when it was started.

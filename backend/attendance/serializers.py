@@ -25,6 +25,14 @@ class AttendanceSerializer(serializers.ModelSerializer):
     # already stored would go stale the moment either changes.
     check_in_map_url = serializers.SerializerMethodField()
     check_out_map_url = serializers.SerializerMethodField()
+    # Attendance history: where the row and each end of the day came from,
+    # and which terminal, named -- the brief's "Source = Biometric Device".
+    source_display = serializers.CharField(source="get_source_display", read_only=True)
+    check_in_source_display = serializers.CharField(
+        source="get_check_in_source_display", read_only=True)
+    check_out_source_display = serializers.CharField(
+        source="get_check_out_source_display", read_only=True)
+    device_name = serializers.CharField(source="device.name", read_only=True, default=None)
     check_in_location_source_display = serializers.CharField(
         source="get_check_in_location_source_display", read_only=True)
     check_out_location_source_display = serializers.CharField(
@@ -50,6 +58,10 @@ class AttendanceSerializer(serializers.ModelSerializer):
             # consumer of this payload keeps working unchanged.
             "source", "first_punch_at", "last_punch_at", "punch_count", "device",
             "browser_check_in", "browser_check_out",
+            # Legacy biometric integration: per-end provenance + device name.
+            "source_display", "device_name", "app_source",
+            "check_in_source", "check_out_source",
+            "check_in_source_display", "check_out_source_display",
             # Policy engine (Phase 8) — appended for the same reason: every
             # existing consumer of this payload keeps working unchanged.
             "regular_hours", "overtime_hours", "late_minutes",

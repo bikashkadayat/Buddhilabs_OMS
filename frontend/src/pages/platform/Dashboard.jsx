@@ -58,9 +58,17 @@ const PlatformDashboard = () => {
   const [data, setData] = useState(null);
   const [recent, setRecent] = useState([]);
   const [error, setError] = useState(null);
+  const [support, setSupport] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     let alive = true;
+    platformService.successCommandCenter()
+      .then(({ data: d }) => { if (alive) setSuccess(d); })
+      .catch(() => {});
+    platformService.supportOverview()
+      .then(({ data: d }) => { if (alive) setSupport(d); })
+      .catch(() => {});
     platformService.dashboard()
       .then((response) => { if (alive) setData(response.data); })
       .catch(() => { if (alive) setError('The dashboard could not be loaded.'); });
@@ -194,6 +202,36 @@ const PlatformDashboard = () => {
         <Metric to="/platform/usage" label="Storage"
                 value={bytes(data.storage_bytes)} sub="Tenant media and exports" />
       </section>
+
+      {/* Customer Success 2.0: who needs us, before they say so. */}
+      {success?.bands && success?.segments && (
+        <section className="pf-metrics" aria-label="Customer health">
+          <Metric to="/platform/customer-health" label="Average health" value={success.average_health ?? '—'}
+                  sub={`${success.bands.healthy} healthy · ${success.bands.watch} to watch`} />
+          <Metric to="/platform/customer-health" label="Customers at risk" value={success.bands.at_risk}
+                  tone={success.bands.at_risk ? 'warn' : ''} sub="Health under 50" />
+          <Metric to="/platform/customer-health" label="Trial ending soon"
+                  value={success.segments.find((x) => x.key === 'trial_ending')?.count ?? 0} sub="Within 7 days" />
+          <Metric to="/platform/customer-health?tab=executive" label="New customers"
+                  value={success.segments.find((x) => x.key === 'new')?.count ?? 0} sub="Joined in 30 days" />
+        </section>
+      )}
+
+      {/* Support Overview: the desk's health at a glance. Overdue is the
+          number to act on -- those tickets are past their SLA. */}
+      {support && (
+        <section className="pf-metrics" aria-label="Support overview">
+          <Metric to="/platform/support" label="Open tickets" value={support.open}
+                  sub={`${support.assigned} assigned · ${support.unassigned} unassigned`} />
+          <Metric to="/platform/support" label="Critical" value={support.critical}
+                  tone={support.critical ? 'warn' : ''} sub={`${support.unread} unread`} />
+          <Metric to="/platform/support" label="Overdue" value={support.overdue}
+                  tone={support.overdue ? 'warn' : ''} sub="Past their SLA" />
+          <Metric to="/platform/support" label="Avg resolution"
+                  value={support.avg_resolution_hours_30d != null ? `${support.avg_resolution_hours_30d}h` : '—'}
+                  sub={support.csat_30d?.average ? `Satisfaction ${support.csat_30d.average}/5` : 'Last 30 days'} />
+        </section>
+      )}
 
       {/* Part 14: the executive summary. Collected is cash that arrived
           (verified payments, by the day they were verified); MRR and ARR

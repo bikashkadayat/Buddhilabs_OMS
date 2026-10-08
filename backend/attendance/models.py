@@ -65,15 +65,24 @@ class Attendance(models.Model):
         ``marked_by`` is kept in lockstep (browser<->self, biometric<->system,
         hr<->hr) because the serializer and the React app already read it.
         """
-        BROWSER = "browser", "Browser check-in"
+        # The stored value stays "browser" -- every existing row, report and
+        # client reads it -- and only the label changes to the brief's name.
+        BROWSER = "browser", "Web app"
+        MOBILE = "mobile", "Mobile app"
         BIOMETRIC = "biometric", "Biometric device"
         HR = "hr", "HR entry"
 
-    # Precedence for authoring a row: HR > Biometric > Browser. An HR correction
+    # The two values an employee authors themselves. Derivation treats them
+    # identically: both are snapshotted before a device punch is merged in,
+    # and both are restored if the punches go away.
+    SELF_SOURCES = frozenset({Source.BROWSER, Source.MOBILE})
+
+    # Precedence for authoring a row: HR > Biometric > App. An HR correction
     # is never overwritten by the derivation engine — see biometric/derivation.py.
-    SOURCE_PRECEDENCE = {Source.BROWSER: 0, Source.BIOMETRIC: 1, Source.HR: 2}
+    SOURCE_PRECEDENCE = {Source.BROWSER: 0, Source.MOBILE: 0, Source.BIOMETRIC: 1, Source.HR: 2}
     MARKED_BY_FOR_SOURCE = {
         Source.BROWSER: MarkedBy.SELF,
+        Source.MOBILE: MarkedBy.SELF,
         Source.BIOMETRIC: MarkedBy.SYSTEM,
         Source.HR: MarkedBy.HR,
     }
@@ -159,6 +168,19 @@ class Attendance(models.Model):
     # employee's own check-in can be restored instead of silently lost.
     browser_check_in = models.DateTimeField(null=True, blank=True)
     browser_check_out = models.DateTimeField(null=True, blank=True)
+    # WHICH SOURCE SUPPLIED EACH END OF THE DAY. With App + Biometric the
+    # merge rule takes the earliest valid check-in and the latest valid
+    # check-out from either source, so one row can have a check-in from the
+    # phone and a check-out from the gate terminal. `source` above says who
+    # authored the row; these say where each time came from.
+    # Which app the employee's own times (browser_check_*) came from, so a
+    # revert restores "Mobile app" rather than relabelling it "Web app".
+    app_source = models.CharField(
+        max_length=20, choices=Source.choices, blank=True, default="", db_default="")
+    check_in_source = models.CharField(
+        max_length=20, choices=Source.choices, blank=True, default="", db_default="")
+    check_out_source = models.CharField(
+        max_length=20, choices=Source.choices, blank=True, default="", db_default="")
 
     # --- policy engine (Phase 8) — all additive, all defaulted ---------------
     # working_hours above keeps its meaning (the GROSS span). These sit beside

@@ -17,6 +17,7 @@ import { taskService } from '../services/taskService';
 import { appraisalService } from '../services/appraisalService';
 import { draftService } from '../services/draftService';
 import { useCorrectionCounts } from './useWorkforce';
+import { supportService } from '../services/supportService';
 import { useWorkQueue } from './useWorkQueue';
 import { CONTEXTS, contextForPath, visibleItems } from '../components/layout/navConfig';
 
@@ -74,6 +75,14 @@ const useNavCounts = () => {
     staleTime: 60_000,
     retry: false,
   });
+  // Help & Support: unread ticket replies and unseen What's New posts.
+  const { data: support } = useQuery({
+    queryKey: ['support', 'badges'],
+    queryFn: supportService.badges,
+    staleTime: 60_000,
+    refetchInterval: 120_000,
+    retry: false,
+  });
   const { data: corrections } = useCorrectionCounts();
   // The queue is already fetched by Home and /queue; this only reads the cache.
   const { counts } = useWorkQueue({ enabled: false });
@@ -90,9 +99,10 @@ const useNavCounts = () => {
       pending_reviews: appraisalDash.manager?.pending_reviews || 0,
     },
     corrections,
+    support,
     queue: counts?.total || null,
     drafts: Array.isArray(drafts) ? drafts.length || null : (drafts?.results?.length || null),
-  }), [memo, minute, circular, task, appraisalDash, corrections, counts, drafts]);
+  }), [memo, minute, circular, task, appraisalDash, corrections, support, counts, drafts]);
 };
 
 export const useNavContext = () => {

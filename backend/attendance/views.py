@@ -83,6 +83,22 @@ def _user_agent(request):
     return (request.META.get("HTTP_USER_AGENT") or "")[:256]
 
 
+def _client_source(request):
+    """Mobile app or web app, as the client declares it.
+
+    Declared, not sniffed: a phone's browser is still the WEB app, so the
+    user-agent cannot answer this. A native client sends
+    ``X-Attendance-Client: mobile`` (or ``"client": "mobile"`` in the body);
+    anything else -- including every existing caller -- is the web app.
+    """
+    declared = (request.META.get("HTTP_X_ATTENDANCE_CLIENT")
+                or (request.data.get("client") if hasattr(request.data, "get") else "")
+                or "")
+    if str(declared).strip().lower() == Attendance.Source.MOBILE:
+        return Attendance.Source.MOBILE
+    return Attendance.Source.BROWSER
+
+
 class CheckInView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -123,6 +139,10 @@ class CheckInView(APIView):
             employee=emp, date=today, defaults={"marked_by": Attendance.MarkedBy.SELF})
         rec.check_in = timezone.now()
         rec.marked_by = Attendance.MarkedBy.SELF
+        client = _client_source(request)
+        if rec.source in Attendance.SELF_SOURCES:
+            rec.source = client
+        rec.check_in_source = client
         if coords:
             rec.check_in_lat = coords["lat"]
             rec.check_in_lng = coords["lng"]
@@ -165,6 +185,15 @@ class CheckOutView(APIView):
                            "your phone. (The site must be opened over HTTPS for location to work.)"},
                 status=status.HTTP_400_BAD_REQUEST)
         rec.check_out = timezone.now()
+        client = _client_source(request)
+        rec.check_out_source = client
+        if rec.source == Attendance.Source.BIOMETRIC:
+            # A device-derived day the employee checks out of from the app.
+            # Kept in the app snapshot too, so the next sync's merge (latest
+            # valid check-out from either source) sees it instead of
+            # overwriting it with the device's last punch.
+            rec.browser_check_out = rec.check_out
+            rec.app_source = rec.app_source or client
         if coords:
             rec.check_out_lat = coords["lat"]
             rec.check_out_lng = coords["lng"]
@@ -266,7 +295,7 @@ class AttendanceListView(APIView):
 
     def get(self, request):
         role = request.user.role
-        qs = Attendance.objects.select_related("employee", "employee__department_ref")
+        qs = Attendance.objects.select_related("employee", "employee__department_ref", "device")
         if _org_wide_read(request.user):
             pass  # all - HR, Admin, and the Board read-only
         elif role == User.Roles.CHECKER and request.user.department_ref_id:
@@ -316,6 +345,10 @@ class ManualAttendanceView(APIView):
         rec.status = d["status"]
         rec.check_in = d.get("check_in") or rec.check_in
         rec.check_out = d.get("check_out") or rec.check_out
+        if d.get("check_in"):
+            rec.check_in_source = Attendance.Source.HR
+        if d.get("check_out"):
+            rec.check_out_source = Attendance.Source.HR
         rec.remarks = d.get("remarks", "")
         rec.marked_by = Attendance.MarkedBy.HR
         if rec.check_in and rec.check_out:

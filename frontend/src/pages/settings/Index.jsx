@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  CreditCard, Globe, Palette, ScrollText, Tags, CalendarDays, Building2, Clock3,
+  CreditCard, Globe, Palette, ScrollText, Tags, CalendarDays, Building2, Clock3, Fingerprint,
 } from 'lucide-react';
 import PageHeader from '../../components/common/PageHeader';
 
@@ -43,6 +43,9 @@ const SETUP = [
     title: 'Leave types', body: 'Annual, sick, unpaid and any others you offer.' },
   { to: '/admin/attendance/policies', Icon: Clock3,
     title: 'Attendance rules', body: 'Office hours, grace period, shifts and overtime.' },
+  { to: '/settings/attendance', Icon: Fingerprint,
+    title: 'Attendance & biometric devices',
+    body: 'App or device attendance, and the fingerprint devices you connect.' },
   { to: '/admin/leaves/holidays', Icon: CalendarDays,
     title: 'Holidays & events', body: 'Public holidays and the dates your organization closes.' },
   { to: '/admin/leaves/departments', Icon: Building2,

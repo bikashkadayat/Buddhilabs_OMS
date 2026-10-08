@@ -11,6 +11,8 @@ import BrandingPanel from '../../components/platform/BrandingPanel';
 import EditOrganization from '../../components/platform/EditOrganization';
 import PortabilityPanel from '../../components/platform/PortabilityPanel';
 import HandoverCard from '../../components/platform/HandoverCard';
+import Timeline from '../../components/platform/success/Timeline';
+import SuccessTasks from '../../components/platform/success/Tasks';
 import {
   platformService, money, bytes, statusLabel,
 } from '../../services/platformService';
@@ -241,6 +243,14 @@ const PlatformOrganizationDetail = () => {
           }}
         />
       )}
+
+      {/* Customer Success 2.0: the whole story, and what we owe them next. */}
+      <section className="pf-panel cs-org" id="success" aria-label="Customer success">
+        <h2 className="pf-panel-title">Customer timeline</h2>
+        <Timeline slug={slug} />
+        <h2 className="pf-panel-title">Customer success tasks</h2>
+        <SuccessTasks organization={slug} />
+      </section>
 
       <section className="pf-panel" aria-label="Subscription history">
         <h2 className="pf-panel-title">Subscription history</h2>

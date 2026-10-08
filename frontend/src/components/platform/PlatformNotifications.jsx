@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  AlertTriangle, Building2, CheckCircle2, CreditCard, Globe, Loader2,
+  AlertTriangle, AtSign, Building2, CheckCircle2, CreditCard, Globe, HeartPulse, LifeBuoy, Loader2,
 } from 'lucide-react';
 
 import { platformService } from '../../services/platformService';
@@ -44,13 +44,15 @@ const PlatformNotifications = ({ onClose }) => {
       platformService.dashboard().catch(() => ({ data: {} })),
       platformService.health().catch(() => ({ data: {} })),
       platformService.domains().catch(() => ({ data: { domains: [] } })),
+      platformService.successAlerts().catch(() => ({ data: { tickets: {}, customers: [] } })),
     ])
-      .then(([dash, health, domains]) => {
+      .then(([dash, health, domains, alerts]) => {
         if (!alive) return;
         setState({
           dash: dash.data || {},
           health: health.data || {},
           domains: (domains.data?.domains || []),
+          alerts: alerts.data || { tickets: {}, customers: [] },
         });
       });
     return () => { alive = false; };
@@ -67,8 +69,48 @@ const PlatformNotifications = ({ onClose }) => {
     );
   }
 
-  const { dash, health, domains } = state;
+  const { dash, health, domains, alerts } = state;
   const items = [];
+
+  // Customer Success 2.0: support SLA alerts. Overdue and critical first --
+  // a customer is waiting on us -- then the slower-burning ones.
+  const t = alerts.tickets || {};
+  const ticketRows = [
+    ['escalated', 'urgent', 'escalated', 'Escalated by a rule or an agent; leadership has been emailed.'],
+    ['overdue', 'urgent', 'past their SLA', 'Answer or resolve them now.'],
+    ['critical', 'urgent', 'critical', 'Critical tickets have a 4-hour target.'],
+    ['no_response', 'warn', 'with no response yet', 'Unanswered for half their SLA.'],
+    ['stale', 'warn', 'gone stale', 'In progress with no activity for 3+ days.'],
+  ];
+  ticketRows.forEach(([key, tone, words, detail]) => {
+    const n = (t[key] || []).length;
+    if (n) {
+      items.push(
+        <Row key={`t-${key}`} to={key === 'escalated' ? '/platform/support?section=sla' : '/platform/support'}
+             tone={tone} icon={<LifeBuoy size={15} />}
+             title={`${n} ticket${n === 1 ? '' : 's'} ${words}`} detail={detail} />,
+      );
+    }
+  });
+  // Support Desk 3.0: someone @mentioned me in an internal note.
+  const mentions = alerts.mentions || {};
+  if (mentions.unread) {
+    const first = (mentions.mentions || [])[0];
+    items.push(
+      <Row key="mentions" to={first ? `/platform/support?ticket=${first.ticket}` : '/platform/support'} tone="warn"
+           icon={<AtSign size={15} />}
+           title={`${mentions.unread} mention${mentions.unread === 1 ? '' : 's'} in internal notes`}
+           detail={first ? `${first.by} on ${first.reference}: ${first.body.slice(0, 80)}` : ''} />,
+    );
+  }
+  const reach = (alerts.customers || []).length;
+  if (reach) {
+    items.push(
+      <Row key="cs" to="/platform/customer-health?tab=alerts" tone="warn" icon={<HeartPulse size={15} />}
+           title={`${reach} customer signal${reach === 1 ? '' : 's'} to follow up`}
+           detail={(alerts.customers || []).slice(0, 2).map((c) => `${c.name}: ${c.text}`).join(' · ')} />,
+    );
+  }
 
   if (dash.payments_pending_verification > 0) {
     items.push(
@@ -130,8 +172,8 @@ const PlatformNotifications = ({ onClose }) => {
           <CheckCircle2 size={16} aria-hidden="true" />
           {/* An empty state that says what was checked. "Nothing here" alone
               reads as "not loaded yet". */}
-          Nothing is waiting. Payments, provisioning, domains and renewals
-          are all clear.
+          Nothing is waiting. Payments, provisioning, domains, renewals,
+          support SLAs and customer signals are all clear.
         </div>
       ) : items}
       <Link className="pf-notes-foot" to="/platform/audit" onClick={onClose}>

@@ -74,3 +74,17 @@ def export_bundle_path(instance, filename):
     """
     return (f"platform/exports/{instance.organization_id}/"
             f"{uuid.uuid4().hex}/{filename}")
+
+
+def support_file_path(instance, filename):
+    """``platform/support/<organization id>/<uuid>/<filename>``.
+
+    A ticket's screenshot or attachment, uploaded by a customer and read by
+    platform staff -- the payment-proof situation exactly, so the same tree:
+    outside ``org/``, which the signed media view refuses, and served only by
+    the authenticated ticket views.
+    """
+    ticket = getattr(instance, "ticket", None) or instance
+    return (f"platform/support/{ticket.organization_id or 'platform'}/"
+            f"{uuid.uuid4().hex}/{filename}")
+

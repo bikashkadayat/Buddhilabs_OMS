@@ -31,7 +31,8 @@ from django.utils import timezone
 
 from .exceptions import DirectStatusChangeForbidden
 from .slugs import validate_tenant_slug
-from .uploads import export_bundle_path, org_asset_path, payment_proof_path
+from .uploads import (export_bundle_path, org_asset_path, payment_proof_path,
+                      support_file_path)
 
 # A 7-character hex colour, or blank for "inherit the platform default".
 HEX_COLOR = RegexValidator(
@@ -1326,6 +1327,14 @@ class PlatformMetric(models.Model):
         LEAVE_USED = "leave_used", "Leave applied for"
         TASK_USED = "task_used", "Task created"
         DOCUMENT_USED = "document_used", "Document created"
+        # Customer Success 2.0. An employee beyond the founding administrator
+        # was added (onboarding "first employee"), and a would-be ticket was
+        # answered by the in-app assistant instead (ticket deflection).
+        EMPLOYEE_ADDED = "employee_added", "Employee added"
+        TICKET_DEFLECTED = "ticket_deflected", "Ticket answered by the assistant"
+        # Support Desk 3.0: the assistant showed suggestions to someone
+        # writing a ticket (once per draft). Deflection rate = deflected / shown.
+        ASSIST_SHOWN = "assist_shown", "Assistant suggestions shown"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     day = models.DateField(db_index=True)
@@ -1492,12 +1501,100 @@ class SupportRequest(models.Model):
     class Status(models.TextChoices):
         OPEN = "open", "Open"
         IN_PROGRESS = "in_progress", "In progress"
+        WAITING_CUSTOMER = "waiting_customer", "Waiting for you"
         RESOLVED = "resolved", "Resolved"
+        CLOSED = "closed", "Closed"
+
+    class Category(models.TextChoices):
+        """What the ticket is about -- the customer picks one, nothing else."""
+        BUG = "bug", "Bug"
+        TECHNICAL = "technical", "Technical issue"
+        ATTENDANCE = "attendance", "Attendance issue"
+        LEAVE = "leave", "Leave issue"
+        TASK = "task", "Task issue"
+        BILLING = "billing", "Billing issue"
+        DOMAIN = "domain", "Domain issue"
+        LOGIN = "login", "Login issue"
+        FEATURE_REQUEST = "feature_request", "Feature request"
+        OTHER = "other", "Other"
+
+    class Priority(models.TextChoices):
+        CRITICAL = "critical", "Critical"
+        HIGH = "high", "High"
+        MEDIUM = "medium", "Medium"
+        LOW = "low", "Low"
+
+    class Roadmap(models.TextChoices):
+        """Where a feature request stands -- what the customer tracks."""
+        SUBMITTED = "submitted", "Submitted"
+        UNDER_REVIEW = "under_review", "Under review"
+        PLANNED = "planned", "Planned"
+        IN_DEVELOPMENT = "in_development", "In development"
+        COMPLETED = "completed", "Completed"
+
+    # The SLA, in hours, measured to RESOLUTION and paused while the ticket
+    # waits on the customer. Platform settings may override (SUPPORT_SLA_HOURS).
+    SLA_HOURS = {Priority.CRITICAL: 4, Priority.HIGH: 8,
+                 Priority.MEDIUM: 24, Priority.LOW: 72}
+    # The customer never chooses a priority -- everyone would choose
+    # Critical. It is set from the category and an agent can change it.
+    DEFAULT_PRIORITY = {
+        Category.LOGIN: Priority.HIGH, Category.BILLING: Priority.HIGH,
+        Category.DOMAIN: Priority.HIGH, Category.FEATURE_REQUEST: Priority.LOW,
+    }
+    OPEN_STATES = (Status.OPEN, Status.IN_PROGRESS, Status.WAITING_CUSTOMER)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, null=True, blank=True,
         related_name="support_requests")
+    # Human reference shown to the customer ("SUP-000042"); assigned on create.
+    number = models.PositiveIntegerField(null=True, blank=True, unique=True)
+    category = models.CharField(max_length=20, choices=Category.choices, blank=True,
+                                default="", db_default="", db_index=True)
+    priority = models.CharField(max_length=10, choices=Priority.choices,
+                                default=Priority.MEDIUM, db_default=Priority.MEDIUM,
+                                db_index=True)
+    roadmap_status = models.CharField(max_length=20, choices=Roadmap.choices,
+                                      blank=True, default="", db_default="")
+    # Captured by the browser and the server, never typed: url, browser,
+    # device, viewport, plan, tenant slug, the time on the customer's clock.
+    context = models.JSONField(default=dict, blank=True)
+    url = models.CharField(max_length=500, blank=True, default="", db_default="")
+    screenshot = models.FileField(upload_to=support_file_path, max_length=255,
+                                  blank=True, default="")
+    attachment = models.FileField(upload_to=support_file_path, max_length=255,
+                                  blank=True, default="")
+    # --- desk: assignment, escalation, SLA, unread -----------------------
+    assigned_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="+")
+    escalated = models.BooleanField(default=False, db_default=False)
+    sla_due_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    sla_paused_at = models.DateTimeField(null=True, blank=True)
+    first_response_at = models.DateTimeField(null=True, blank=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    closed_at = models.DateTimeField(null=True, blank=True)
+    unread_by_staff = models.BooleanField(default=True, db_default=True)
+    unread_by_customer = models.BooleanField(default=False, db_default=False)
+    # --- satisfaction, asked once the ticket is resolved -----------------
+    satisfaction_rating = models.PositiveSmallIntegerField(null=True, blank=True)
+    satisfaction_comment = models.TextField(blank=True, default="", db_default="")
+    satisfaction_at = models.DateTimeField(null=True, blank=True)
+    # Which SLA alerts have gone out for this ticket, and when -- so the
+    # alert job tells the team once per condition, not every fifteen minutes.
+    sla_alerts = models.JSONField(default=dict, blank=True)
+    # --- Support Desk 3.0: ownership, escalation, known issue -------------
+    # The team that owns the ticket. Set on creation from the category
+    # (``SupportTeam.categories``), so a ticket is never nobody's; an agent
+    # inside the team may or may not have picked it up yet.
+    team = models.ForeignKey("SupportTeam", on_delete=models.SET_NULL, null=True,
+                             blank=True, related_name="tickets")
+    # 0 = never escalated; each escalation (manual or by rule) adds one.
+    escalation_level = models.PositiveSmallIntegerField(default=0, db_default=0)
+    escalated_at = models.DateTimeField(null=True, blank=True)
+    known_issue = models.ForeignKey("KnownIssue", on_delete=models.SET_NULL, null=True,
+                                    blank=True, related_name="tickets")
     kind = models.CharField(max_length=20, choices=Kind.choices, db_index=True)
     subject = models.CharField(max_length=200, blank=True, default="")
     message = models.TextField(blank=True, default="")
@@ -1519,3 +1616,344 @@ class SupportRequest(models.Model):
 
     def __str__(self):
         return f"{self.get_kind_display()}: {self.subject or self.feature}"
+
+    @property
+    def reference(self):
+        return f"SUP-{self.number:06d}" if self.number else ""
+
+    @property
+    def is_ticket(self):
+        """Feedback ratings share the table; everything else is a ticket."""
+        return self.kind != self.Kind.FEEDBACK
+
+    @property
+    def is_overdue(self):
+        return bool(self.sla_due_at and self.status in self.OPEN_STATES
+                    and self.sla_paused_at is None
+                    and timezone.now() > self.sla_due_at)
+
+
+class SupportMessage(models.Model):
+    """One entry in a ticket's conversation.
+
+    Platform-global for the reason SupportRequest is. ``is_internal`` marks a
+    staff-only note: it is never serialised to the customer, and never
+    exported to them. ``author_kind=system`` records a status change,
+    assignment or escalation in the thread so the history explains itself.
+    """
+
+    class AuthorKind(models.TextChoices):
+        CUSTOMER = "customer", "Customer"
+        STAFF = "staff", "Support team"
+        SYSTEM = "system", "System"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    ticket = models.ForeignKey(SupportRequest, on_delete=models.CASCADE,
+                               related_name="messages")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                               null=True, blank=True, related_name="+")
+    author_name = models.CharField(max_length=150, blank=True, default="")
+    author_kind = models.CharField(max_length=10, choices=AuthorKind.choices)
+    body = models.TextField(blank=True, default="")
+    is_internal = models.BooleanField(default=False)
+    attachment = models.FileField(upload_to=support_file_path, max_length=255,
+                                  blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"{self.ticket_id} · {self.author_kind} · {self.created_at:%Y-%m-%d %H:%M}"
+
+
+class ProductUpdate(models.Model):
+    """What's New: a published note about how the product changed.
+
+    Platform-wide and the same for every customer, so no organization column.
+    """
+
+    class Category(models.TextChoices):
+        NEW = "new", "New"
+        IMPROVED = "improved", "Improved"
+        FIXED = "fixed", "Fixed"
+        RELEASE = "release", "Release notes"
+        ANNOUNCEMENT = "announcement", "Announcement"
+        MAINTENANCE = "maintenance", "Maintenance"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=160)
+    summary = models.CharField(max_length=300, blank=True, default="")
+    body = models.TextField(blank=True, default="")
+    category = models.CharField(max_length=20, choices=Category.choices,
+                                default=Category.NEW)
+    # Optional link into the product ("Try it" -> /settings/attendance).
+    link = models.CharField(max_length=200, blank=True, default="")
+    published_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-published_at", "-created_at"]
+
+    def __str__(self):
+        return self.title
+
+
+class StatusNotice(models.Model):
+    """An incident or maintenance notice an operator posts on System Status.
+
+    The automatic checks say whether a component is answering; a notice says
+    what the platform team knows about it ("Email delivery delayed, provider
+    incident, next update 14:00"). Active while ``resolved_at`` is null.
+    """
+
+    class Component(models.TextChoices):
+        PLATFORM = "platform", "Platform"
+        EMAIL = "email", "Email delivery"
+        STORAGE = "storage", "File storage"
+        PAYMENTS = "payments", "Payments"
+        DOMAINS = "domains", "Domain verification"
+        ATTENDANCE = "attendance", "Attendance services"
+
+    class Level(models.TextChoices):
+        MAINTENANCE = "maintenance", "Maintenance"
+        DEGRADED = "degraded", "Degraded"
+        OUTAGE = "outage", "Outage"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    component = models.CharField(max_length=20, choices=Component.choices)
+    level = models.CharField(max_length=20, choices=Level.choices, default=Level.DEGRADED)
+    message = models.CharField(max_length=500)
+    starts_at = models.DateTimeField(default=timezone.now)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-starts_at"]
+
+    def __str__(self):
+        return f"{self.get_component_display()} · {self.level}"
+
+
+class SuccessTask(models.Model):
+    """A customer-success action the platform team owes an organization.
+
+    Follow up, call, schedule a meeting, run training, review onboarding --
+    linked to the organization, optionally assigned to an operator, due on a
+    date. ``auto_reason`` marks a task the daily success job opened from a
+    health signal ("no_attendance"), which is also how it avoids opening the
+    same one twice while the first is still open.
+
+    Platform-global and NOT exported to the customer: it is the platform's
+    own working list about them, like an internal ticket note.
+    """
+
+    class Kind(models.TextChoices):
+        FOLLOW_UP = "follow_up", "Follow up"
+        CALL = "call", "Call customer"
+        MEETING = "meeting", "Schedule meeting"
+        TRAINING = "training", "Product training"
+        ONBOARDING_REVIEW = "onboarding_review", "Onboarding review"
+        # Support Desk 3.0: tasks an agent opens from a ticket, and campaign
+        # outreach.
+        DOMAIN_SETUP = "domain_setup", "Domain setup"
+        PAYMENT_VERIFICATION = "payment_verification", "Payment verification"
+        OUTREACH = "outreach", "Customer outreach"
+
+    class Status(models.TextChoices):
+        OPEN = "open", "Open"
+        DONE = "done", "Done"
+        CANCELLED = "cancelled", "Cancelled"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE,
+                                     related_name="success_tasks")
+    kind = models.CharField(max_length=20, choices=Kind.choices, default=Kind.FOLLOW_UP)
+    title = models.CharField(max_length=200)
+    notes = models.TextField(blank=True, default="")
+    due_date = models.DateField(null=True, blank=True, db_index=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.OPEN,
+                              db_index=True)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                    null=True, blank=True, related_name="+")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name="+")
+    auto_reason = models.CharField(max_length=40, blank=True, default="", db_index=True)
+    # Support Desk 3.0: the ticket it follows up, the campaign that opened it.
+    ticket = models.ForeignKey(SupportRequest, on_delete=models.SET_NULL, null=True,
+                               blank=True, related_name="tasks")
+    campaign = models.ForeignKey("SuccessCampaign", on_delete=models.SET_NULL, null=True,
+                                 blank=True, related_name="tasks")
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["status", "due_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.get_kind_display()}: {self.title}"
+
+
+# ===========================================================================
+# Support Desk 3.0: teams, mentions, linked tickets, known issues, campaigns.
+# All platform-global: the platform team's own organisation of its work,
+# read from the console with no tenant bound, never exported to a customer.
+# ===========================================================================
+class SupportTeam(models.Model):
+    """A group of platform agents who own a kind of ticket.
+
+    ``categories`` routes new tickets: a ticket whose category is listed here
+    is owned by this team from the moment it is opened. With ``auto_assign``
+    the least-loaded available member also picks it up, so "every ticket has
+    an owner" holds for people as well as teams whenever the team is staffed.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    key = models.SlugField(max_length=40, unique=True)
+    name = models.CharField(max_length=80)
+    description = models.CharField(max_length=300, blank=True, default="")
+    categories = models.JSONField(default=list, blank=True)
+    # The team tickets fall to when no category matches.
+    is_default = models.BooleanField(default=False)
+    auto_assign = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class SupportTeamMember(models.Model):
+    """An agent's place in a team. A lead is told about escalations."""
+
+    class Role(models.TextChoices):
+        LEAD = "lead", "Team lead"
+        AGENT = "agent", "Agent"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    team = models.ForeignKey(SupportTeam, on_delete=models.CASCADE, related_name="members")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name="support_teams")
+    role = models.CharField(max_length=10, choices=Role.choices, default=Role.AGENT)
+    # Off: away / on leave -- kept in the team, skipped by auto-assignment.
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["team", "user"],
+                                               name="uniq_support_team_member")]
+        ordering = ["team", "role", "created_at"]
+
+    def __str__(self):
+        return f"{self.team} · {self.user_id} · {self.role}"
+
+
+class SupportMention(models.Model):
+    """An agent @mentioned in an internal note: their to-read list."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    message = models.ForeignKey(SupportMessage, on_delete=models.CASCADE,
+                                related_name="mentions")
+    ticket = models.ForeignKey(SupportRequest, on_delete=models.CASCADE, related_name="+")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             related_name="+")
+    read_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["message", "user"],
+                                               name="uniq_support_mention")]
+        ordering = ["-created_at"]
+
+
+class SupportTicketLink(models.Model):
+    """Two tickets about the same thing. Stored once; read both ways."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    from_ticket = models.ForeignKey(SupportRequest, on_delete=models.CASCADE, related_name="+")
+    to_ticket = models.ForeignKey(SupportRequest, on_delete=models.CASCADE, related_name="+")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["from_ticket", "to_ticket"],
+                                               name="uniq_support_ticket_link")]
+
+
+class KnownIssue(models.Model):
+    """A problem the platform team knows about, with what to do meanwhile.
+
+    The privacy-safe way to show "resolved similar cases" across customers:
+    the assistant matches a customer's words against ``title`` and
+    ``symptoms`` and shows the ``workaround`` -- text the team wrote for
+    everyone -- never another customer's ticket. Tickets are linked to it, so
+    the desk sees how many customers it touched and the fix can be posted
+    to all of them at once.
+    """
+
+    class State(models.TextChoices):
+        INVESTIGATING = "investigating", "Investigating"
+        WORKAROUND = "workaround", "Workaround available"
+        FIXED = "fixed", "Fixed"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    symptoms = models.TextField(blank=True, default="")
+    workaround = models.TextField(blank=True, default="")
+    category = models.CharField(max_length=20, blank=True, default="")
+    state = models.CharField(max_length=20, choices=State.choices,
+                             default=State.INVESTIGATING, db_index=True)
+    # Off: the desk's own note, not offered to customers by the assistant.
+    is_public = models.BooleanField(default=True)
+    deflected_count = models.PositiveIntegerField(default=0)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name="+")
+    fixed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["state", "-updated_at"]
+
+    def __str__(self):
+        return self.title
+
+
+class SuccessCampaign(models.Model):
+    """One outreach push to a segment: one task per customer in it."""
+
+    class Segment(models.TextChoices):
+        INACTIVE = "inactive", "Inactive customers"
+        LOW_HEALTH = "low_health", "Low health customers"
+        TRIAL = "trial", "Trial customers"
+        NEAR_RENEWAL = "near_renewal", "Near renewal"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=160)
+    segment = models.CharField(max_length=20, choices=Segment.choices)
+    task_kind = models.CharField(max_length=20, choices=SuccessTask.Kind.choices,
+                                 default=SuccessTask.Kind.OUTREACH)
+    task_title = models.CharField(max_length=200)
+    notes = models.TextField(blank=True, default="")
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                    null=True, blank=True, related_name="+")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                   null=True, blank=True, related_name="+")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+

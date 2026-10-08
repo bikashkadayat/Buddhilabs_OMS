@@ -87,7 +87,10 @@ class TestHeartbeat:
             "run_scheduled_reports", "purge_expired_reports", "send_weekly_digest",
             "reconcile_approval_notifications", "process_punches",
             "check_device_health", "reap_stuck_reports", "check_alerts",
-            "backup_verify", "device_sync",
+            # device_sync_due replaced the single-device `device_sync` line:
+            # it pulls every tenant's due devices and writes the same
+            # DEVICE_SYNC heartbeat.
+            "backup_verify", "device_sync_due",
             # Phase 111.17: autosave snapshots are working state, not records,
             # so they are purged on a retention window like generated reports.
             "purge_expired_drafts",
@@ -102,6 +105,9 @@ class TestHeartbeat:
             "snapshot_task_evidence",
             # Phase ASSET-LIFECYCLE-DISPOSAL: warranty, AMC and end-of-life alerts.
             "send_asset_lifecycle_alerts",
+            # Customer Success 2.0: SLA alerts (15 min) and daily customer
+            # signals -- one command, two heartbeats.
+            "customer_success_alerts",
         }
         assert commands == expected, (
             "The crontab changed. Add the new job to monitoring.heartbeat."

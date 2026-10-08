@@ -155,8 +155,55 @@ export const platformService = {
   // Customer success: health and adoption (from usage counters only), and
   // the inbox of what customers wrote to the platform team.
   customerHealth: (days = 30) => api.get('/platform/customer-health/', { params: { days } }),
+  successCommandCenter: () => api.get('/platform/success/command-center/'),
+  successAdoption: (weeks = 12) => api.get('/platform/success/adoption/', { params: { weeks } }),
+  successOnboarding: () => api.get('/platform/success/onboarding/'),
+  successExecutive: () => api.get('/platform/success/executive/'),
+  successAlerts: () => api.get('/platform/success/alerts/'),
+  successTasks: (params = {}) => api.get('/platform/success/tasks/', { params }),
+  createSuccessTask: (body) => api.post('/platform/success/tasks/', body),
+  updateSuccessTask: (id, body) => api.patch(`/platform/success/tasks/${id}/`, body),
+  organizationTimeline: (slug) => api.get(`/platform/organizations/${slug}/timeline/`),
   supportInbox: (params = {}) => api.get('/platform/support/', { params }),
   updateSupport: (id, body) => api.patch(`/platform/support/${id}/`, body),
+  supportTicket: (id) => api.get(`/platform/support/${id}/`),
+  supportMessage: (id, body, internal, attachment) => {
+    if (!attachment) return api.post(`/platform/support/${id}/messages/`, { body, internal });
+    const form = new FormData();
+    form.append('body', body); form.append('internal', internal ? 'true' : 'false');
+    form.append('attachment', attachment);
+    return api.post(`/platform/support/${id}/messages/`, form,
+      { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
+  supportFile: (id, which, messageId) => api.get(
+    `/platform/support/${id}/files/${which}/${messageId ? `${messageId}/` : ''}`, { responseType: 'blob' }),
+  supportOverview: () => api.get('/platform/support/overview/'),
+  supportAgents: () => api.get('/platform/support/agents/'),
+  // Support Desk 3.0: teams, transfer, links, ticket tasks, SLA board,
+  // mentions, known issues; campaigns and the founder view.
+  supportTeams: () => api.get('/platform/support/teams/'),
+  createSupportTeam: (body) => api.post('/platform/support/teams/', body),
+  updateSupportTeam: (id, body) => api.patch(`/platform/support/teams/${id}/`, body),
+  setTeamMember: (teamId, body) => api.post(`/platform/support/teams/${teamId}/members/`, body),
+  transferTicket: (id, body) => api.post(`/platform/support/${id}/transfer/`, body),
+  linkTicket: (id, ticket, remove = false) => api.post(`/platform/support/${id}/links/`, { ticket, remove }),
+  createTicketTask: (id, body) => api.post(`/platform/support/${id}/tasks/`, body),
+  supportSla: (team) => api.get('/platform/support/sla/', { params: team ? { team } : {} }),
+  supportMentions: () => api.get('/platform/support/mentions/'),
+  readMentions: (ticket) => api.post('/platform/support/mentions/', ticket ? { ticket } : {}),
+  knownIssues: () => api.get('/platform/support/known-issues/'),
+  createKnownIssue: (body) => api.post('/platform/support/known-issues/', body),
+  updateKnownIssue: (id, body) => api.patch(`/platform/support/known-issues/${id}/`, body),
+  successCampaigns: (segment) => api.get('/platform/success/campaigns/', { params: segment ? { segment } : {} }),
+  createCampaign: (body) => api.post('/platform/success/campaigns/', body),
+  successOperations: () => api.get('/platform/success/operations/'),
+  productUpdates: () => api.get('/platform/product-updates/'),
+  createProductUpdate: (body) => api.post('/platform/product-updates/', body),
+  updateProductUpdate: (id, body) => api.patch(`/platform/product-updates/${id}/`, body),
+  deleteProductUpdate: (id) => api.delete(`/platform/product-updates/${id}/`),
+  statusNotices: () => api.get('/platform/status-notices/'),
+  createStatusNotice: (body) => api.post('/platform/status-notices/', body),
+  resolveStatusNotice: (id) => api.post(`/platform/status-notices/${id}/resolve/`),
   payments: (view) => api.get('/platform/payments/', { params: view ? { view } : {} }),
   // The Payment Center (no engineer, no shell): decide a payment, read the
   // receipt the customer sent.

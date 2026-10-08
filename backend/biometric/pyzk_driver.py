@@ -33,7 +33,9 @@ logger = logging.getLogger(__name__)
 # Anything not on this list is not called. Kept as data so the guarantee is
 # checkable rather than a claim in prose.
 PERMITTED_CALLS = ("connect", "disconnect", "get_users", "get_attendance",
-                   "get_time", "read_sizes")
+                   "get_time", "read_sizes", "get_serialnumber",
+                   "get_firmware_version", "get_platform", "get_device_name",
+                   "get_mac")
 
 
 class PyzkUnavailable(RuntimeError):
@@ -112,6 +114,26 @@ class PyzkReadOnlyClient:
                 "records": getattr(self._conn, "records", 0) or 0,
                 "users_capacity": getattr(self._conn, "users_cap", 0) or 0,
                 "records_capacity": getattr(self._conn, "rec_cap", 0) or 0}
+
+    def device_info(self):
+        """Same contract as the native client's: optional keys, never raises."""
+        # Spelled out as attribute calls, not getattr() on a name, so the
+        # AST check in test_collector can see exactly what reaches the device.
+        conn = self._conn
+        info = {}
+        for key, read in (("serial_number", lambda: conn.get_serialnumber()),
+                          ("firmware", lambda: conn.get_firmware_version()),
+                          ("platform", lambda: conn.get_platform()),
+                          ("device_name", lambda: conn.get_device_name()),
+                          ("mac", lambda: conn.get_mac())):
+            try:
+                value = read()
+            except Exception as exc:  # noqa: BLE001
+                logger.debug("pyzk %s read failed: %s", key, exc)
+                continue
+            if value:
+                info[key] = str(value).strip()
+        return info
 
     def device_time(self):
         """Naive device wall clock, matching the native client's contract."""

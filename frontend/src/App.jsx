@@ -18,6 +18,7 @@ const SettingsIndex = lazy(() => import('./pages/settings/Index'));
 const AttendanceRules = lazy(() => import('./pages/admin/AttendanceRules'));
 const SettingsBranding = lazy(() => import('./pages/settings/Branding'));
 const SettingsDomains = lazy(() => import('./pages/settings/Domains'));
+const SettingsAttendance = lazy(() => import('./pages/settings/Attendance'));
 import VerifyEmail from './pages/VerifyEmail';
 // Phase 203. `/` is now a real page rather than a redirect. RoleLanding.jsx is
 // retained unimported for one release: restoring it as the index element is the
@@ -144,6 +145,13 @@ const PlatformSupport = lazy(() => import('./pages/platform/SupportInbox'));
 const HelpCenter = lazy(() => import('./pages/help/HelpCenter'));
 const HelpArticle = lazy(() => import('./pages/help/HelpArticle'));
 const HelpSupport = lazy(() => import('./pages/help/Support'));
+const HelpTickets = lazy(() => import('./pages/help/Tickets'));
+const HelpTicketDetail = lazy(() => import('./pages/help/TicketDetail'));
+const HelpFeatures = lazy(() => import('./pages/help/FeatureRequests'));
+const HelpUpdates = lazy(() => import('./pages/help/ProductUpdates'));
+const HelpStatus = lazy(() => import('./pages/help/SystemStatus'));
+const HelpContactUs = lazy(() => import('./pages/help/ContactUs'));
+const PlatformUpdatesStatus = lazy(() => import('./pages/platform/UpdatesStatus'));
 const GettingStarted = lazy(() => import('./pages/GettingStarted'));
 const PlatformPlans = lazy(() => import('./pages/platform/Plans'));
 const PlatformSubscriptions = lazy(() => import('./pages/platform/Subscriptions'));
@@ -286,6 +294,7 @@ function App() {
           <Route path="payment-methods" element={<PlatformPaymentMethods />} />
           <Route path="customer-health" element={<PlatformCustomerHealth />} />
           <Route path="support" element={<PlatformSupport />} />
+          <Route path="updates" element={<PlatformUpdatesStatus />} />
           <Route path="usage" element={<PlatformUsage />} />
           <Route path="health" element={<PlatformHealth />} />
             <Route path="domains" element={<PlatformDomains />} />
@@ -318,6 +327,12 @@ function App() {
           {/* Customer success: help, support and setup, inside the workspace. */}
           <Route path="help" element={<HelpCenter />} />
           <Route path="help/contact" element={<HelpSupport />} />
+          <Route path="help/tickets" element={<HelpTickets />} />
+          <Route path="help/tickets/:id" element={<HelpTicketDetail />} />
+          <Route path="help/features" element={<HelpFeatures />} />
+          <Route path="help/updates" element={<HelpUpdates />} />
+          <Route path="help/status" element={<HelpStatus />} />
+          <Route path="help/contact-us" element={<HelpContactUs />} />
           <Route path="help/:slug" element={<HelpArticle />} />
           <Route path="getting-started" element={<GettingStarted />} />
           <Route path="settings" element={<RequireAuth allowedRoles={['admin']}><SettingsIndex /></RequireAuth>} />
@@ -326,6 +341,7 @@ function App() {
           <Route path="settings/subscription" element={<RequireAuth allowedRoles={['admin']}><SettingsSubscription /></RequireAuth>} />
           <Route path="settings/branding" element={<RequireAuth allowedRoles={['admin']}><SettingsBranding /></RequireAuth>} />
           <Route path="settings/domains" element={<RequireAuth allowedRoles={['admin']}><SettingsDomains /></RequireAuth>} />
+          <Route path="settings/attendance" element={<RequireAuth allowedRoles={['admin', 'approver']}><SettingsAttendance /></RequireAuth>} />
           <Route path="admin/attendance-reports" element={<RequireAuth allowedRoles={['approver', 'bod', 'admin']}><AttendanceReports /></RequireAuth>} />
           <Route path="attendance/records" element={<RequireAuth allowedRoles={['checker', 'approver', 'bod', 'admin']}><AttendanceRecords /></RequireAuth>} />
           <Route path="admin/biometric-attendance" element={<RequireAuth allowedRoles={['admin']}><BiometricAttendance /></RequireAuth>} />

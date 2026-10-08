@@ -193,11 +193,11 @@ def evaluate(record, *, policy=None, shift=None):
     else:
         record.status = Attendance.Status.PRESENT
 
-    # Approved WFH + a browser check-in = WORK_FROM_HOME. A biometric punch means
-    # the employee was physically at a device, so it can never be WFH. Half Day
-    # is left standing: a short WFH day is still a short day.
+    # Approved WFH + an app check-in (web or mobile) = WORK_FROM_HOME. A
+    # biometric punch means the employee was physically at a device, so it can
+    # never be WFH. Half Day is left standing: a short WFH day is still short.
     if (record.is_wfh
-            and record.source == Attendance.Source.BROWSER
+            and record.source in Attendance.SELF_SOURCES
             and record.status in (Attendance.Status.PRESENT, Attendance.Status.LATE)):
         record.status = Attendance.Status.WORK_FROM_HOME
 

@@ -361,7 +361,9 @@ def test_the_counts_match_the_phase_report():
     assert summary["phase_b_complete"] is True
     # Nothing outstanding; one field is globally unique on purpose.
     assert summary["global_unique_fields_outstanding"] == 0
-    assert summary["intentionally_global"] == 1
+    # 1 at Phase S3 (ADMS serial); 2 since the legacy device integration
+    # pinned each pulled terminal's own serial platform-wide.
+    assert summary["intentionally_global"] == 2
 
 
 def test_the_tenant_scoped_total_equals_the_projects_business_models():

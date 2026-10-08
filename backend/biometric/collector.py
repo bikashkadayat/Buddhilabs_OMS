@@ -168,12 +168,17 @@ def client_for(driver):
 def sync_device(device, *, host=None, comm_key=None, since=None, until=None,
                 include_roster=True, include_punches=True, dry_run=False,
                 source=None, chunk_size=None, derive=True, timeout=None,
-                driver=None):
+                driver=None, identity_check=None):
     """Read the terminal and ingest what it holds. Returns a summary dict.
 
     ``dry_run`` reads everything and writes nothing — the mode to use before a
     production import, because it produces the exact counts the import will
     produce without touching a row.
+
+    ``identity_check(device, serial)`` is called with the serial the terminal
+    reports, BEFORE either table is read; raising from it aborts the sync with
+    nothing read and nothing written. ``devices.run_pull_sync`` uses it to
+    refuse a terminal that is not the one this device row registered.
     """
     zone = device_zone(device)
     address = host or device.host
@@ -204,6 +209,12 @@ def sync_device(device, *, host=None, comm_key=None, since=None, until=None,
     with transport(address, device.port, timeout=timeout,
                    comm_key=comm_key) as client:
         summary["sizes"] = client.sizes()
+
+        if identity_check is not None:
+            info = client.device_info() if hasattr(client, "device_info") else {}
+            summary["device_info"] = info
+            if not dry_run:
+                identity_check(device, info.get("serial_number"))
 
         drift = measure_drift(client, zone)
         summary["clock"] = {"drift_seconds": drift}
